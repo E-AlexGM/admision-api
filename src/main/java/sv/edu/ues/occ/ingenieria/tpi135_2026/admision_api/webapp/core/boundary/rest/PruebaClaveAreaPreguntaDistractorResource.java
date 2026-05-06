@@ -66,7 +66,7 @@ public class PruebaClaveAreaPreguntaDistractorResource implements Serializable {
             entity.setIdPregunta(padre.getIdPregunta());
             entity.setIdDistractor(distractor);
             pruebaClaveAreaPreguntaDistractorDAO.crear(entity);
-            return Response.created(uriInfo.getAbsolutePath()).entity(entity).build();
+            return Response.created(uriInfo.getAbsolutePath()).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
         }

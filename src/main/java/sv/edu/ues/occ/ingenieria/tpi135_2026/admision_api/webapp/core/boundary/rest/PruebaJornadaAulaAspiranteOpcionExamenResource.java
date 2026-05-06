@@ -82,7 +82,6 @@ public class PruebaJornadaAulaAspiranteOpcionExamenResource implements Serializa
             UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
             uriBuilder.path(entity.getIdPruebaClave().getIdPruebaClave().toString());
             return Response.created(uriBuilder.build())
-                    .entity(entity)
                     .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();

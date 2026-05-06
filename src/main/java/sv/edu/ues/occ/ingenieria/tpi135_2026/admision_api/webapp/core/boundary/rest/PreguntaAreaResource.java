@@ -62,7 +62,7 @@ public class PreguntaAreaResource implements Serializable {
             preguntaArea.setIdArea(area);
             preguntaAreaDAO.crear(preguntaArea);
 
-            return Response.created(uriInfo.getAbsolutePath()).entity(preguntaArea).build();
+            return Response.created(uriInfo.getAbsolutePath()).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())

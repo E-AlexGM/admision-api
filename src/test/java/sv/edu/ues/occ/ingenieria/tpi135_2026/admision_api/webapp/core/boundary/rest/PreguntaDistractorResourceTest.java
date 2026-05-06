@@ -1,17 +1,14 @@
 package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.rest;
 
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeEach;
-
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import jakarta.ws.rs.core.Response;
-
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.DistractorDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PreguntaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PreguntaDistractorDAO;
@@ -57,7 +54,6 @@ public class PreguntaDistractorResourceTest {
         Response response = cut.crear(p.getIdPregunta(), d.getIdDistractor(), pD);
         Mockito.verify(pDDAO).crear(pD);
         Assertions.assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-        Assertions.assertEquals(pD, response.getEntity());
     }
 
     @Test 

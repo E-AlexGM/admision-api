@@ -39,7 +39,7 @@ public class JornadaResource implements Serializable {
                 jornadaDAO.crear(jornada);
                 UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
                 uriBuilder.path(jornada.getIdJornada().toString());
-                return Response.created(uriBuilder.build()).entity(jornada).build();
+                return Response.created(uriBuilder.build()).build();
             } catch (Exception e) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
             }

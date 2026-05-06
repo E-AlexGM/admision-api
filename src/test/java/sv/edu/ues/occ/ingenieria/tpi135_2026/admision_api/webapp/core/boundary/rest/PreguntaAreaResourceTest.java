@@ -59,7 +59,7 @@ public class PreguntaAreaResourceTest {
         Response resultado = cut.crear(idPregunta, idArea, mockUriInfo);
 
         assertEquals(201, resultado.getStatus());
-        assertNotNull(resultado.getEntity());
+        assertNotNull(resultado.getLocation());
         Mockito.verify(mockPD).buscarPorId(idPregunta);
         Mockito.verify(mockAreaDAO).buscarPorId(idArea);
         Mockito.verify(mockPAA).crear(Mockito.any(PreguntaArea.class));

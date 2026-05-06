@@ -39,7 +39,7 @@ public class DistractorResource implements Serializable {
                 distractorDAO.crear(distractor);
                 UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
                 uriBuilder.path(distractor.getIdDistractor().toString());
-                return Response.created(uriBuilder.build()).entity(distractor).build();
+                return Response.created(uriBuilder.build()).build();
             } catch (Exception e) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
             }

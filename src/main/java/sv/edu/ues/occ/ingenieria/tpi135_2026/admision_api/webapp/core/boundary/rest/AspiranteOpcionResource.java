@@ -57,7 +57,7 @@ public class AspiranteOpcionResource implements Serializable {
             }
             aspiranteOpcionDAO.crear(aspiranteOpcion);
             UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder().path(aspiranteOpcion.getIdAspiranteOpcion().toString());
-            return Response.created(uriBuilder.build()).entity(aspiranteOpcion).build();
+            return Response.created(uriBuilder.build()).build();
         } catch (IllegalArgumentException | IllegalStateException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
         }

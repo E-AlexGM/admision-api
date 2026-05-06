@@ -83,38 +83,37 @@ public class PruebaClaveAreaPreguntaResourceST extends AbstractIntegrationTest{
                 .request()
                 .post(Entity.json(tipoPrueba));
 
-        tipoPrueba = respuestaTipoPrueba.readEntity(TipoPrueba.class);
+        String idTipoPrueba = respuestaTipoPrueba.getLocation().toString().split(RESOURCE_NAME_TIPO_PRUEBA + "/")[1];
+        tipoPrueba = new TipoPrueba(UUID.fromString(idTipoPrueba));
 
         prueba.setIdTipoPrueba(tipoPrueba);
         Response respuestaPrueba = target.path(RESOURCE_NAME_PRUEBA)
                 .request()
                 .post(Entity.json(prueba));
 
-        prueba = respuestaPrueba.readEntity(Prueba.class);
+        String idPruebaCreada = respuestaPrueba.getLocation().toString().split(RESOURCE_NAME_PRUEBA + "/")[1];
+        prueba = new Prueba(UUID.fromString(idPruebaCreada));
 
         Response respuestaPregunta = target.path(RESOURCE_NAME_PREGUNTA)
                 .request()
                 .post(Entity.json(pregunta));
 
-        pregunta = respuestaPregunta.readEntity(Pregunta.class);
-
-        idPregunta = pregunta.getIdPregunta().toString();
+        idPregunta = respuestaPregunta.getLocation().toString().split(RESOURCE_NAME_PREGUNTA + "/")[1];
+        pregunta = new Pregunta(UUID.fromString(idPregunta));
 
         Response respuestaPregunta2 = target.path(RESOURCE_NAME_PREGUNTA)
                 .request()
                 .post(Entity.json(pregunta2));
 
-        pregunta2 = respuestaPregunta2.readEntity(Pregunta.class);
-
-        idPregunta2 = pregunta2.getIdPregunta().toString();
+        idPregunta2 = respuestaPregunta2.getLocation().toString().split(RESOURCE_NAME_PREGUNTA + "/")[1];
+        pregunta2 = new Pregunta(UUID.fromString(idPregunta2));
 
         Response respuestaArea = target.path(RESOURCE_NAME_AREA)
                 .request()
                 .post(Entity.json(area));
 
-        area = respuestaArea.readEntity(Area.class);
-
-        idArea = area.getIdArea().toString();
+        idArea = respuestaArea.getLocation().toString().split(RESOURCE_NAME_AREA + "/")[1];
+        area = new Area(UUID.fromString(idArea));
 
         pruebaClave.setIdPrueba(prueba);
         Response respuestaPruebaClave = target.path(RESOURCE_NAME_PRUEBA)
@@ -123,9 +122,8 @@ public class PruebaClaveAreaPreguntaResourceST extends AbstractIntegrationTest{
                 .request()
                 .post(Entity.json(pruebaClave));
 
-        pruebaClave = respuestaPruebaClave.readEntity(PruebaClave.class);
-
-        idPruebaClave = pruebaClave.getIdPruebaClave().toString();
+        idPruebaClave = respuestaPruebaClave.getLocation().toString().split(RESOURCE_NAME_CLAVE + "/")[1];
+        pruebaClave = new PruebaClave(UUID.fromString(idPruebaClave));
 
         pruebaClaveArea.setIdArea(area);
         Response respuestaPruebaClaveArea = target.path(RESOURCE_NAME_PRUEBA_CLAVE)
@@ -134,7 +132,9 @@ public class PruebaClaveAreaPreguntaResourceST extends AbstractIntegrationTest{
                 .request()
                 .post(Entity.json(pruebaClaveArea));
 
-        pruebaClaveArea = respuestaPruebaClaveArea.readEntity(PruebaClaveArea.class);
+        String idPCA = respuestaPruebaClaveArea.getLocation().toString().split(RESOURCE_NAME_AREA + "/")[1];
+        pruebaClaveArea = new PruebaClaveArea();
+        pruebaClaveArea.setIdArea(area);
 
 
         Response respuestaPreguntaArea = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta).path(RESOURCE_NAME_AREA).path(idArea).request()
@@ -172,9 +172,8 @@ public class PruebaClaveAreaPreguntaResourceST extends AbstractIntegrationTest{
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta.getStatus());
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta2.getStatus());
 
-        pruebaClaveAreaPregunta = respuesta.readEntity(PruebaClaveAreaPregunta.class);
-        assertNotNull(pruebaClaveAreaPregunta);
-        assertEquals(new BigDecimal(50), pruebaClaveAreaPregunta.getPorcentaje());
+        assertNotNull(respuesta.getLocation());
+        assertNotNull(respuesta2.getLocation());
     }
 
         @Order(2)

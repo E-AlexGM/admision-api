@@ -76,19 +76,8 @@ public class AspiranteOpcionResourceST extends AbstractIntegrationTest{
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta.getStatus());
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta2.getStatus());
 
-        AspiranteOpcion aspiranteOpcionRespuesta = respuesta.readEntity(AspiranteOpcion.class);
         idAspiranteOpcion = respuesta.getLocation().toString().split(RESOURCE_NAME_OPCION + "/")[1];
-
-        assertEquals(idAspiranteOpcion, aspiranteOpcionRespuesta.getIdAspiranteOpcion().toString());
-        assertNotNull(aspiranteOpcionRespuesta);
-
-        AspiranteOpcion aspiranteOpcionRespuesta2 = respuesta2.readEntity(AspiranteOpcion.class);
         idAspiranteOpcion2 = respuesta2.getLocation().toString().split(RESOURCE_NAME_OPCION + "/")[1];
-
-
-        assertEquals(idAspiranteOpcion2, aspiranteOpcionRespuesta2.getIdAspiranteOpcion().toString());
-        assertNotNull(respuesta2);
-        assertNotNull(aspiranteOpcionRespuesta2);
     }
 
     @Order(2)

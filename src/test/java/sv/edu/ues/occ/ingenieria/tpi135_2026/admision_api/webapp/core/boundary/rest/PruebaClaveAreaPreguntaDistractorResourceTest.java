@@ -74,11 +74,6 @@ class PruebaClaveAreaPreguntaDistractorResourceTest {
         Response response = resource.crear(idPruebaClave, idArea, idPregunta, idDistractor, uriInfo);
 
         assertEquals(201, response.getStatus());
-        PruebaClaveAreaPreguntaDistractor creada = (PruebaClaveAreaPreguntaDistractor) response.getEntity();
-        assertEquals(idPruebaClave, creada.getIdPruebaClave().getIdPruebaClave());
-        assertEquals(idArea, creada.getIdArea().getIdArea());
-        assertEquals(idPregunta, creada.getIdPregunta().getIdPregunta());
-        assertEquals(idDistractor, creada.getIdDistractor().getIdDistractor());
         verify(mockDAO).crear(any(PruebaClaveAreaPreguntaDistractor.class));
     }
 

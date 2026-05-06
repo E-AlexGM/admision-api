@@ -11,6 +11,7 @@ import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Pre
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PreguntaDistractor;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -67,17 +68,17 @@ public class PreguntaDistractorResourceST extends AbstractIntegrationTest{
         Response respuestaDistractor = target.path(RESOURCE_NAME_DISTRACTOR).request().post(Entity.json(distractor));
         Response respuestaDistractor2 = target.path(RESOURCE_NAME_DISTRACTOR).request().post(Entity.json(distractor2));
 
-        pregunta = respuestaPregunta.readEntity(Pregunta.class);
         idPregunta = respuestaPregunta.getLocation().toString().split(RESOURCE_NAME_PREGUNTA + "/")[1];
+        pregunta = new Pregunta(UUID.fromString(idPregunta));
 
-        pregunta2 = respuestaPregunta2.readEntity(Pregunta.class);
         idPregunta2 = respuestaPregunta2.getLocation().toString().split(RESOURCE_NAME_PREGUNTA + "/")[1];
+        pregunta2 = new Pregunta(UUID.fromString(idPregunta2));
 
-        distractor = respuestaDistractor.readEntity(Distractor.class);
         idDistractor = respuestaDistractor.getLocation().toString().split(RESOURCE_NAME_DISTRACTOR + "/")[1];
+        distractor = new Distractor(UUID.fromString(idDistractor));
 
-        distractor2 = respuestaDistractor2.readEntity(Distractor.class);
         idDistractor2 = respuestaDistractor2.getLocation().toString().split(RESOURCE_NAME_DISTRACTOR + "/")[1];
+        distractor2 = new Distractor(UUID.fromString(idDistractor2));
 
     }
 
@@ -94,18 +95,19 @@ public class PreguntaDistractorResourceST extends AbstractIntegrationTest{
         Response respuesta3 = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta2).path(RESOURCE_NAME_DISTRACTOR).path(idDistractor2)
                 .request(MediaType.APPLICATION_JSON).post(Entity.json(preguntaDistractor3));
 
-        preguntaDistractor = respuesta.readEntity(PreguntaDistractor.class);
-        preguntaDistractor2 = respuesta2.readEntity(PreguntaDistractor.class);
-        preguntaDistractor3 = respuesta3.readEntity(PreguntaDistractor.class);
-
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta.getStatus());
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta2.getStatus());
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta3.getStatus());
-
-        assertNotNull(preguntaDistractor);
         assertNotNull(preguntaDistractor2);
         assertNotNull(preguntaDistractor3);
 
+        // Configure local expected entities with the known IDs so equals()/contains() works
+        preguntaDistractor.setIdPregunta(pregunta);
+        preguntaDistractor.setIdDistractor(distractor);
+        preguntaDistractor2.setIdPregunta(pregunta);
+        preguntaDistractor2.setIdDistractor(distractor2);
+        preguntaDistractor3.setIdPregunta(pregunta2);
+        preguntaDistractor3.setIdDistractor(distractor2);
 
     }
 

@@ -62,7 +62,7 @@ public class DistractorAreaResource implements Serializable {
             distractorArea.setIdArea(area);
             distractorAreaDAO.crear(distractorArea);
 
-            return Response.created(uriInfo.getAbsolutePath()).entity(distractorArea).build();
+            return Response.created(uriInfo.getAbsolutePath()).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())

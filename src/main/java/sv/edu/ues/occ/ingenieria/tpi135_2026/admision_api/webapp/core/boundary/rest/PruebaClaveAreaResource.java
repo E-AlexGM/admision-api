@@ -64,7 +64,7 @@ public class PruebaClaveAreaResource implements Serializable {
                 if (idArea != null) {
                     uriBuilder.path(idArea.toString());
                 }
-                return Response.created(uriBuilder.build()).entity(pruebaClaveArea).build();
+                return Response.created(uriBuilder.build()).build();
             } catch (IllegalArgumentException | IllegalStateException e) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
             }

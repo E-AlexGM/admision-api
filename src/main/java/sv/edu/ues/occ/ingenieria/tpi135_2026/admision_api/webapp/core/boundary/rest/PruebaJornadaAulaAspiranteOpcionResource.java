@@ -77,7 +77,7 @@ public class PruebaJornadaAulaAspiranteOpcionResource implements Serializable {
             pruebaJornadaAulaAspiranteOpcionDAO.crear(entity);
             UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
             uriBuilder.path(aspirante.getIdAspiranteOpcion().toString());
-            return Response.created(uriBuilder.build()).entity(entity).build();
+            return Response.created(uriBuilder.build()).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
         }

@@ -19,9 +19,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
-
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaJornadaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Jornada;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Prueba;
@@ -76,7 +75,7 @@ public class PruebaJornadaResource implements Serializable{
                 if(p != null && j != null){
                     pJDAO.crear(pj);
                     UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                    return Response.created(uriBuilder.build()).entity(pj).build();
+                    return Response.created(uriBuilder.build()).build();
                 }
                 return Response.status(Response.Status.NOT_FOUND).build();
             } catch (Exception e) {

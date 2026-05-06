@@ -52,7 +52,6 @@ public class JornadaResourceTest {
         Response resultado = cut.crear(nuevo, mockUriInfo);
 
         assertEquals(201, resultado.getStatus());
-        assertNotNull(resultado.getEntity());
         Mockito.verify(mockJD).crear(nuevo);
     }
 

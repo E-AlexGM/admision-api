@@ -107,7 +107,7 @@ public class PruebaJornadaAulaAspiranteOpcionExamenResourceTest {
         Response res = cut.crear(idPrueba, idJornada, idAula, idAspiranteOpcion, entity, mockUriInfo);
 
         assertEquals(201, res.getStatus());
-        assertNotNull(res.getEntity());
+        assertNotNull(res.getLocation());
         assertEquals(idPrueba, entity.getIdPrueba().getIdPrueba());
         assertEquals(idJornada, entity.getIdJornada().getIdJornada());
         assertEquals(idAula, entity.getIdAula());

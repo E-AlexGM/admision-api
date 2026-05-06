@@ -59,7 +59,6 @@ public class DistractorAreaResourceTest {
         Response resultado = cut.crear(idDistractor, idArea, mockUriInfo);
 
         assertEquals(201, resultado.getStatus());
-        assertNotNull(resultado.getEntity());
         Mockito.verify(mockDD).buscarPorId(idDistractor);
         Mockito.verify(mockAreaDAO).buscarPorId(idArea);
         Mockito.verify(mockDAA).crear(Mockito.any(DistractorArea.class));

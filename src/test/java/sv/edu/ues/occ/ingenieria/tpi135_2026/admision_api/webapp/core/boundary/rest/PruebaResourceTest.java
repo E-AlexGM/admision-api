@@ -1,16 +1,16 @@
 package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.rest;
 
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import jakarta.ws.rs.core.UriInfo;
-import jakarta.ws.rs.core.UriBuilder;
 
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.TipoPruebaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Prueba;
@@ -44,7 +44,6 @@ public class PruebaResourceTest {
         Response response = cut.crear(p, uriInfo);
         Mockito.verify(pDAO).crear(p);
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-        assertEquals(p, response.getEntity());
     }
 
     @Test 

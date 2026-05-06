@@ -50,8 +50,7 @@ public class AreaResourceTest {
         Response resultado = cut.crear(nuevo, mockUriInfo);
 
         assertAll(
-                () -> assertEquals(201, resultado.getStatus()),
-                () -> assertNotNull(resultado.getEntity())
+                () -> assertEquals(201, resultado.getStatus())
         );
 
         Mockito.verify(mockAD).crear(nuevo);

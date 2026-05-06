@@ -54,7 +54,6 @@ public class TipoPruebaResourceTest {
 
         // Verificar que la respuesta sea CREATED
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
-        assertEquals(tp, response.getEntity());
         assertNotNull(response.getLocation());
     }
 

@@ -96,11 +96,9 @@ public class DistractorAreaResourceST extends AbstractIntegrationTest{
         Response respuesta = target.path(RESOURCE_NAME_DISTRACTOR).path(idDistractor).path(RESOURCE_NAME_AREA).path(idArea)
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(distractorArea));
-        distractorArea = respuesta.readEntity(DistractorArea.class);
         Response respuesta2 = target.path(RESOURCE_NAME_DISTRACTOR).path(idDistractor).path(RESOURCE_NAME_AREA).path(idArea2)
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(distractorArea2));
-        distractorArea2 = respuesta2.readEntity(DistractorArea.class);
 
         Response respuesta3 = target.path(RESOURCE_NAME_DISTRACTOR).path(idDistractor2).path(RESOURCE_NAME_AREA).path(idArea2)
                 .request(MediaType.APPLICATION_JSON)
@@ -110,6 +108,13 @@ public class DistractorAreaResourceST extends AbstractIntegrationTest{
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta2.getStatus());
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta3.getStatus());
 
+        // Configure IDs from created entities for local comparison
+        distractorArea.setIdDistractor(distractor);
+        distractorArea.setIdArea(area);
+        distractorArea2.setIdDistractor(distractor);
+        distractorArea2.setIdArea(area2);
+        distractorArea3.setIdDistractor(distractor2);
+        distractorArea3.setIdArea(area2);
     }
 
     @Order(2)
@@ -119,8 +124,8 @@ public class DistractorAreaResourceST extends AbstractIntegrationTest{
                 .request().get();
         DistractorArea encontrado = respuesta.readEntity(DistractorArea.class);
         assertEquals(Response.Status.OK.getStatusCode(), respuesta.getStatus());
-        assertEquals(distractor, encontrado.getIdDistractor());
-        assertEquals(area, encontrado.getIdArea());
+        assertEquals(distractor.getIdDistractor(), encontrado.getIdDistractor().getIdDistractor());
+        assertEquals(area.getIdArea(), encontrado.getIdArea().getIdArea());
 
     }
 
@@ -132,8 +137,18 @@ public class DistractorAreaResourceST extends AbstractIntegrationTest{
         List<DistractorArea> encontrados = respuesta.readEntity(new GenericType<List<DistractorArea>>() {});
         assertEquals(Response.Status.OK.getStatusCode(), respuesta.getStatus());
         assertEquals(2, encontrados.size());
-        assertTrue(encontrados.contains(distractorArea));
-        assertTrue(encontrados.contains(distractorArea2));
+        boolean found1 = encontrados.stream().anyMatch(e ->
+                e.getIdArea() != null && e.getIdDistractor() != null &&
+                        e.getIdArea().getIdArea().equals(area.getIdArea()) &&
+                        e.getIdDistractor().getIdDistractor().equals(distractor.getIdDistractor())
+        );
+        boolean found2 = encontrados.stream().anyMatch(e ->
+                e.getIdArea() != null && e.getIdDistractor() != null &&
+                        e.getIdArea().getIdArea().equals(area2.getIdArea()) &&
+                        e.getIdDistractor().getIdDistractor().equals(distractor.getIdDistractor())
+        );
+        assertTrue(found1);
+        assertTrue(found2);
     }
 
     @Order(4)

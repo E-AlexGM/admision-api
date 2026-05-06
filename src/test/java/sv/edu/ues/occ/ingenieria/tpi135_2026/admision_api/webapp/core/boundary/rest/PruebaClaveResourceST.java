@@ -65,7 +65,8 @@ public class PruebaClaveResourceST extends AbstractIntegrationTest{
 
         assertEquals(Response.Status.CREATED.getStatusCode() ,respuestaTipoPrueba.getStatus());
 
-        prueba.setIdTipoPrueba(respuestaTipoPrueba.readEntity(TipoPrueba.class));
+        String idTipoPrueba = respuestaTipoPrueba.getLocation().toString().split("tipo_prueba/")[1];
+        prueba.setIdTipoPrueba(new TipoPrueba(UUID.fromString(idTipoPrueba)));
         Response respuestaPrueba = target.path("prueba").request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(prueba));
 

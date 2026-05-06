@@ -5,7 +5,16 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -31,7 +40,7 @@ public class AreaResource  implements Serializable {
                 areaDAO.crear(area);
                 UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
                 uriBuilder.path(area.getIdArea().toString());
-                return Response.created(uriBuilder.build()).entity(area).build();
+                return Response.created(uriBuilder.build()).build();
             } catch (Exception e) {
                 return Response.status(500).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
             }

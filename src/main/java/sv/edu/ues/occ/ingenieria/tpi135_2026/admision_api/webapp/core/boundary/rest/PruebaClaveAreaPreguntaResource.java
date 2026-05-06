@@ -5,11 +5,29 @@ import java.util.List;
 import java.util.UUID;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.*;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.*;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.AreaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PreguntaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaClaveAreaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaClaveAreaPreguntaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaClaveDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Pregunta;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaClaveArea;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaClaveAreaPK;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaClaveAreaPregunta;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaClaveAreaPreguntaPK;
 
 
 @Path("prueba_clave/{id_prueba_clave}/area/{id_area}/pregunta")
@@ -36,7 +54,8 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
     @Produces(MediaType.APPLICATION_JSON)
     public Response crear(@PathParam("id_prueba_clave") UUID idPruebaClave,
                           @PathParam("id_area") UUID idArea,
-                          PruebaClaveAreaPregunta pruebaClaveAreaPregunta) {
+                          PruebaClaveAreaPregunta pruebaClaveAreaPregunta,
+                          @Context UriInfo uriInfo) {
 
         if(idPruebaClave != null && idArea != null && pruebaClaveAreaPregunta != null) {
             try {
@@ -50,7 +69,14 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
                     boolean isValid = pruebaClaveAreaPreguntaDAO.validarPorcentajePrueba(pruebaClaveArea.getIdPruebaClave(), pruebaClaveAreaPregunta);
                     if(isValid){
                         pruebaClaveAreaPreguntaDAO.crear(pruebaClaveAreaPregunta);
-                        return Response.status(Response.Status.CREATED).entity(pruebaClaveAreaPregunta).build();
+                        if (uriInfo != null) {
+                            UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+                            uriBuilder.path(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta().toString());
+                            return Response.created(uriBuilder.build()).build();
+                        } else {
+                            java.net.URI created = java.net.URI.create(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta().toString());
+                            return Response.created(created).build();
+                        }
                     }
                     return Response.status(Response.Status.CONFLICT)
                             .header(ResponseHeaders.VIOLATES_BUSINESS_RULES.toString(), "el porcentaje total excede el máximo permitido para esta prueba")
@@ -63,6 +89,11 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
             }
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+    // Backwards-compatible overload used by unit tests (and by callers that don't have UriInfo)
+    public Response crear(UUID idPruebaClave, UUID idArea, PruebaClaveAreaPregunta pruebaClaveAreaPregunta) {
+        return crear(idPruebaClave, idArea, pruebaClaveAreaPregunta, null);
     }
 
     @DELETE

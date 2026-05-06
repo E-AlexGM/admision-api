@@ -1,19 +1,33 @@
 package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.rest;
 
-import jakarta.ws.rs.client.Entity;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import org.junit.jupiter.api.*;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.ExamenResultadosEnum;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.ExamenResultadosEnum;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Aspirante;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.AspiranteOpcion;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Jornada;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.JornadaAula;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Prueba;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaClave;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaJornada;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaJornadaAulaAspiranteOpcion;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaJornadaAulaAspiranteOpcionExamen;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.TipoPrueba;
 
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -88,7 +102,7 @@ public class AspiranteExamenResourceST extends AbstractIntegrationTest{
         Response respuestaTipoPrueba = target.path(RESOURCE_NAME_TIPO_PRUEBA)
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(tipoPrueba));
-        idTipoPrueba = respuestaTipoPrueba.readEntity(TipoPrueba.class).getIdTipoPrueba();
+        idTipoPrueba = UUID.fromString(respuestaTipoPrueba.getLocation().toString().split(RESOURCE_NAME_TIPO_PRUEBA + "/")[1]);
         tipoPrueba.setIdTipoPrueba(idTipoPrueba);
         prueba.setIdTipoPrueba(tipoPrueba);
         assertEquals(Response.Status.CREATED.getStatusCode(), respuestaTipoPrueba.getStatus());
@@ -97,7 +111,7 @@ public class AspiranteExamenResourceST extends AbstractIntegrationTest{
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(prueba));
         assertEquals(Response.Status.CREATED.getStatusCode(), respuestaPrueba.getStatus());
-        idPrueba = respuestaPrueba.readEntity(Prueba.class).getIdPrueba();
+        idPrueba = UUID.fromString(respuestaPrueba.getLocation().toString().split(RESORUCE_NAME_PRUEBA + "/")[1]);
         prueba.setIdPrueba(idPrueba);
 
         pruebaClave.setIdPrueba(prueba);
@@ -107,14 +121,14 @@ public class AspiranteExamenResourceST extends AbstractIntegrationTest{
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(pruebaClave));
         assertEquals(Response.Status.CREATED.getStatusCode(), respuestaPruebaClave.getStatus());
-        idPruebaClave = respuestaPruebaClave.readEntity(PruebaClave.class).getIdPruebaClave();
+        idPruebaClave = UUID.fromString(respuestaPruebaClave.getLocation().toString().split(RESOURCE_NAME_CLAVE + "/")[1]);
         pruebaClave.setIdPruebaClave(idPruebaClave);
 
         Response respuestaJornada = target.path(RESOURCE_NAME_JORNADA)
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(jornada));
         assertEquals(Response.Status.CREATED.getStatusCode(), respuestaJornada.getStatus());
-        idJornada =respuestaJornada.readEntity(Jornada.class).getIdJornada();
+        idJornada = UUID.fromString(respuestaJornada.getLocation().toString().split(RESOURCE_NAME_JORNADA + "/")[1]);
         jornada.setIdJornada(idJornada);
 
         jornadaAula.setIdJornada(jornada);
@@ -130,7 +144,7 @@ public class AspiranteExamenResourceST extends AbstractIntegrationTest{
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(aspirante));
         assertEquals(Response.Status.CREATED.getStatusCode(), respuestaAspirante.getStatus());
-        idAspirante = respuestaAspirante.readEntity(Aspirante.class).getIdAspirante();
+        idAspirante = UUID.fromString(respuestaAspirante.getLocation().toString().split(RESOURCE_NAME_ASPIRANTE + "/")[1]);
 
 
         Response respuestaAspiranteOpcion = target.path(RESOURCE_NAME_ASPIRANTE)
@@ -139,7 +153,7 @@ public class AspiranteExamenResourceST extends AbstractIntegrationTest{
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(aspiranteOpcion));
         assertEquals(Response.Status.CREATED.getStatusCode(), respuestaAspiranteOpcion.getStatus());
-        idAspiranteOpcion = respuestaAspiranteOpcion.readEntity(AspiranteOpcion.class).getIdAspiranteOpcion();
+        idAspiranteOpcion = UUID.fromString(respuestaAspiranteOpcion.getLocation().toString().split(RESORCE_NAME_OPCION + "/")[1]);
         aspiranteOpcion.setIdAspiranteOpcion(idAspiranteOpcion);
 
         pruebaJornada.setIdJornada(jornada);

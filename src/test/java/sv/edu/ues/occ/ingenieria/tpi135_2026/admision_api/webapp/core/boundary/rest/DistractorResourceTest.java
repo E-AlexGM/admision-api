@@ -47,7 +47,6 @@ public class DistractorResourceTest {
         Response resultado = cut.crear(nuevo, mockUriInfo);
 
         assertEquals(201, resultado.getStatus());
-        assertNotNull(resultado.getEntity());
         Mockito.verify(mockDD).crear(nuevo);
     }
 
