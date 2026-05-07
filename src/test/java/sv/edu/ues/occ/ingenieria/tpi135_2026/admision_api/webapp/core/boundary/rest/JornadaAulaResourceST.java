@@ -1,24 +1,23 @@
 package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.rest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.MethodOrderer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Jornada;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.JornadaAula;
 
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -47,13 +46,15 @@ public class JornadaAulaResourceST extends AbstractIntegrationTest{
     @Order(1)
     @Test
     public void testCrear(){
-        // El path de la solicitud POST es /jornada/{id_jornada}/aula/{id_aula}
+        // El path de la solicitud POST es /jornada/{id_jornada}/aula con idAula en el body.
 
         Response respuestaContexto = target.request(MediaType.APPLICATION_JSON)
             .post(Entity.json(jornada));
         idJornada = respuestaContexto.getHeaderString("Location").split(RESOURCE_NAME + "/")[1];
-        Response response = target.path(idJornada).path("aula").path(idAula.toString())
-            .request(MediaType.APPLICATION_JSON).post(null);
+        JornadaAula ja = new JornadaAula();
+        ja.setIdAula(idAula.toString());
+        Response response = target.path(idJornada).path("aula")
+            .request(MediaType.APPLICATION_JSON).post(Entity.json(ja));
 
         assertEquals(Response.Status.CREATED.getStatusCode(), respuestaContexto.getStatus());
         assertNotNull(response);

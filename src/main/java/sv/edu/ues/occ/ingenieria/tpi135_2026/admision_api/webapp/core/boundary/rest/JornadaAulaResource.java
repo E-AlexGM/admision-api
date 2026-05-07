@@ -4,20 +4,23 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-
 import jakarta.inject.Inject;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Response;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaAulaDAO;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.JornadaAula;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Jornada;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaDAO;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaAulaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Jornada;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.JornadaAula;
 
 
 @Path("jornada/{id_jornada}/aula")
@@ -83,17 +86,21 @@ public class JornadaAulaResource implements Serializable {
      * @return 
      */
     @POST
-    @Path("/{id_aula}")
-    public Response crear(@PathParam("id_jornada") UUID idJornada, @PathParam("id_aula") String idAula){
-        if(idJornada != null && idAula != null){
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response crear(@PathParam("id_jornada") UUID idJornada, JornadaAula jornadaAula, @Context UriInfo uriInfo){
+        if(idJornada != null && jornadaAula != null && jornadaAula.getIdAula() != null){
             try {
                 Jornada j = jDAO.buscarPorId(idJornada);
                 if(j != null){
-                    JornadaAula jA = new JornadaAula(UUID.randomUUID());
-                    jA.setIdAula(idAula);
-                    jA.setIdJornada(j);
-                    jADAO.crear(jA);
-                    return Response.status(Response.Status.CREATED).entity(jA).build();
+                    jornadaAula.setIdJornada(j);
+                    if (jornadaAula.getIdJornadaAula() == null) {
+                        jornadaAula.setIdJornadaAula(UUID.randomUUID());
+                    }
+                    jADAO.crear(jornadaAula);
+                    UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+                    uriBuilder.path(jornadaAula.getIdJornadaAula().toString());
+                    return Response.created(uriBuilder.build()).build();
                 }
                 return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "jornada").build();
 
@@ -101,5 +108,6 @@ public class JornadaAulaResource implements Serializable {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
             }
         }
-        return Response.status(Response.Status.BAD_REQUEST).build();}
+        return Response.status(Response.Status.BAD_REQUEST).build();
+    }
 }

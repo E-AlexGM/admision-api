@@ -1,20 +1,18 @@
 package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.rest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
-
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaDAO;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.JornadaAula;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Jornada;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaAulaDAO;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import jakarta.ws.rs.core.Response;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaAulaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Jornada;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.JornadaAula;
 
 public class JornadaAulaResourceTest {
 
@@ -24,6 +22,8 @@ public class JornadaAulaResourceTest {
     UUID idAula;
     Jornada j;
     UUID idJornada;
+    jakarta.ws.rs.core.UriInfo uriInfo;
+    jakarta.ws.rs.core.UriBuilder uriBuilder;
 
     @BeforeEach
     public void setUp() {
@@ -35,44 +35,53 @@ public class JornadaAulaResourceTest {
         idAula = UUID.randomUUID();
         idJornada = UUID.randomUUID();
         j = new Jornada(idJornada);
+        uriInfo = Mockito.mock(jakarta.ws.rs.core.UriInfo.class);
+        uriBuilder = Mockito.mock(jakarta.ws.rs.core.UriBuilder.class);
+        Mockito.when(uriInfo.getAbsolutePathBuilder()).thenReturn(uriBuilder);
+        Mockito.when(uriBuilder.path(Mockito.anyString())).thenReturn(uriBuilder);
     }
 
     @Test
     public void crear_JornadaAula_Exitoso() {
         System.out.println("Ejecutando test: crear_JornadaAula_Exitoso");
-        cut.crear(idJornada, idAula.toString());
+        JornadaAula request = new JornadaAula(UUID.randomUUID());
+        request.setIdAula(idAula.toString());
 
         Mockito.when(jDAO.buscarPorId(j.getIdJornada())).thenReturn(j); 
         Mockito.doNothing().when(jADAO).crear(Mockito.any());
-        Response respuesta = cut.crear(idJornada, idAula.toString());
+        Response respuesta = cut.crear(idJornada, request, uriInfo);
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta.getStatus());
     }
 
     @Test
     public void crear_JornadaAula_JornadaNoEncontrada() {
         System.out.println("Ejecutando test: crear_JornadaAula_JornadaNoEncontrada");
-        cut.crear(idJornada, idAula.toString());
+        JornadaAula request = new JornadaAula(UUID.randomUUID());
+        request.setIdAula(idAula.toString());
 
         Mockito.when(jDAO.buscarPorId(j.getIdJornada())).thenReturn(null);
-        Response respuesta = cut.crear(idJornada, idAula.toString());
+        Response respuesta = cut.crear(idJornada, request, uriInfo);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), respuesta.getStatus());
     }
 
     @Test
     public void crear_JornadaAula_ErrorInterno() {
         System.out.println("Ejecutando test: crear_JornadaAula_ErrorInterno");
-        cut.crear(idJornada, idAula.toString());
+        JornadaAula request = new JornadaAula(UUID.randomUUID());
+        request.setIdAula(idAula.toString());
 
         Mockito.when(jDAO.buscarPorId(j.getIdJornada())).thenReturn(j);
         Mockito.doThrow(new RuntimeException("Error interno")).when(jADAO).crear(Mockito.any());
-        Response respuesta = cut.crear(idJornada, idAula.toString());
+        Response respuesta = cut.crear(idJornada, request, uriInfo);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), respuesta.getStatus());
     }
 
     @Test
     public void crear_JornadaAula_BadRequest_IdJornada() {
         System.out.println("Ejecutando test: crear_JornadaAula_BadRequest");
-        Response respuesta = cut.crear(null, UUID.randomUUID().toString());
+        JornadaAula request = new JornadaAula(UUID.randomUUID());
+        request.setIdAula(UUID.randomUUID().toString());
+        Response respuesta = cut.crear(null, request, uriInfo);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respuesta.getStatus());
     }
 
@@ -80,7 +89,7 @@ public class JornadaAulaResourceTest {
     @Test
     public void crear_JornadaAula_BadRequest_IdAula() {
         System.out.println("Ejecutando test: crear_JornadaAula_BadRequest");
-        Response respuesta = cut.crear(UUID.randomUUID(), null);
+        Response respuesta = cut.crear(UUID.randomUUID(), null, uriInfo);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respuesta.getStatus());
     }
 

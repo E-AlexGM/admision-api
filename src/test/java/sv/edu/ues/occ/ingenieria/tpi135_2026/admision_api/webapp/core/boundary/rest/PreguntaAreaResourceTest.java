@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.AreaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PreguntaAreaDAO;
@@ -34,11 +35,14 @@ public class PreguntaAreaResourceTest {
     @BeforeEach
     public void setup() {
         mockUriInfo = Mockito.mock(UriInfo.class);
+        UriBuilder mockUriBuilder = Mockito.mock(UriBuilder.class);
         mockPAA = Mockito.mock(PreguntaAreaDAO.class);
         mockPD = Mockito.mock(PreguntaDAO.class);
         mockAreaDAO = Mockito.mock(AreaDAO.class);
 
-        Mockito.when(mockUriInfo.getAbsolutePath())
+        Mockito.when(mockUriInfo.getAbsolutePathBuilder()).thenReturn(mockUriBuilder);
+        Mockito.when(mockUriBuilder.path(Mockito.anyString())).thenReturn(mockUriBuilder);
+        Mockito.when(mockUriBuilder.build())
                 .thenReturn(URI.create("http://localhost:8080/v1/pregunta/1/area/1"));
 
         idPregunta = UUID.randomUUID();
@@ -55,10 +59,13 @@ public class PreguntaAreaResourceTest {
         System.out.println("Ejecutando test: crearExitosoTest en PreguntaAreaResource");
         Mockito.when(mockPD.buscarPorId(idPregunta)).thenReturn(new Pregunta(idPregunta));
         Mockito.when(mockAreaDAO.buscarPorId(idArea)).thenReturn(new Area(idArea));
+        PreguntaArea nueva = new PreguntaArea();
+        nueva.setIdArea(new Area(idArea));
 
-        Response resultado = cut.crear(idPregunta, idArea, mockUriInfo);
+        Response resultado = cut.crear(idPregunta, nueva, mockUriInfo);
 
         assertEquals(201, resultado.getStatus());
+        Mockito.verify(mockUriInfo).getAbsolutePathBuilder();
         assertNotNull(resultado.getLocation());
         Mockito.verify(mockPD).buscarPorId(idPregunta);
         Mockito.verify(mockAreaDAO).buscarPorId(idArea);
@@ -68,8 +75,9 @@ public class PreguntaAreaResourceTest {
     @Test
     public void crearConIdAreaNuloTest() {
         System.out.println("Ejecutando test: crearConIdAreaNuloTest en PreguntaAreaResource");
+        PreguntaArea nueva = new PreguntaArea();
 
-        Response resultado = cut.crear(idPregunta, null, mockUriInfo);
+        Response resultado = cut.crear(idPregunta, nueva, mockUriInfo);
 
         assertEquals(400, resultado.getStatus());
         Mockito.verify(mockPAA, Mockito.never()).crear(Mockito.any());
@@ -79,8 +87,10 @@ public class PreguntaAreaResourceTest {
     public void crearPreguntaNoEncontradaTest() {
         System.out.println("Ejecutando test: crearPreguntaNoEncontradaTest en PreguntaAreaResource");
         Mockito.when(mockPD.buscarPorId(idPregunta)).thenReturn(null);
+        PreguntaArea nueva = new PreguntaArea();
+        nueva.setIdArea(new Area(idArea));
 
-        Response resultado = cut.crear(idPregunta, idArea, mockUriInfo);
+        Response resultado = cut.crear(idPregunta, nueva, mockUriInfo);
 
         assertEquals(404, resultado.getStatus());
         Mockito.verify(mockPD).buscarPorId(idPregunta);
@@ -93,8 +103,10 @@ public class PreguntaAreaResourceTest {
         System.out.println("Ejecutando test: crearAreaNoEncontradaTest en PreguntaAreaResource");
         Mockito.when(mockPD.buscarPorId(idPregunta)).thenReturn(new Pregunta(idPregunta));
         Mockito.when(mockAreaDAO.buscarPorId(idArea)).thenReturn(null);
+        PreguntaArea nueva = new PreguntaArea();
+        nueva.setIdArea(new Area(idArea));
 
-        Response resultado = cut.crear(idPregunta, idArea, mockUriInfo);
+        Response resultado = cut.crear(idPregunta, nueva, mockUriInfo);
 
         assertEquals(404, resultado.getStatus());
         Mockito.verify(mockPAA, Mockito.never()).crear(Mockito.any());
@@ -106,11 +118,13 @@ public class PreguntaAreaResourceTest {
         System.out.println("Ejecutando test: crearUsaUriAbsolutaConPathCompletoTest en PreguntaAreaResource");
         Mockito.when(mockPD.buscarPorId(idPregunta)).thenReturn(new Pregunta(idPregunta));
         Mockito.when(mockAreaDAO.buscarPorId(idArea)).thenReturn(new Area(idArea));
+        PreguntaArea nueva = new PreguntaArea();
+        nueva.setIdArea(new Area(idArea));
 
-        Response resultado = cut.crear(idPregunta, idArea, mockUriInfo);
+        Response resultado = cut.crear(idPregunta, nueva, mockUriInfo);
 
         assertEquals(201, resultado.getStatus());
-        Mockito.verify(mockUriInfo).getAbsolutePath();
+        Mockito.verify(mockUriInfo).getAbsolutePathBuilder();
         Mockito.verify(mockPAA).crear(Mockito.any(PreguntaArea.class));
     }
 
@@ -119,9 +133,11 @@ public class PreguntaAreaResourceTest {
         System.out.println("Ejecutando test: crearConExcepcionTest en PreguntaAreaResource");
         Mockito.when(mockPD.buscarPorId(idPregunta)).thenReturn(new Pregunta(idPregunta));
         Mockito.when(mockAreaDAO.buscarPorId(idArea)).thenReturn(new Area(idArea));
+        PreguntaArea nueva = new PreguntaArea();
+        nueva.setIdArea(new Area(idArea));
         Mockito.doThrow(new RuntimeException("Error en base de datos")).when(mockPAA).crear(Mockito.any(PreguntaArea.class));
 
-        Response resultado = cut.crear(idPregunta, idArea, mockUriInfo);
+        Response resultado = cut.crear(idPregunta, nueva, mockUriInfo);
 
         assertEquals(500, resultado.getStatus());
         Mockito.verify(mockPAA).crear(Mockito.any(PreguntaArea.class));
@@ -130,8 +146,9 @@ public class PreguntaAreaResourceTest {
     @Test
     public void crearBadRequestTest() {
         System.out.println("Ejecutando test: crearBadRequestTest en PreguntaAreaResource");
-        assertEquals(400, cut.crear(idPregunta, null, mockUriInfo).getStatus());
-        assertEquals(400, cut.crear(null, idArea, mockUriInfo).getStatus());
+        PreguntaArea nueva = new PreguntaArea();
+        assertEquals(400, cut.crear(idPregunta, nueva, mockUriInfo).getStatus());
+        assertEquals(400, cut.crear(null, nueva, mockUriInfo).getStatus());
         Mockito.verifyNoInteractions(mockPAA);
         Mockito.verifyNoInteractions(mockPD);
     }

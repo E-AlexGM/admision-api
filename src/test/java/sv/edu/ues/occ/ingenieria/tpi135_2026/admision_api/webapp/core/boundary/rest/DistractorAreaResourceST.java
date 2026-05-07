@@ -93,14 +93,17 @@ public class DistractorAreaResourceST extends AbstractIntegrationTest{
     public void testCrear(){
         crearContexto();
 
-        Response respuesta = target.path(RESOURCE_NAME_DISTRACTOR).path(idDistractor).path(RESOURCE_NAME_AREA).path(idArea)
+        distractorArea.setIdArea(area);
+        Response respuesta = target.path(RESOURCE_NAME_DISTRACTOR).path(idDistractor).path(RESOURCE_NAME_AREA)
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(distractorArea));
-        Response respuesta2 = target.path(RESOURCE_NAME_DISTRACTOR).path(idDistractor).path(RESOURCE_NAME_AREA).path(idArea2)
+        distractorArea2.setIdArea(area2);
+        Response respuesta2 = target.path(RESOURCE_NAME_DISTRACTOR).path(idDistractor).path(RESOURCE_NAME_AREA)
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(distractorArea2));
 
-        Response respuesta3 = target.path(RESOURCE_NAME_DISTRACTOR).path(idDistractor2).path(RESOURCE_NAME_AREA).path(idArea2)
+        distractorArea3.setIdArea(area2);
+        Response respuesta3 = target.path(RESOURCE_NAME_DISTRACTOR).path(idDistractor2).path(RESOURCE_NAME_AREA)
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.json(distractorArea3));
 

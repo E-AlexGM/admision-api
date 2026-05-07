@@ -86,14 +86,17 @@ public class PreguntaDistractorResourceST extends AbstractIntegrationTest{
     @Test
     public void testCrear(){
         crearContexto();
-        Response respuesta = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta).path(RESOURCE_NAME_DISTRACTOR).path(idDistractor)
-                .request(MediaType.APPLICATION_JSON).post(Entity.json(preguntaDistractor));
+        preguntaDistractor.setIdDistractor(distractor);
+        Response respuesta = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta).path(RESOURCE_NAME_DISTRACTOR)
+            .request(MediaType.APPLICATION_JSON).post(Entity.json(preguntaDistractor));
 
-        Response respuesta2 = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta).path(RESOURCE_NAME_DISTRACTOR).path(idDistractor2)
-                .request(MediaType.APPLICATION_JSON).post(Entity.json(preguntaDistractor2));
+        preguntaDistractor2.setIdDistractor(distractor2);
+        Response respuesta2 = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta).path(RESOURCE_NAME_DISTRACTOR)
+            .request(MediaType.APPLICATION_JSON).post(Entity.json(preguntaDistractor2));
 
-        Response respuesta3 = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta2).path(RESOURCE_NAME_DISTRACTOR).path(idDistractor2)
-                .request(MediaType.APPLICATION_JSON).post(Entity.json(preguntaDistractor3));
+        preguntaDistractor3.setIdDistractor(distractor2);
+        Response respuesta3 = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta2).path(RESOURCE_NAME_DISTRACTOR)
+            .request(MediaType.APPLICATION_JSON).post(Entity.json(preguntaDistractor3));
 
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta.getStatus());
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta2.getStatus());
@@ -101,13 +104,9 @@ public class PreguntaDistractorResourceST extends AbstractIntegrationTest{
         assertNotNull(preguntaDistractor2);
         assertNotNull(preguntaDistractor3);
 
-        // Configure local expected entities with the known IDs so equals()/contains() works
         preguntaDistractor.setIdPregunta(pregunta);
-        preguntaDistractor.setIdDistractor(distractor);
         preguntaDistractor2.setIdPregunta(pregunta);
-        preguntaDistractor2.setIdDistractor(distractor2);
         preguntaDistractor3.setIdPregunta(pregunta2);
-        preguntaDistractor3.setIdDistractor(distractor2);
 
     }
 

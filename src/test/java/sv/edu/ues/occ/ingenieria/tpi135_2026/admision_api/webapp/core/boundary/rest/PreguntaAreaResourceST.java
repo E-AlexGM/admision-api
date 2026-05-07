@@ -61,11 +61,12 @@ public class PreguntaAreaResourceST extends AbstractIntegrationTest {
     }
 
     private Response crearRelacion(UUID idPregunta, UUID idArea) {
+        PreguntaArea relacion = new PreguntaArea();
+        relacion.setIdArea(new Area(idArea));
         return target.path(idPregunta.toString())
-                .path("area")
-                .path(idArea.toString())
-                .request(MediaType.APPLICATION_JSON)
-                .method("POST");
+            .path("area")
+            .request(MediaType.APPLICATION_JSON)
+            .post(Entity.json(relacion));
     }
 
     @Order(1)

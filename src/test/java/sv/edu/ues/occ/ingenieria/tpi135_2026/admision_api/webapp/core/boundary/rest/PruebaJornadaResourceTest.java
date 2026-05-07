@@ -1,26 +1,23 @@
 package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.rest;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
-import org.junit.jupiter.api.Test;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mockito;
-
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaJornadaPK;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaJornadaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Jornada;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Prueba;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaDAO;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaDAO;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaJornadaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaJornada;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaJornadaPK;
 
 public class PruebaJornadaResourceTest {
 
@@ -65,10 +62,11 @@ public class PruebaJornadaResourceTest {
         Mockito.when(pDAO.buscarPorId(p.getIdPrueba())).thenReturn(p);
         Mockito.when(jDAO.buscarPorId(j.getIdJornada())).thenReturn(j);
         PruebaJornada pj = new PruebaJornada(p, j);
-        Mockito.doNothing().when(pJDAO).crear(pj); // Simula la creación exitosa
+        Mockito.doNothing().when(pJDAO).crear(Mockito.any(PruebaJornada.class)); // Simula la creación exitosa
 
-
-        Response respuesta = cut.crear(idPrueba, idJornada, uriInfo);
+        PruebaJornada request = new PruebaJornada();
+        request.setIdJornada(new Jornada(idJornada));
+        Response respuesta = cut.crear(idPrueba, request, uriInfo);
         assertEquals(Response.Status.CREATED.getStatusCode(), respuesta.getStatus());
     }
 
@@ -81,7 +79,9 @@ public class PruebaJornadaResourceTest {
         Mockito.when(pDAO.buscarPorId(idPrueba)).thenReturn(new Prueba(UUID.randomUUID())); // Simula que no se encuentra la prueba
         Mockito.when(jDAO.buscarPorId(idJornada)).thenReturn(null); // Simula que no se encuentra la jornada
 
-        Response respuesta = cut.crear(idPrueba, idJornada, uriInfo);
+        PruebaJornada request = new PruebaJornada();
+        request.setIdJornada(new Jornada(idJornada));
+        Response respuesta = cut.crear(idPrueba, request, uriInfo);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), respuesta.getStatus());
     }
 
@@ -94,7 +94,9 @@ public class PruebaJornadaResourceTest {
         Mockito.when(pDAO.buscarPorId(idPrueba)).thenReturn(null); // Simula que no se encuentra la prueba
         Mockito.when(jDAO.buscarPorId(idJornada)).thenReturn(new Jornada(UUID.randomUUID())); // Simula que no se encuentra la jornada
 
-        Response respuesta = cut.crear(idPrueba, idJornada, uriInfo);
+        PruebaJornada request = new PruebaJornada();
+        request.setIdJornada(new Jornada(idJornada));
+        Response respuesta = cut.crear(idPrueba, request, uriInfo);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), respuesta.getStatus());
     }
 
@@ -102,7 +104,9 @@ public class PruebaJornadaResourceTest {
     @Test
     public void crearBadRequestIdPrueba() {
         System.out.println("EjecutandoTest: crearBadRequest");
-        Response respuesta = cut.crear(null, UUID.randomUUID(), uriInfo);
+        PruebaJornada request = new PruebaJornada();
+        request.setIdJornada(new Jornada(UUID.randomUUID()));
+        Response respuesta = cut.crear(null, request, uriInfo);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respuesta.getStatus());
     }
 
@@ -123,7 +127,9 @@ public class PruebaJornadaResourceTest {
          Mockito.when(pDAO.buscarPorId(idPrueba)).thenReturn(null); // Prueba no encontrada
          Mockito.when(jDAO.buscarPorId(idJornada)).thenReturn(j);
 
-         Response respuesta = cut.crear(idPrueba, idJornada, uriInfo);
+            PruebaJornada request = new PruebaJornada();
+            request.setIdJornada(new Jornada(idJornada));
+            Response respuesta = cut.crear(idPrueba, request, uriInfo);
          assertEquals(Response.Status.NOT_FOUND.getStatusCode(), respuesta.getStatus());
      }
 
@@ -137,7 +143,9 @@ public class PruebaJornadaResourceTest {
          Mockito.when(pDAO.buscarPorId(idPrueba)).thenReturn(p);
          Mockito.when(jDAO.buscarPorId(idJornada)).thenReturn(null); // Jornada no encontrada
 
-         Response respuesta = cut.crear(idPrueba, idJornada, uriInfo);
+            PruebaJornada request = new PruebaJornada();
+            request.setIdJornada(new Jornada(idJornada));
+            Response respuesta = cut.crear(idPrueba, request, uriInfo);
          assertEquals(Response.Status.NOT_FOUND.getStatusCode(), respuesta.getStatus());
      }
 
@@ -149,8 +157,10 @@ public class PruebaJornadaResourceTest {
          p = new Prueba(idPrueba);
          j = new Jornada(idJornada);
 
-         cut.jDAO = null;
-         Response respuesta = cut.crear(idPrueba, idJornada, uriInfo);
+        cut.jDAO = null;
+        PruebaJornada request = new PruebaJornada();
+        request.setIdJornada(new Jornada(idJornada));
+        Response respuesta = cut.crear(idPrueba, request, uriInfo);
          assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), respuesta.getStatus());
      }
 

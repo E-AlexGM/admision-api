@@ -12,8 +12,11 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.DistractorDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PreguntaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PreguntaDistractorDAO;
@@ -35,20 +38,21 @@ public class PreguntaDistractorResource implements Serializable {
     PreguntaDistractorDAO pDDAO;
 
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/{id_distractor}")
-    public Response crear(@PathParam("id_pregunta") UUID idPregunta, @PathParam("id_distractor") UUID idDistractor, PreguntaDistractor pD){ 
-        if(idPregunta != null && idDistractor != null && pD != null){
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response crear(@PathParam("id_pregunta") UUID idPregunta, PreguntaDistractor pD, @Context UriInfo uriInfo){ 
+        if(idPregunta != null && pD != null && pD.getIdDistractor() != null && pD.getIdDistractor().getIdDistractor() != null){
             try {
                 Pregunta p = pDAO.buscarPorId(idPregunta);
-                Distractor d = dDAO.buscarPorId(idDistractor);
+                Distractor d = dDAO.buscarPorId(pD.getIdDistractor().getIdDistractor());
 
                 if(p != null && d != null ){
                     pD.setIdPregunta(p);
                     pD.setIdDistractor(d);
                     pDDAO.crear(pD);
-                    return Response.status(Response.Status.CREATED).build();
+                    UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+                    uriBuilder.path(pD.getIdDistractor().getIdDistractor().toString());
+                    return Response.created(uriBuilder.build()).build();
                 }
                 
                 return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "pregunta o distractor o preguntaDistractor").build();

@@ -24,6 +24,8 @@ import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Jor
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Prueba;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaJornadaAulaAspiranteOpcion;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.TipoPrueba;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaJornada;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.JornadaAula;
 
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -147,23 +149,29 @@ public class PruebaJornadaAulaAspiranteOpcionResourceST extends AbstractIntegrat
     }
 
     private void crearPruebaJornadaPorApi(UUID idPrueba, UUID idJornada) {
+        PruebaJornada pj = new PruebaJornada();
+        Jornada j = new Jornada();
+        j.setIdJornada(idJornada);
+        pj.setIdJornada(j);
+
         Response response = apiRoot().path("prueba")
-                .path(idPrueba.toString())
-                .path("jornada")
-                .path(idJornada.toString())
-                .request(MediaType.APPLICATION_JSON)
-                .method("POST");
+            .path(idPrueba.toString())
+            .path("jornada")
+            .request(MediaType.APPLICATION_JSON)
+            .post(Entity.json(pj));
 
         Assertions.assertEquals(201, response.getStatus());
     }
 
     private void crearJornadaAulaPorApi(UUID idJornada, String idAula) {
+        JornadaAula ja = new JornadaAula();
+        ja.setIdAula(idAula);
+
         Response response = apiRoot().path("jornada")
-                .path(idJornada.toString())
-                .path("aula")
-                .path(idAula)
-                .request(MediaType.APPLICATION_JSON)
-                .method("POST");
+            .path(idJornada.toString())
+            .path("aula")
+            .request(MediaType.APPLICATION_JSON)
+            .post(Entity.json(ja));
 
         Assertions.assertEquals(201, response.getStatus());
     }
@@ -176,13 +184,13 @@ public class PruebaJornadaAulaAspiranteOpcionResourceST extends AbstractIntegrat
         relacion.setActivo(activo);
 
         Response response = target.path(contexto.idPrueba.toString())
-                .path("jornada")
-                .path(contexto.idJornada.toString())
-                .path("aula")
-                .path(contexto.idAula)
-                .path("aspirante_opcion")
-                .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(relacion));
+            .path("jornada")
+            .path(contexto.idJornada.toString())
+            .path("aula")
+            .path(contexto.idAula)
+            .path("aspirante_opcion")
+            .request(MediaType.APPLICATION_JSON)
+            .post(Entity.json(relacion));
 
         Assertions.assertEquals(201, response.getStatus());
     }

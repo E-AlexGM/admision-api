@@ -137,11 +137,17 @@ public class PruebaClaveAreaPreguntaResourceST extends AbstractIntegrationTest{
         pruebaClaveArea.setIdArea(area);
 
 
-        Response respuestaPreguntaArea = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta).path(RESOURCE_NAME_AREA).path(idArea).request()
-                .post(null);
+        PreguntaArea relacionPreguntaArea = new PreguntaArea();
+        relacionPreguntaArea.setIdArea(area);
 
-        Response respuestaPreguntaArea2 = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta2).path(RESOURCE_NAME_AREA).path(idArea).request()
-                .post(null);
+        Response respuestaPreguntaArea = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta).path(RESOURCE_NAME_AREA).request()
+                .post(Entity.json(relacionPreguntaArea));
+
+        PreguntaArea relacionPreguntaArea2 = new PreguntaArea();
+        relacionPreguntaArea2.setIdArea(area);
+
+        Response respuestaPreguntaArea2 = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta2).path(RESOURCE_NAME_AREA).request()
+                .post(Entity.json(relacionPreguntaArea2));
     }
 
     @Order(1)

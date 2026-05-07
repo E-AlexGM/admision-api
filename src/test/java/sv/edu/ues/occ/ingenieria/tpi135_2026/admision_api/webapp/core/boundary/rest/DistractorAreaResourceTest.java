@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.AreaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.DistractorAreaDAO;
@@ -34,11 +35,15 @@ public class DistractorAreaResourceTest {
     @BeforeEach
     public void setup() {
         mockUriInfo = Mockito.mock(UriInfo.class);
+        UriBuilder mockUriBuilder = Mockito.mock(UriBuilder.class);
         mockDAA = Mockito.mock(DistractorAreaDAO.class);
         mockDD = Mockito.mock(DistractorDAO.class);
         mockAreaDAO = Mockito.mock(AreaDAO.class);
 
-        Mockito.when(mockUriInfo.getAbsolutePath())
+        Mockito.when(mockUriInfo.getAbsolutePathBuilder())
+            .thenReturn(mockUriBuilder);
+        Mockito.when(mockUriBuilder.path(Mockito.anyString())).thenReturn(mockUriBuilder);
+        Mockito.when(mockUriBuilder.build())
                 .thenReturn(URI.create("http://localhost:8080/v1/distractor/1/area/1"));
 
         idDistractor = UUID.randomUUID();
@@ -55,10 +60,13 @@ public class DistractorAreaResourceTest {
         System.out.println("Ejecutando test: crearExitosoTest en DistractorAreaResource");
         Mockito.when(mockDD.buscarPorId(idDistractor)).thenReturn(new Distractor(idDistractor));
         Mockito.when(mockAreaDAO.buscarPorId(idArea)).thenReturn(new Area(idArea));
+        DistractorArea nueva = new DistractorArea();
+        nueva.setIdArea(new Area(idArea));
 
-        Response resultado = cut.crear(idDistractor, idArea, mockUriInfo);
+        Response resultado = cut.crear(idDistractor, nueva, mockUriInfo);
 
         assertEquals(201, resultado.getStatus());
+        Mockito.verify(mockUriInfo).getAbsolutePathBuilder();
         Mockito.verify(mockDD).buscarPorId(idDistractor);
         Mockito.verify(mockAreaDAO).buscarPorId(idArea);
         Mockito.verify(mockDAA).crear(Mockito.any(DistractorArea.class));
@@ -67,19 +75,22 @@ public class DistractorAreaResourceTest {
     @Test
     public void crearConIdAreaNuloTest() {
         System.out.println("Ejecutando test: crearConIdAreaNuloTest en DistractorAreaResource");
+        DistractorArea nueva = new DistractorArea();
 
-        Response resultado = cut.crear(idDistractor, null, mockUriInfo);
+        Response resultado = cut.crear(idDistractor, nueva, mockUriInfo);
 
         assertEquals(400, resultado.getStatus());
-        Mockito.verify(mockDAA, Mockito.never()).crear(Mockito.any());
+        Mockito.verifyNoInteractions(mockUriInfo);
     }
 
     @Test
     public void crearDistractorNoEncontradoTest() {
         System.out.println("Ejecutando test: crearDistractorNoEncontradoTest en DistractorAreaResource");
         Mockito.when(mockDD.buscarPorId(idDistractor)).thenReturn(null);
+        DistractorArea nueva = new DistractorArea();
+        nueva.setIdArea(new Area(idArea));
 
-        Response resultado = cut.crear(idDistractor, idArea, mockUriInfo);
+        Response resultado = cut.crear(idDistractor, nueva, mockUriInfo);
 
         assertEquals(404, resultado.getStatus());
         Mockito.verify(mockDD).buscarPorId(idDistractor);
@@ -92,8 +103,10 @@ public class DistractorAreaResourceTest {
         System.out.println("Ejecutando test: crearAreaNoEncontradaTest en DistractorAreaResource");
         Mockito.when(mockDD.buscarPorId(idDistractor)).thenReturn(new Distractor(idDistractor));
         Mockito.when(mockAreaDAO.buscarPorId(idArea)).thenReturn(null);
+        DistractorArea nueva = new DistractorArea();
+        nueva.setIdArea(new Area(idArea));
 
-        Response resultado = cut.crear(idDistractor, idArea, mockUriInfo);
+        Response resultado = cut.crear(idDistractor, nueva, mockUriInfo);
 
         assertEquals(404, resultado.getStatus());
         Mockito.verify(mockDAA, Mockito.never()).crear(Mockito.any());
@@ -105,11 +118,13 @@ public class DistractorAreaResourceTest {
         System.out.println("Ejecutando test: crearUsaUriAbsolutaConPathCompletoTest en DistractorAreaResource");
         Mockito.when(mockDD.buscarPorId(idDistractor)).thenReturn(new Distractor(idDistractor));
         Mockito.when(mockAreaDAO.buscarPorId(idArea)).thenReturn(new Area(idArea));
+        DistractorArea nueva = new DistractorArea();
+        nueva.setIdArea(new Area(idArea));
 
-        Response resultado = cut.crear(idDistractor, idArea, mockUriInfo);
+        Response resultado = cut.crear(idDistractor, nueva, mockUriInfo);
 
         assertEquals(201, resultado.getStatus());
-        Mockito.verify(mockUriInfo).getAbsolutePath();
+        Mockito.verify(mockUriInfo).getAbsolutePathBuilder();
         Mockito.verify(mockDAA).crear(Mockito.any(DistractorArea.class));
     }
 
@@ -118,9 +133,11 @@ public class DistractorAreaResourceTest {
         System.out.println("Ejecutando test: crearConExcepcionTest en DistractorAreaResource");
         Mockito.when(mockDD.buscarPorId(idDistractor)).thenReturn(new Distractor(idDistractor));
         Mockito.when(mockAreaDAO.buscarPorId(idArea)).thenReturn(new Area(idArea));
+        DistractorArea nueva = new DistractorArea();
+        nueva.setIdArea(new Area(idArea));
         Mockito.doThrow(new RuntimeException("Error en base de datos")).when(mockDAA).crear(Mockito.any(DistractorArea.class));
 
-        Response resultado = cut.crear(idDistractor, idArea, mockUriInfo);
+        Response resultado = cut.crear(idDistractor, nueva, mockUriInfo);
 
         assertEquals(500, resultado.getStatus());
         Mockito.verify(mockDAA).crear(Mockito.any(DistractorArea.class));
@@ -129,8 +146,9 @@ public class DistractorAreaResourceTest {
     @Test
     public void crearBadRequestTest() {
         System.out.println("Ejecutando test: crearBadRequestTest en DistractorAreaResource");
-        assertEquals(400, cut.crear(idDistractor, null, mockUriInfo).getStatus());
-        assertEquals(400, cut.crear(null, idArea, mockUriInfo).getStatus());
+        DistractorArea nueva = new DistractorArea();
+        assertEquals(400, cut.crear(idDistractor, nueva, mockUriInfo).getStatus());
+        assertEquals(400, cut.crear(null, nueva, mockUriInfo).getStatus());
         Mockito.verifyNoInteractions(mockDAA);
         Mockito.verifyNoInteractions(mockDD);
     }

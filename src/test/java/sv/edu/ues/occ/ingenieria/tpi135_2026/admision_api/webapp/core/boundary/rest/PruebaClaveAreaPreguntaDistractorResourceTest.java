@@ -71,7 +71,10 @@ class PruebaClaveAreaPreguntaDistractorResourceTest {
         UriBuilder uriBuilder = UriBuilder.fromUri("http://localhost/test");
         when(uriInfo.getAbsolutePathBuilder()).thenReturn(uriBuilder);
 
-        Response response = resource.crear(idPruebaClave, idArea, idPregunta, idDistractor, uriInfo);
+        PruebaClaveAreaPreguntaDistractor body = new PruebaClaveAreaPreguntaDistractor();
+        body.setIdDistractor(new Distractor(idDistractor));
+
+        Response response = resource.crear(idPruebaClave, idArea, idPregunta, body, uriInfo);
 
         assertEquals(201, response.getStatus());
         verify(mockDAO).crear(any(PruebaClaveAreaPreguntaDistractor.class));
@@ -87,14 +90,18 @@ class PruebaClaveAreaPreguntaDistractorResourceTest {
     @Test
     void crearConIdAreaNullTest() {
         System.out.println("Ejecutando test: crearConIdAreaNullTest en PruebaClaveAreaPreguntaDistractorResource");
-        Response response = resource.crear(idPruebaClave, null, idPregunta, idDistractor, mock(UriInfo.class));
+        PruebaClaveAreaPreguntaDistractor body = new PruebaClaveAreaPreguntaDistractor();
+        body.setIdDistractor(new Distractor(idDistractor));
+        Response response = resource.crear(idPruebaClave, null, idPregunta, body, mock(UriInfo.class));
         assertEquals(400, response.getStatus());
     }
 
     @Test
     void crearConIdPreguntaNullTest() {
         System.out.println("Ejecutando test: crearConIdPreguntaNullTest en PruebaClaveAreaPreguntaDistractorResource");
-        Response response = resource.crear(idPruebaClave, idArea, null, idDistractor, mock(UriInfo.class));
+        PruebaClaveAreaPreguntaDistractor body = new PruebaClaveAreaPreguntaDistractor();
+        body.setIdDistractor(new Distractor(idDistractor));
+        Response response = resource.crear(idPruebaClave, idArea, null, body, mock(UriInfo.class));
         assertEquals(400, response.getStatus());
     }
 
@@ -110,7 +117,9 @@ class PruebaClaveAreaPreguntaDistractorResourceTest {
         System.out.println("Ejecutando test: crearPadreNoExisteTest en PruebaClaveAreaPreguntaDistractorResource");
         when(mockPadreDAO.buscarPorId(any())).thenReturn(null);
 
-        Response response = resource.crear(idPruebaClave, idArea, idPregunta, idDistractor, mock(UriInfo.class));
+        PruebaClaveAreaPreguntaDistractor body = new PruebaClaveAreaPreguntaDistractor();
+        body.setIdDistractor(new Distractor(idDistractor));
+        Response response = resource.crear(idPruebaClave, idArea, idPregunta, body, mock(UriInfo.class));
 
         assertEquals(404, response.getStatus());
     }
@@ -121,7 +130,9 @@ class PruebaClaveAreaPreguntaDistractorResourceTest {
         when(mockPadreDAO.buscarPorId(any())).thenReturn(new PruebaClaveAreaPregunta());
         when(mockDistractorDAO.buscarPorId(any())).thenReturn(null);
 
-        Response response = resource.crear(idPruebaClave, idArea, idPregunta, idDistractor, mock(UriInfo.class));
+        PruebaClaveAreaPreguntaDistractor body = new PruebaClaveAreaPreguntaDistractor();
+        body.setIdDistractor(new Distractor(idDistractor));
+        Response response = resource.crear(idPruebaClave, idArea, idPregunta, body, mock(UriInfo.class));
 
         assertEquals(404, response.getStatus());
     }
@@ -131,7 +142,9 @@ class PruebaClaveAreaPreguntaDistractorResourceTest {
         System.out.println("Ejecutando test: crearExceptionTest en PruebaClaveAreaPreguntaDistractorResource");
         when(mockPadreDAO.buscarPorId(any())).thenThrow(new RuntimeException());
 
-        Response response = resource.crear(idPruebaClave, idArea, idPregunta, idDistractor, mock(UriInfo.class));
+        PruebaClaveAreaPreguntaDistractor body = new PruebaClaveAreaPreguntaDistractor();
+        body.setIdDistractor(new Distractor(idDistractor));
+        Response response = resource.crear(idPruebaClave, idArea, idPregunta, body, mock(UriInfo.class));
 
         assertEquals(500, response.getStatus());
     }

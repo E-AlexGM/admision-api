@@ -62,19 +62,20 @@ public class PruebaJornadaResource implements Serializable{
     }
 
     @POST
-    @Path("/{id_jornada}")
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
-    public Response crear(@PathParam("id_prueba") UUID idPrueba, @PathParam("id_jornada") UUID idJornada, @Context UriInfo uriInfo){
+    public Response crear(@PathParam("id_prueba") UUID idPrueba, PruebaJornada pruebaJornada, @Context UriInfo uriInfo){
 
-        if(idPrueba != null && idJornada != null){
+        if(idPrueba != null && pruebaJornada != null && pruebaJornada.getIdJornada() != null && pruebaJornada.getIdJornada().getIdJornada() != null){
             try {
                 Prueba p = pDAO.buscarPorId(idPrueba);
-                Jornada j = jDAO.buscarPorId(idJornada);
-                PruebaJornada pj = new PruebaJornada(p, j);
+                Jornada j = jDAO.buscarPorId(pruebaJornada.getIdJornada().getIdJornada());
                 if(p != null && j != null){
-                    pJDAO.crear(pj);
+                    pruebaJornada.setIdPrueba(p);
+                    pruebaJornada.setIdJornada(j);
+                    pJDAO.crear(pruebaJornada);
                     UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+                    uriBuilder.path(pruebaJornada.getIdJornada().getIdJornada().toString());
                     return Response.created(uriBuilder.build()).build();
                 }
                 return Response.status(Response.Status.NOT_FOUND).build();
