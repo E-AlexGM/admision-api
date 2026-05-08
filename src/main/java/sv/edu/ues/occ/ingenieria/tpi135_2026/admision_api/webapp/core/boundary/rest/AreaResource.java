@@ -114,6 +114,7 @@ public class AreaResource  implements Serializable {
     @PUT
     @Path("{id}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response actualizar(@PathParam("id") UUID idArea, Area area){
         if(idArea != null && area != null){
             try {
@@ -121,7 +122,7 @@ public class AreaResource  implements Serializable {
                 if(existente != null){
                     area.setIdArea(idArea);
                     areaDAO.actualizar(area);
-                    return Response.status(Response.Status.OK).build();
+                    return Response.status(Response.Status.OK).entity(area).build();
                 }
                 return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
             }catch (Exception e){
