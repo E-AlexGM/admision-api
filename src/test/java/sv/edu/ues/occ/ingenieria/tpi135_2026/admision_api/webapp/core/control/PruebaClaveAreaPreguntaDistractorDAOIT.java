@@ -19,6 +19,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import jakarta.persistence.EntityManager;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Area;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Distractor;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.DistractorArea;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Pregunta;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PreguntaArea;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PreguntaDistractor;
@@ -107,6 +108,11 @@ public class PruebaClaveAreaPreguntaDistractorDAOIT extends AbstractIntengration
         em.persist(preguntaArea);
     }
 
+    private void crearDistractorArea(Distractor distractor, Area area) {
+        DistractorArea distractorArea = new DistractorArea(distractor, area);
+        em.persist(distractorArea);
+    }
+
     private void crearPruebaClaveArea(PruebaClave pruebaClave, Area area) {
         PruebaClaveArea pruebaClaveArea = new PruebaClaveArea(pruebaClave, area);
         pruebaClaveArea.setCantidad(1);
@@ -143,7 +149,9 @@ public class PruebaClaveAreaPreguntaDistractorDAOIT extends AbstractIntengration
         PruebaClave pruebaClave = crearPruebaClave();
         Area area = crearArea();
         Pregunta pregunta = crearPregunta();
+        Distractor distractor = crearDistractor();
         crearPreguntaArea(pregunta, area);
+        crearDistractorArea(distractor, area);
         crearPruebaClaveArea(pruebaClave, area);
         crearPruebaClaveAreaPregunta(pruebaClave, area, pregunta);
 
@@ -151,7 +159,7 @@ public class PruebaClaveAreaPreguntaDistractorDAOIT extends AbstractIntengration
         ctx.pruebaClave = pruebaClave;
         ctx.area = area;
         ctx.pregunta = pregunta;
-        ctx.distractor = crearDistractor();
+        ctx.distractor = distractor;
         crearPreguntaDistractor(ctx.pregunta, ctx.distractor);
         return ctx;
     }
@@ -438,6 +446,7 @@ public class PruebaClaveAreaPreguntaDistractorDAOIT extends AbstractIntengration
         cut.crear(registro1);
 
         Distractor distractor2 = crearDistractor();
+        crearDistractorArea(distractor2, ctx.area);
         crearPreguntaDistractor(ctx.pregunta, distractor2);
         PruebaClaveAreaPreguntaDistractor registro2 = nuevaEntidad(
             ctx.pruebaClave, ctx.area, ctx.pregunta, distractor2);
@@ -485,6 +494,7 @@ public class PruebaClaveAreaPreguntaDistractorDAOIT extends AbstractIntengration
         cut.crear(registro1);
 
         Distractor distractor2 = crearDistractor();
+        crearDistractorArea(distractor2, ctx.area);
         crearPreguntaDistractor(ctx.pregunta, distractor2);
         PruebaClaveAreaPreguntaDistractor registro2 = nuevaEntidad(
             ctx.pruebaClave, ctx.area, ctx.pregunta, distractor2);

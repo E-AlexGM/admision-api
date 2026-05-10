@@ -40,7 +40,7 @@ public class PreguntaDistractorResource implements Serializable {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response crear(@PathParam("id_pregunta") UUID idPregunta, PreguntaDistractor pD, @Context UriInfo uriInfo){ 
+    public Response crear(@PathParam("id_pregunta") UUID idPregunta, PreguntaDistractor pD, @Context UriInfo uriInfo){
         if(idPregunta != null && pD != null && pD.getIdDistractor() != null && pD.getIdDistractor().getIdDistractor() != null){
             try {
                 Pregunta p = pDAO.buscarPorId(idPregunta);
@@ -50,14 +50,39 @@ public class PreguntaDistractorResource implements Serializable {
                     pD.setIdPregunta(p);
                     pD.setIdDistractor(d);
                     pDDAO.crear(pD);
+
                     UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
                     uriBuilder.path(pD.getIdDistractor().getIdDistractor().toString());
                     return Response.created(uriBuilder.build()).build();
                 }
-                
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "pregunta o distractor o preguntaDistractor").build();
+
+                return Response.status(Response.Status.NOT_FOUND)
+                        .header(ResponseHeaders.NOT_FOUND.toString(), "pregunta o distractor o preguntaDistractor")
+                        .build();
+
             } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+                // 1. Escarbamos hasta encontrar la causa raíz (Root Cause) de la excepción
+                Throwable rootCause = e;
+                while (rootCause.getCause() != null && rootCause != rootCause.getCause()) {
+                    rootCause = rootCause.getCause();
+                }
+
+                // 2. Verificamos si el mensaje original contiene la frase clave de nuestro Trigger
+                if (rootCause.getMessage() != null && rootCause.getMessage().contains("Violación de negocio")) {
+
+                    // Limpiamos un poco el mensaje de PostgreSQL (opcional, para quitar códigos técnicos)
+                    String mensajeUsuario = rootCause.getMessage().split("\n")[0];
+
+                    // Retornamos un 400 Bad Request o 409 Conflict, avisando que es error de regla de negocio
+                    return Response.status(Response.Status.BAD_REQUEST)
+                            .entity("{\"error\": \"" + mensajeUsuario + "\"}") // Enviamos el JSON con el error
+                            .build();
+                }
+
+                // 3. Si es cualquier otro error del servidor (Base de datos caída, error de sintaxis, etc.)
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
+                        .build();
             }
         }
         return Response.status(Response.Status.BAD_REQUEST).build();

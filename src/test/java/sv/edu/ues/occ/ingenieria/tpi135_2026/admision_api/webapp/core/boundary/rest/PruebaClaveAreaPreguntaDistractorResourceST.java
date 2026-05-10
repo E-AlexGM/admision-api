@@ -20,6 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Area;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Distractor;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.DistractorArea;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Pregunta;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PreguntaArea;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PreguntaDistractor;
@@ -161,6 +162,19 @@ public class PruebaClaveAreaPreguntaDistractorResourceST extends AbstractIntegra
         Assertions.assertEquals(201, response.getStatus());
     }
 
+    private void crearDistractorAreaPorApi(UUID idDistractor, UUID idArea) {
+        DistractorArea relacion = new DistractorArea();
+        relacion.setIdArea(new Area(idArea));
+
+        Response response = apiRoot().path("distractor")
+            .path(idDistractor.toString())
+            .path("area")
+            .request(MediaType.APPLICATION_JSON)
+            .post(Entity.json(relacion));
+
+        Assertions.assertEquals(201, response.getStatus());
+    }
+
     private void crearPruebaClaveAreaPorApi(UUID idPruebaClave, UUID idArea) {
         PruebaClaveArea relacion = new PruebaClaveArea();
         relacion.setIdArea(new Area(idArea));
@@ -229,6 +243,7 @@ public class PruebaClaveAreaPreguntaDistractorResourceST extends AbstractIntegra
         contexto.idPruebaClave = crearPruebaClavePorApi(contexto.idPrueba);
 
         crearPreguntaAreaPorApi(contexto.idPregunta, contexto.idArea);
+        crearDistractorAreaPorApi(contexto.idDistractor, contexto.idArea);
         crearPreguntaDistractorPorApi(contexto.idPregunta, contexto.idDistractor);
         crearPruebaClaveAreaPorApi(contexto.idPruebaClave, contexto.idArea);
         crearPruebaClaveAreaPreguntaPorApi(contexto.idPruebaClave, contexto.idArea, contexto.idPregunta);

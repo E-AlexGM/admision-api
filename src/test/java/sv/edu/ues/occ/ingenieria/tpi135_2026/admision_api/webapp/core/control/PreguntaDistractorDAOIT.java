@@ -1,31 +1,40 @@
 package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control;
 
 
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Order;
 
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Pregunta;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Area;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Distractor;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.DistractorArea;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Pregunta;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PreguntaArea;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PreguntaDistractor;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PreguntaDistractorPK;
-
-import static org.junit.Assert.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PreguntaDistractorDAOIT extends AbstractIntengrationDAOTest{
 
+    AreaDAO areaDAO = new AreaDAO();
     PreguntaDAO preguntaDAO = new PreguntaDAO();
     DistractorDAO distractorDAO = new DistractorDAO();
+    PreguntaAreaDAO preguntaAreaDAO = new PreguntaAreaDAO();
+    DistractorAreaDAO distractorAreaDAO = new DistractorAreaDAO();
 
     PreguntaDistractorDAO cut = new PreguntaDistractorDAO();
+
+    Area area = new Area(UUID.randomUUID());
 
     Pregunta pregunta = new Pregunta(UUID.randomUUID());
     
@@ -36,12 +45,22 @@ public class PreguntaDistractorDAOIT extends AbstractIntengrationDAOTest{
     PreguntaDistractor preguntaDistractor = new PreguntaDistractor(pregunta, distractor); 
     PreguntaDistractorPK pk2 = new PreguntaDistractorPK(pregunta.getIdPregunta(), distractor2.getIdDistractor());
     PreguntaDistractor preguntaDistractor2 = new PreguntaDistractor(pregunta, distractor2);
+    PreguntaArea preguntaArea = new PreguntaArea(pregunta, area);
+    DistractorArea distractorArea = new DistractorArea(distractor, area);
+    DistractorArea distractorArea2 = new DistractorArea(distractor2, area);
 
     @BeforeEach
     public void setUp(){
         cut.em = em;
+        areaDAO.em = em;
         preguntaDAO.em = em;
         distractorDAO.em = em;
+        preguntaAreaDAO.em = em;
+        distractorAreaDAO.em = em;
+
+        area.setNombre("MATEMATICAS");
+        area.setDescripcion("Area para validar pregunta-distractor");
+        area.setActivo(true);
 
         pregunta.setValor("¿Cuánto es 2 + 2?");
         pregunta.setActivo(true);
@@ -58,9 +77,13 @@ public class PreguntaDistractorDAOIT extends AbstractIntengrationDAOTest{
 
     public void crearContexto(){
         em.getTransaction().begin();
+        areaDAO.crear(area);
         preguntaDAO.crear(pregunta);
         distractorDAO.crear(distractor);
         distractorDAO.crear(distractor2);
+        preguntaAreaDAO.crear(preguntaArea);
+        distractorAreaDAO.crear(distractorArea);
+        distractorAreaDAO.crear(distractorArea2);
         em.getTransaction().commit();
     }
 

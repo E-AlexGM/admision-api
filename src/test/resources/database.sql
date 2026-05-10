@@ -377,4 +377,33 @@ ALTER TABLE IF EXISTS public.prueba_jornada_aula_aspirante_opcion_examen
 CREATE INDEX IF NOT EXISTS prueba_jornada_aula_aspirante_opcion_examen_pkey
     ON public.prueba_jornada_aula_aspirante_opcion_examen(id_prueba, id_jornada, id_aula, id_aspirante_opcion);
 
+-- ---------------------------------------------------------
+-- TRIGGERS Y FUNCIONES DE VALIDACIÓN LÓGICA
+-- ---------------------------------------------------------
+
+-- 1. Creamos la función lógica
+CREATE OR REPLACE FUNCTION validar_area_pregunta_distractor()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Buscamos si existe al menos un área en común entre la pregunta y el distractor
+    IF NOT EXISTS (
+        SELECT 1
+        FROM public.pregunta_area pa
+        INNER JOIN public.distractor_area da ON pa.id_area = da.id_area
+        WHERE pa.id_pregunta = NEW.id_pregunta
+          AND da.id_distractor = NEW.id_distractor
+    ) THEN
+        -- Si no hay coincidencia, abortamos la inserción con un error
+        RAISE EXCEPTION '[ERR-001] El distractor y la pregunta no pertenecen a la misma área.';
+END IF;
+
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 2. Atamos la función a la tabla
+CREATE TRIGGER trg_validar_areas
+    BEFORE INSERT OR UPDATE ON public.pregunta_distractor
+                         FOR EACH ROW EXECUTE FUNCTION validar_area_pregunta_distractor();
+
 END;

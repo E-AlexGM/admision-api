@@ -6,8 +6,11 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.*;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Area;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.DistractorArea;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Distractor;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Pregunta;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PreguntaArea;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PreguntaDistractor;
 
 import java.util.List;
@@ -22,6 +25,7 @@ public class PreguntaDistractorResourceST extends AbstractIntegrationTest{
 
     private final String RESOURCE_NAME_PREGUNTA = "pregunta";
     private final String RESOURCE_NAME_DISTRACTOR = "distractor";
+    private final String RESOURCE_NAME_AREA = "area";
 
     Pregunta pregunta = new Pregunta();
     String idPregunta;
@@ -31,6 +35,8 @@ public class PreguntaDistractorResourceST extends AbstractIntegrationTest{
     String idDistractor;
     Distractor distractor2 = new Distractor();
     String idDistractor2;
+    Area area = new Area();
+    String idArea;
 
     PreguntaDistractor preguntaDistractor = new PreguntaDistractor();
     PreguntaDistractor preguntaDistractor2 = new PreguntaDistractor();
@@ -56,6 +62,10 @@ public class PreguntaDistractorResourceST extends AbstractIntegrationTest{
         distractor2.setValor("5");
         distractor2.setActivo(true);
 
+        area.setNombre("AREA-PREGUNTA-DISTRACTOR-ST");
+        area.setDescripcion("Area comun para validar trigger");
+        area.setActivo(true);
+
         preguntaDistractor.setCorrecto(true);
         preguntaDistractor2.setCorrecto(false);
         preguntaDistractor3.setCorrecto(false);
@@ -67,6 +77,7 @@ public class PreguntaDistractorResourceST extends AbstractIntegrationTest{
 
         Response respuestaDistractor = target.path(RESOURCE_NAME_DISTRACTOR).request().post(Entity.json(distractor));
         Response respuestaDistractor2 = target.path(RESOURCE_NAME_DISTRACTOR).request().post(Entity.json(distractor2));
+        Response respuestaArea = target.path(RESOURCE_NAME_AREA).request().post(Entity.json(area));
 
         idPregunta = respuestaPregunta.getLocation().toString().split(RESOURCE_NAME_PREGUNTA + "/")[1];
         pregunta = new Pregunta(UUID.fromString(idPregunta));
@@ -79,6 +90,34 @@ public class PreguntaDistractorResourceST extends AbstractIntegrationTest{
 
         idDistractor2 = respuestaDistractor2.getLocation().toString().split(RESOURCE_NAME_DISTRACTOR + "/")[1];
         distractor2 = new Distractor(UUID.fromString(idDistractor2));
+
+        idArea = respuestaArea.getLocation().toString().split(RESOURCE_NAME_AREA + "/")[1];
+        area = new Area(UUID.fromString(idArea));
+
+        PreguntaArea preguntaArea = new PreguntaArea();
+        preguntaArea.setIdArea(area);
+        Response respuestaPreguntaArea = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta).path(RESOURCE_NAME_AREA)
+            .request(MediaType.APPLICATION_JSON).post(Entity.json(preguntaArea));
+
+        PreguntaArea preguntaArea2 = new PreguntaArea();
+        preguntaArea2.setIdArea(area);
+        Response respuestaPreguntaArea2 = target.path(RESOURCE_NAME_PREGUNTA).path(idPregunta2).path(RESOURCE_NAME_AREA)
+            .request(MediaType.APPLICATION_JSON).post(Entity.json(preguntaArea2));
+
+        DistractorArea distractorArea = new DistractorArea();
+        distractorArea.setIdArea(area);
+        Response respuestaDistractorArea = target.path(RESOURCE_NAME_DISTRACTOR).path(idDistractor).path(RESOURCE_NAME_AREA)
+            .request(MediaType.APPLICATION_JSON).post(Entity.json(distractorArea));
+
+        DistractorArea distractorArea2 = new DistractorArea();
+        distractorArea2.setIdArea(area);
+        Response respuestaDistractorArea2 = target.path(RESOURCE_NAME_DISTRACTOR).path(idDistractor2).path(RESOURCE_NAME_AREA)
+            .request(MediaType.APPLICATION_JSON).post(Entity.json(distractorArea2));
+
+        assertEquals(Response.Status.CREATED.getStatusCode(), respuestaPreguntaArea.getStatus());
+        assertEquals(Response.Status.CREATED.getStatusCode(), respuestaPreguntaArea2.getStatus());
+        assertEquals(Response.Status.CREATED.getStatusCode(), respuestaDistractorArea.getStatus());
+        assertEquals(Response.Status.CREATED.getStatusCode(), respuestaDistractorArea2.getStatus());
 
     }
 
