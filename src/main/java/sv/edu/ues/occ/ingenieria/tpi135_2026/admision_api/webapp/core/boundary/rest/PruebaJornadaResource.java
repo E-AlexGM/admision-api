@@ -49,11 +49,9 @@ public class PruebaJornadaResource implements Serializable{
         if(idPrueba != null && first >= 0 && max > 0){
             try {
                 List<Jornada> jornadas = jDAO.listarPorIdPrueba(idPrueba, first, max);
-                
-                if(jornadas != null){
-                    return Response.status(Response.Status.OK).entity(jornadas).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "jornadas").build();
+                Response.ResponseBuilder responseBuilder = Response.ok(jornadas)
+                        .type(MediaType.APPLICATION_JSON);
+                return responseBuilder.build();
             } catch (Exception e) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
             }

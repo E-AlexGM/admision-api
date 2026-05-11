@@ -111,10 +111,11 @@ public class PreguntaResource implements Serializable{
         if(first >= 0 && hasta > 0){
             try {
                 List<Pregunta> preguntas = pDAO.buscarPorRango(first, hasta);
-                if(preguntas != null && !preguntas.isEmpty()){
-                    return Response.status(Response.Status.OK).entity(preguntas).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "PREGUNTAS").build();
+                Long total = pDAO.contar();
+                Response.ResponseBuilder responseBuilder = Response.ok(preguntas)
+                        .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
+                        .type(MediaType.APPLICATION_JSON);
+                return responseBuilder.build();
             } catch (Exception e) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
             }

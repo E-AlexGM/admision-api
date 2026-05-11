@@ -2,36 +2,32 @@ package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.
 
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.ws.rs.core.Response;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PreguntaDAO;
+import jakarta.ws.rs.core.Response;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.AreaDAO;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaClaveDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PreguntaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaClaveAreaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaClaveAreaPreguntaDAO;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Pregunta;
-
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Area;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Pregunta;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaClave;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaClaveArea;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaClaveAreaPK;
@@ -260,23 +256,23 @@ class PruebaClaveAreaPreguntaResourceTest {
         }
 
         @Test
-        @DisplayName("Debe retornar 404 si la lista es nula")
+        @DisplayName("Debe retornar 200 si la lista es nula")
         void listar_Nulo() {
             when(pCAPDAO.buscarPorClaveYArea(idPruebaClave, idArea)).thenReturn(null);
 
             Response response = resource.listar(idPruebaClave, idArea);
 
-            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         }
 
         @Test
-        @DisplayName("Debe retornar 404 si la lista está vacía")
+        @DisplayName("Debe retornar 200 si la lista está vacía")
         void listar_ListaVacia() {
             when(pCAPDAO.buscarPorClaveYArea(idPruebaClave, idArea)).thenReturn(List.of());
 
             Response response = resource.listar(idPruebaClave, idArea);
 
-            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+            assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         }
 
         @Test

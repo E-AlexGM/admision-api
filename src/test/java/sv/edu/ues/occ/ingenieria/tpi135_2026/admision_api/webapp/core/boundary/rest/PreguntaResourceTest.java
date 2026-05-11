@@ -1,19 +1,18 @@
 package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.rest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Pregunta;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PreguntaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Pregunta;
 
 public class PreguntaResourceTest {
 
@@ -273,7 +272,7 @@ public class PreguntaResourceTest {
          Mockito.when(mockPDAO.buscarPorRango(first, size)).thenReturn(List.of());
          Response response = cut.buscarPorRango(first, size);
          Mockito.verify(mockPDAO).buscarPorRango(first, size);
-         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
      }
 
      @Test
@@ -285,7 +284,7 @@ public class PreguntaResourceTest {
          Mockito.when(mockPDAO.buscarPorRango(first, size)).thenReturn(null);
          Response response = cut.buscarPorRango(first, size);
          Mockito.verify(mockPDAO).buscarPorRango(first, size);
-         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
      }
 
      @Test

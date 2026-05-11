@@ -3,6 +3,7 @@ package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.ExamenResultadosEnum;
@@ -306,4 +308,19 @@ public class AspiranteExamenResourceST extends AbstractIntegrationTest {
 
         assertEquals(new BigDecimal("40"), resultado.getResultado());
     }
+
+        @Order(4)
+        @Test
+        public void listarPruebasPorAspiranteVacio() {
+
+                Response respuesta = target.path(RESOURCE_NAME_ASPIRANTE)
+                                .path(UUID.randomUUID().toString())
+                                .path(RESOURCE_NAME_PRUEBA)
+                                .request(MediaType.APPLICATION_JSON)
+                                .get();
+
+                assertEquals(Response.Status.OK.getStatusCode(), respuesta.getStatus());
+                List<Prueba> pruebas = respuesta.readEntity(new GenericType<List<Prueba>>() {});
+                assertEquals(0, pruebas.size());
+        }
 }

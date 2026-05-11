@@ -126,10 +126,9 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
         if(idPruebaClave != null && idArea != null ) {
             try {
                 List<PruebaClaveAreaPregunta> pruebaClaveAreaPreguntas = pruebaClaveAreaPreguntaDAO.buscarPorClaveYArea(idPruebaClave, idArea);
-               if(pruebaClaveAreaPreguntas != null && !pruebaClaveAreaPreguntas.isEmpty()){
-                    return Response.status(Response.Status.OK).entity(pruebaClaveAreaPreguntas).build();
-               }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"pruebaClave, area ").build();
+                Response.ResponseBuilder responseBuilder = Response.ok(pruebaClaveAreaPreguntas)
+                        .type(MediaType.APPLICATION_JSON);
+                return responseBuilder.build();
             } catch (Exception e) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
             }

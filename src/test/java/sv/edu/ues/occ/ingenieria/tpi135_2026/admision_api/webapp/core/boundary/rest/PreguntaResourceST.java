@@ -87,4 +87,13 @@ public class PreguntaResourceST extends AbstractIntegrationTest{
         Response respuesta = target.path(idPregunta2).request().delete();
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), respuesta.getStatus());
     }
+
+    @Order(6)
+    @Test
+    public void testBuscarPorRangoVacio(){
+        Response respuesta = target.queryParam("first", 9999).queryParam("size", 10).request().get();
+        assertEquals(Response.Status.OK.getStatusCode(), respuesta.getStatus());
+        List<Pregunta> preguntas = respuesta.readEntity(new GenericType<List<Pregunta>>() {});
+        assertTrue(preguntas.isEmpty());
+    }
 }

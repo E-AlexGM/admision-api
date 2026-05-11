@@ -1,6 +1,7 @@
 package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.rest;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Jornada;
@@ -80,4 +82,15 @@ public class JornadaAulaResourceST extends AbstractIntegrationTest{
             .request().delete();
         assertNotNull(response);
         assert(response.getStatus() == Response.Status.NO_CONTENT.getStatusCode());}
+
+    @Order(4)
+    @Test
+    public void testListarAulaPorJornadaVacio(){
+        Response response = target.path(idJornada).path("aula")
+            .request().get();
+        assertNotNull(response);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        List<JornadaAula> aulas = response.readEntity(new GenericType<List<JornadaAula>>() {});
+        assertEquals(0, aulas.size());
+    }
 }   

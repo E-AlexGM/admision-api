@@ -245,4 +245,19 @@ public class PruebaClaveAreaPreguntaResourceST extends AbstractIntegrationTest{
         assertEquals(Response.Status.OK.getStatusCode(), respuesta.getStatus());
 
     }
+
+        @Order(6)
+        @Test
+        public void testListarVacio(){
+                Response respuesta = target.path(RESOURCE_NAME_PRUEBA_CLAVE)
+                                .path(idPruebaClave)
+                                .path(RESOURCE_NAME_AREA)
+                                .path(UUID.randomUUID().toString())
+                                .path(RESOURCE_NAME_PREGUNTA)
+                                .request(MediaType.APPLICATION_JSON)
+                                .get();
+                List<PruebaClaveAreaPregunta> encontrados = respuesta.readEntity(new GenericType<List<PruebaClaveAreaPregunta>>() {});
+                assertEquals(Response.Status.OK.getStatusCode(), respuesta.getStatus());
+                assertTrue(encontrados.isEmpty());
+        }
 }

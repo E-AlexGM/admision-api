@@ -166,7 +166,7 @@ public class JornadaAulaResourceTest {
         Mockito.when(jADAO.listarPorJornada(idJornada)).thenReturn(List.of());
         Mockito.verify(jADAO).listarPorJornada(idJornada);
         Response respuesta = cut.listarAulaJornadas(idJornada);
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), respuesta.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), respuesta.getStatus());
     }
 
     @Test
@@ -177,7 +177,7 @@ public class JornadaAulaResourceTest {
         Mockito.when(jADAO.listarPorJornada(idJornada)).thenReturn(null);
         Mockito.verify(jADAO).listarPorJornada(idJornada);
         Response respuesta = cut.listarAulaJornadas(idJornada);
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), respuesta.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), respuesta.getStatus());
     }
 
      @Test 

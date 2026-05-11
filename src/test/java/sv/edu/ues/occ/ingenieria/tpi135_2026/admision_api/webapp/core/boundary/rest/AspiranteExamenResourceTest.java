@@ -14,7 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import jakarta.ws.rs.core.Response;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.*;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.ExamenDefaultStrategy;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.ExamenResultadosEnum;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.IngresoUniversitarioPrimeraRondaStrategy;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.IngresoUniversitarioSegundaRondaStrategy;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaJornadaAulaAspiranteOpcionExamenDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.TipoPruebaEnum;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Prueba;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaJornadaAulaAspiranteOpcionExamen;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.TipoPrueba;
@@ -215,7 +221,7 @@ public class AspiranteExamenResourceTest {
         UUID id = UUID.randomUUID();
         Mockito.when(cut.pruebaDAO.findByIdAspirante(id)).thenReturn(Collections.emptyList());
         Response res = cut.listarPruebasPorAspirante(id);
-        assertEquals(404, res.getStatus());
+        assertEquals(200, res.getStatus());
     }
 
     @Test
@@ -231,7 +237,7 @@ public class AspiranteExamenResourceTest {
         UUID id = UUID.randomUUID();
         Mockito.when(cut.pruebaDAO.findByIdAspirante(id)).thenReturn(null);
         Response res = cut.listarPruebasPorAspirante(id);
-        assertEquals(404, res.getStatus());
+        assertEquals(200, res.getStatus());
     }
 
     @Test

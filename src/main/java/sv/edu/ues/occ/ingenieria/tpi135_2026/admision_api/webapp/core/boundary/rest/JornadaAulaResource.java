@@ -43,10 +43,9 @@ public class JornadaAulaResource implements Serializable {
         if(idJornada != null){
             try {
                 List<JornadaAula> aulas = jADAO.listarPorJornada(idJornada);
-                if(aulas != null && !aulas.isEmpty()){
-                    return Response.status(Response.Status.OK).entity(aulas).build();
-                } 
-                return Response.status(Response.Status.NOT_FOUND).entity("aulas").build();
+                Response.ResponseBuilder responseBuilder = Response.ok(aulas)
+                        .type(MediaType.APPLICATION_JSON);
+                return responseBuilder.build();
             } catch (Exception e) {
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
             }

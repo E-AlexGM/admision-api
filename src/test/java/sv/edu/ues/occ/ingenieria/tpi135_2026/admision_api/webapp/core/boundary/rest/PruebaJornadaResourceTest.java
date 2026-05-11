@@ -280,7 +280,7 @@ public class PruebaJornadaResourceTest {
          UUID idPrueba = UUID.randomUUID();
          Mockito.when(jDAO.listarPorIdPrueba(idPrueba, 0, 10)).thenReturn(null);
          Response respuesta = cut.listarJornadas(idPrueba, 0, 10);
-         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), respuesta.getStatus());
+         assertEquals(Response.Status.OK.getStatusCode(), respuesta.getStatus());
      }
 
      @Test

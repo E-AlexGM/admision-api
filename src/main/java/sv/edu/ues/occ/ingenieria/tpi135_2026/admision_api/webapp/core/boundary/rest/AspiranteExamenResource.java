@@ -9,10 +9,22 @@ import java.util.UUID;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.*;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.ExamenDefaultStrategy;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.ExamenResultadosEnum;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.ExamenStrategy;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.IngresoUniversitarioPrimeraRondaStrategy;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.IngresoUniversitarioSegundaRondaStrategy;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaJornadaAulaAspiranteOpcionExamenDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.TipoPruebaEnum;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Prueba;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaJornadaAulaAspiranteOpcionExamen;
 
@@ -120,12 +132,9 @@ public class AspiranteExamenResource implements Serializable {
         }
         try{
             List<Prueba> pruebas = pruebaDAO.findByIdAspirante(idAspirante);
-            if(pruebas == null || pruebas.isEmpty()){
-                return Response.status(Response.Status.NOT_FOUND)
-                        .header(ResponseHeaders.NOT_FOUND.toString(), "No se encontraron pruebas para el aspirante especificado")
-                        .build();
-            }
-            return Response.status(Response.Status.OK).entity(pruebas).build();
+            Response.ResponseBuilder responseBuilder = Response.ok(pruebas)
+                    .type(MediaType.APPLICATION_JSON);
+            return responseBuilder.build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
