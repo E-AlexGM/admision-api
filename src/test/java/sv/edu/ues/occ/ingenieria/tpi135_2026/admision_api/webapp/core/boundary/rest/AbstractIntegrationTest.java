@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.MountableFile;
 
 import jakarta.ws.rs.client.Client;
@@ -47,7 +48,8 @@ public abstract class AbstractIntegrationTest {
             .withNetwork(red)
             .withCopyFileToContainer(war, "/home/usuario/wlp/usr/servers/app/dropins/nuevoingreso.war")
             .withExposedPorts(9080)
-            ;
+            .waitingFor(Wait.forHttp("/nuevoingreso").forPort(9080).forStatusCode(200)
+            );
 
     static{
         postgres.start();
