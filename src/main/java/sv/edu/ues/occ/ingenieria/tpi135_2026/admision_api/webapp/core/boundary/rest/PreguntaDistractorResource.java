@@ -61,28 +61,7 @@ public class PreguntaDistractorResource implements Serializable {
                         .build();
 
             } catch (Exception e) {
-                // 1. Escarbamos hasta encontrar la causa raíz (Root Cause) de la excepción
-                Throwable rootCause = e;
-                while (rootCause.getCause() != null && rootCause != rootCause.getCause()) {
-                    rootCause = rootCause.getCause();
-                }
-
-                // 2. Verificamos si el mensaje original contiene la frase clave de nuestro Trigger
-                if (rootCause.getMessage() != null && rootCause.getMessage().contains("Violación de negocio")) {
-
-                    // Limpiamos un poco el mensaje de PostgreSQL (opcional, para quitar códigos técnicos)
-                    String mensajeUsuario = rootCause.getMessage().split("\n")[0];
-
-                    // Retornamos un 400 Bad Request o 409 Conflict, avisando que es error de regla de negocio
-                    return Response.status(Response.Status.BAD_REQUEST)
-                            .entity("{\"error\": \"" + mensajeUsuario + "\"}") // Enviamos el JSON con el error
-                            .build();
-                }
-
-                // 3. Si es cualquier otro error del servidor (Base de datos caída, error de sintaxis, etc.)
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
-                        .build();
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
             }
         }
         return Response.status(Response.Status.BAD_REQUEST).build();

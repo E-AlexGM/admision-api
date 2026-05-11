@@ -394,7 +394,7 @@ BEGIN
           AND da.id_distractor = NEW.id_distractor
     ) THEN
         -- Si no hay coincidencia, abortamos la inserción con un error
-        RAISE EXCEPTION '[ERR-001] El distractor y la pregunta no pertenecen a la misma área.';
+        RAISE EXCEPTION 'El distractor y la pregunta no pertenecen a la misma área.' USING ERRCODE = 'P0001';
 END IF;
 
 RETURN NEW;
