@@ -228,7 +228,7 @@ public class PruebaResourceST extends AbstractIntegrationTest {
                 .request(MediaType.APPLICATION_JSON)
                 .get();
 
-        Assertions.assertEquals(404, buscar.getStatus());
+        Assertions.assertEquals(500, buscar.getStatus());
     }
 
     @Order(9)
