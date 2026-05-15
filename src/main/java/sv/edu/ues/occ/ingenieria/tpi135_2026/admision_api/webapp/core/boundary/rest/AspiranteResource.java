@@ -34,15 +34,11 @@ public class AspiranteResource implements Serializable {
     public Response crear(Aspirante aspirante, @Context UriInfo uriInfo) {
 
         if (aspirante != null && aspirante.getIdAspirante() == null) {
-            try {
-                aspirante.setIdAspirante(UUID.randomUUID());
-                aspiranteDAO.crear(aspirante);
-                UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                uriBuilder.path(aspirante.getIdAspirante().toString());
-                return Response.created(uriBuilder.build()).build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
-            }
+            aspirante.setIdAspirante(UUID.randomUUID());
+            aspiranteDAO.crear(aspirante);
+            UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+            uriBuilder.path(aspirante.getIdAspirante().toString());
+            return Response.created(uriBuilder.build()).build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El recurso no puede ser nulo y no debe tener un ID asignado").build();
     }
@@ -51,16 +47,12 @@ public class AspiranteResource implements Serializable {
     @Path("{id}")
     public Response eliminar(@PathParam("id") UUID id) {
         if (id != null) {
-            try {
-                Aspirante aspirante = aspiranteDAO.buscarPorId(id);
-                if (aspirante != null) {
-                    aspiranteDAO.eliminar(aspirante);
-                    return Response.noContent().build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Aspirante aspirante = aspiranteDAO.buscarPorId(id);
+            if (aspirante != null) {
+                aspiranteDAO.eliminar(aspirante);
+                return Response.noContent().build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El ID no puede ser nulo").build();
     }
@@ -74,19 +66,13 @@ public class AspiranteResource implements Serializable {
                     .header(ResponseHeaders.WRONG_PARAMETER.toString(), "El parámetro 'apellidos' no puede ser nulo o vacío")
                     .build();
         }
-        try {
-            List<Aspirante> aspirantes = aspiranteDAO.buscarPorApellidos(apellidos);
-            if (aspirantes == null || aspirantes.isEmpty()) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .header(ResponseHeaders.NOT_FOUND.toString(), "No se encontraron aspirantes con los apellidos especificados")
-                        .build();
-            }
-            return Response.ok(aspirantes).type(MediaType.APPLICATION_JSON).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
+        List<Aspirante> aspirantes = aspiranteDAO.buscarPorApellidos(apellidos);
+        if (aspirantes == null || aspirantes.isEmpty()) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .header(ResponseHeaders.NOT_FOUND.toString(), "No se encontraron aspirantes con los apellidos especificados")
                     .build();
         }
+        return Response.ok(aspirantes).type(MediaType.APPLICATION_JSON).build();
     }
 
     @GET
@@ -98,21 +84,15 @@ public class AspiranteResource implements Serializable {
             @QueryParam("max")
             @DefaultValue("50")
             int maxResults) {
-        try {
-            if (firstResult >= 0 && maxResults > 0 && maxResults <= 50) {
-                List<Aspirante> aspirantes = aspiranteDAO.buscarPorRango(firstResult, maxResults);
-                Long total = aspiranteDAO.contar();
-                Response.ResponseBuilder responseBuilder = Response.ok(aspirantes)
-                        .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
-                        .type(MediaType.APPLICATION_JSON);
-                return responseBuilder.build();
-            } else {
-                return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50").build();
-            }
-
-        }catch (Exception e){
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+        if (firstResult >= 0 && maxResults > 0 && maxResults <= 50) {
+            List<Aspirante> aspirantes = aspiranteDAO.buscarPorRango(firstResult, maxResults);
+            Long total = aspiranteDAO.contar();
+            Response.ResponseBuilder responseBuilder = Response.ok(aspirantes)
+                    .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
+                    .type(MediaType.APPLICATION_JSON);
+            return responseBuilder.build();
         }
+        return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50").build();
     }
 
     @GET
@@ -120,16 +100,12 @@ public class AspiranteResource implements Serializable {
     @Produces(MediaType.APPLICATION_JSON)
     public Response buscarPorId(@PathParam("id") UUID id) {
         if (id != null) {
-            try {
-                Aspirante encontrado = aspiranteDAO.buscarPorId(id);
-                if (encontrado != null) {
-                    Response.ResponseBuilder builder = Response.ok(encontrado).type(MediaType.APPLICATION_JSON);
-                    return builder.build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            }catch (Exception e){
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Aspirante encontrado = aspiranteDAO.buscarPorId(id);
+            if (encontrado != null) {
+                Response.ResponseBuilder builder = Response.ok(encontrado).type(MediaType.APPLICATION_JSON);
+                return builder.build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "id: "+id).build();
     }
@@ -140,17 +116,13 @@ public class AspiranteResource implements Serializable {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response actualizar(@PathParam("id") UUID id, Aspirante aspirante) {
         if (aspirante != null && id != null) {
-            try {
-                Aspirante existente = aspiranteDAO.buscarPorId(id);
-                if (existente != null) {
-                    aspirante.setIdAspirante(id);
-                    aspiranteDAO.actualizar(aspirante);
-                    return Response.ok(aspirante).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Aspirante existente = aspiranteDAO.buscarPorId(id);
+            if (existente != null) {
+                aspirante.setIdAspirante(id);
+                aspiranteDAO.actualizar(aspirante);
+                return Response.ok(aspirante).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El recurso no puede ser nulo y debe tener un ID asignado").build();
     }

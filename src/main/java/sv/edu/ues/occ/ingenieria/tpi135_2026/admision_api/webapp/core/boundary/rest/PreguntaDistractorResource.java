@@ -42,27 +42,21 @@ public class PreguntaDistractorResource implements Serializable {
     @Produces(MediaType.APPLICATION_JSON)
     public Response crear(@PathParam("id_pregunta") UUID idPregunta, PreguntaDistractor pD, @Context UriInfo uriInfo){
         if(idPregunta != null && pD != null && pD.getIdDistractor() != null && pD.getIdDistractor().getIdDistractor() != null){
-            try {
-                Pregunta p = pDAO.buscarPorId(idPregunta);
-                Distractor d = dDAO.buscarPorId(pD.getIdDistractor().getIdDistractor());
+            Pregunta p = pDAO.buscarPorId(idPregunta);
+            Distractor d = dDAO.buscarPorId(pD.getIdDistractor().getIdDistractor());
 
-                if(p != null && d != null ){
-                    pD.setIdPregunta(p);
-                    pD.setIdDistractor(d);
-                    pDDAO.crear(pD);
+            if(p != null && d != null ){
+                pD.setIdPregunta(p);
+                pD.setIdDistractor(d);
+                pDDAO.crear(pD);
 
-                    UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                    uriBuilder.path(pD.getIdDistractor().getIdDistractor().toString());
-                    return Response.created(uriBuilder.build()).build();
-                }
-
-                return Response.status(Response.Status.NOT_FOUND)
-                        .header(ResponseHeaders.NOT_FOUND.toString(), "pregunta o distractor o preguntaDistractor")
-                        .build();
-
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+                UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+                uriBuilder.path(pD.getIdDistractor().getIdDistractor().toString());
+                return Response.created(uriBuilder.build()).build();
             }
+            return Response.status(Response.Status.NOT_FOUND)
+                    .header(ResponseHeaders.NOT_FOUND.toString(), "pregunta o distractor o preguntaDistractor")
+                    .build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
@@ -71,16 +65,12 @@ public class PreguntaDistractorResource implements Serializable {
     @Path("/{id_distractor}")
     public Response eliminar(@PathParam("id_pregunta") UUID idPregunta, @PathParam("id_distractor") UUID idDistractor){
         if(idPregunta != null && idDistractor != null){
-            try {
-                    PreguntaDistractor eliminado = pDDAO.buscarPorId(new PreguntaDistractorPK(idPregunta, idDistractor));
-                    if(eliminado != null){
-                        pDDAO.eliminar(eliminado);
-                        return Response.status(Response.Status.NO_CONTENT).build();
-                    }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "pregunta o distractor").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            PreguntaDistractor eliminado = pDDAO.buscarPorId(new PreguntaDistractorPK(idPregunta, idDistractor));
+            if(eliminado != null){
+                pDDAO.eliminar(eliminado);
+                return Response.status(Response.Status.NO_CONTENT).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "pregunta o distractor").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
@@ -89,18 +79,14 @@ public class PreguntaDistractorResource implements Serializable {
     @Produces(MediaType.APPLICATION_JSON)
     public Response listar(@PathParam("id_pregunta") UUID idPregunta){
         if(idPregunta != null){
-            try {
-                Pregunta p = pDAO.buscarPorId(idPregunta);
-                if(p != null){
-                    List<PreguntaDistractor> preguntaDistractores = pDDAO.buscarPorIdPregunta(idPregunta);
-                    if(preguntaDistractores != null && !preguntaDistractores.isEmpty() ){
-                        return Response.status(Response.Status.OK).entity(preguntaDistractores).build();
-                    }
+            Pregunta p = pDAO.buscarPorId(idPregunta);
+            if(p != null){
+                List<PreguntaDistractor> preguntaDistractores = pDDAO.buscarPorIdPregunta(idPregunta);
+                if(preguntaDistractores != null && !preguntaDistractores.isEmpty() ){
+                    return Response.status(Response.Status.OK).entity(preguntaDistractores).build();
                 }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "pregunta o distractores").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "pregunta o distractores").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }

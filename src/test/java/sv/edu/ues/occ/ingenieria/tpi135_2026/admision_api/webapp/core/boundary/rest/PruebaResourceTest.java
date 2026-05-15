@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -48,11 +49,10 @@ public class PruebaResourceTest {
 
     @Test 
     public void crear_Prueba_ErrorInterno(){
-        System.out.println("EjecutandoTest: crear_Prueba_ErrorInterno");    
-        cut.pDAO = null;
+        System.out.println("EjecutandoTest: crear_Prueba_ErrorInterno");
         Prueba p = new Prueba();
-        Response response = cut.crear(p, uriInfo);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        Mockito.doThrow(new RuntimeException("Error interno")).when(pDAO).crear(p);
+        assertThrows(RuntimeException.class, () -> cut.crear(p, uriInfo));
     }
     
     @Test 
@@ -90,8 +90,7 @@ public class PruebaResourceTest {
         Prueba prueba = new Prueba();
         Mockito.when(pDAO.buscarPorId(idPrueba)).thenReturn(prueba);
         Mockito.doThrow(new RuntimeException()).when(pDAO).eliminar(prueba);
-        Response response = cut.eliminar(idPrueba);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.eliminar(idPrueba));
     }
 
     @Test 
@@ -131,8 +130,7 @@ public class PruebaResourceTest {
         Mockito.when(pDAO.buscarPorId(idPrueba)).thenReturn(pruebaExistente);
         Prueba p = new Prueba();
         Mockito.doThrow(new RuntimeException()).when(pDAO).actualizar(p);
-        Response response = cut.actualizar(idPrueba, p);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.actualizar(idPrueba, p));
     }
 
     @Test 
@@ -168,8 +166,7 @@ public class PruebaResourceTest {
         System.out.println("EjecutandoTest: buscarPorId_Prueba_ErrorInterno");
         UUID idPrueba = UUID.randomUUID();
         Mockito.when(pDAO.buscarPorId(idPrueba)).thenThrow(new RuntimeException());
-        Response response = cut.buscarPorId(idPrueba);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());  
+        assertThrows(RuntimeException.class, () -> cut.buscarPorId(idPrueba));  
     }
 
     @Test 
@@ -218,8 +215,7 @@ public class PruebaResourceTest {
          int first = 0;
          int max = 10;
          Mockito.when(pDAO.buscarPorRango(first, max)).thenThrow(new RuntimeException());
-         Response response = cut.buscarPorRango(first, max);
-         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+         assertThrows(RuntimeException.class, () -> cut.buscarPorRango(first, max));
      }
 
      @Test

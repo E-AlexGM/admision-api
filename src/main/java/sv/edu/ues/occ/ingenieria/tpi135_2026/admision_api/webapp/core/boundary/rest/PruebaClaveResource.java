@@ -37,22 +37,18 @@ public class PruebaClaveResource implements Serializable{
     @Produces({MediaType.APPLICATION_JSON})
     public Response asignarClave(@PathParam("id_prueba") UUID idPrueba, PruebaClave pC, @Context UriInfo uriInfo) {
         if(idPrueba != null && pC != null) {
-            try {
-                Prueba p = pDAO.buscarPorId(idPrueba);
-                if(p != null){
-                    pC.setIdPruebaClave(UUID.randomUUID());
-                    pC.setIdPrueba(p);
-                    pCDAO.crear(pC);
-                    UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                    uriBuilder.path(pC.getIdPruebaClave().toString());
-                    return Response.status(Response.Status.CREATED)
-                            .header("Location", uriBuilder.build().toString())
-                            .build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"prueba").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            Prueba p = pDAO.buscarPorId(idPrueba);
+            if(p != null){
+                pC.setIdPruebaClave(UUID.randomUUID());
+                pC.setIdPrueba(p);
+                pCDAO.crear(pC);
+                UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+                uriBuilder.path(pC.getIdPruebaClave().toString());
+                return Response.status(Response.Status.CREATED)
+                        .header("Location", uriBuilder.build().toString())
+                        .build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"prueba").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
@@ -62,18 +58,14 @@ public class PruebaClaveResource implements Serializable{
     @Produces({MediaType.APPLICATION_JSON})
     public Response listarClaves(@PathParam("id_prueba") UUID idPrueba) {
         if(idPrueba != null) {
-            try {
-                Prueba p = pDAO.buscarPorId(idPrueba);
-                if(p != null){
-                    List<PruebaClave> claves = pCDAO.listarClavesPorPrueba(idPrueba);
-                    if(claves != null && !claves.isEmpty()) {
-                        return Response.status(Response.Status.OK).entity(claves).build();
-                    }
+            Prueba p = pDAO.buscarPorId(idPrueba);
+            if(p != null){
+                List<PruebaClave> claves = pCDAO.listarClavesPorPrueba(idPrueba);
+                if(claves != null && !claves.isEmpty()) {
+                    return Response.status(Response.Status.OK).entity(claves).build();
                 }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"prueba").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"prueba").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
@@ -82,20 +74,16 @@ public class PruebaClaveResource implements Serializable{
     @Path("{id_clave}")
     public Response eliminarClave(@PathParam("id_prueba") UUID idPrueba, @PathParam("id_clave") UUID idPruebaClave) { 
         if(idPruebaClave != null && idPrueba != null) {
-            try {
-                Prueba p = pDAO.buscarPorId(idPrueba);
-                if(p != null){
-                    PruebaClave pC = pCDAO.buscarPorId(idPruebaClave);
-                    if(pC != null && pC.getIdPrueba().getIdPrueba().equals(idPrueba)) {
-                        pCDAO.eliminar(pC);
-                        return Response.status(Response.Status.NO_CONTENT).build();
-                    }
-                    return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"clave").build();
+            Prueba p = pDAO.buscarPorId(idPrueba);
+            if(p != null){
+                PruebaClave pC = pCDAO.buscarPorId(idPruebaClave);
+                if(pC != null && pC.getIdPrueba().getIdPrueba().equals(idPrueba)) {
+                    pCDAO.eliminar(pC);
+                    return Response.status(Response.Status.NO_CONTENT).build();
                 }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"prueba").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"clave").build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"prueba").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "idClave o idPrueba").build();
     }
@@ -105,15 +93,11 @@ public class PruebaClaveResource implements Serializable{
     @Path("/{id_clave}")
     public Response buscarPorId(@PathParam("id_prueba") UUID idPrueba, @PathParam("id_clave") UUID idPruebaClave){
         if(idPrueba != null && idPruebaClave != null){
-            try{
-                PruebaClave encontrado = pCDAO.buscarPorId(idPruebaClave);
-                if(encontrado != null){
-                    return Response.status(Response.Status.OK).entity(encontrado).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"clave").build();
-            }catch (Exception e){
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            PruebaClave encontrado = pCDAO.buscarPorId(idPruebaClave);
+            if(encontrado != null){
+                return Response.status(Response.Status.OK).entity(encontrado).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"clave").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "idPrueba o idClave").build();
     }

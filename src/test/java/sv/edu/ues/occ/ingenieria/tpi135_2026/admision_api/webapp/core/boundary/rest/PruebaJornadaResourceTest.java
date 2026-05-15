@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -156,12 +157,11 @@ public class PruebaJornadaResourceTest {
          UUID idJornada = UUID.randomUUID();
          p = new Prueba(idPrueba);
          j = new Jornada(idJornada);
-
-        cut.jDAO = null;
+        Mockito.when(pDAO.buscarPorId(idPrueba)).thenReturn(p);
+        Mockito.when(jDAO.buscarPorId(idJornada)).thenThrow(new RuntimeException("Error interno"));
         PruebaJornada request = new PruebaJornada();
         request.setIdJornada(new Jornada(idJornada));
-        Response respuesta = cut.crear(idPrueba, request, uriInfo);
-         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), respuesta.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.crear(idPrueba, request, uriInfo));
      }
 
     @Test
@@ -254,15 +254,15 @@ public class PruebaJornadaResourceTest {
     }
 
      @Test
-    public void eliminarErrorInterno() {
+     public void eliminarErrorInterno() {
         System.out.println("EjecutandoTest: eliminarErrorInterno");
         UUID idPrueba = UUID.randomUUID();
         UUID idJornada = UUID.randomUUID();
         p = new Prueba(idPrueba);
         j = new Jornada(idJornada);
-        cut.jDAO = null;
-        Response respuesta = cut.eliminar(idPrueba, idJornada);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), respuesta.getStatus());
+        Mockito.when(pDAO.buscarPorId(idPrueba)).thenReturn(p);
+        Mockito.when(jDAO.buscarPorId(idJornada)).thenThrow(new RuntimeException("Error interno"));
+        assertThrows(RuntimeException.class, () -> cut.eliminar(idPrueba, idJornada));
     }
 
      @Test
@@ -284,12 +284,12 @@ public class PruebaJornadaResourceTest {
      }
 
      @Test
-     public void listarJornadasBadRequestNullId(){
-         System.out.println("EjecutandoTest: listarJornadasBadRequestNullId");
-         Response respuesta = cut.listarJornadas(null, 0, 10);
-         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respuesta.getStatus());
+     public void listarJornadasErrorInterno(){
+         System.out.println("EjecutandoTest: listarJornadasErrorInterno");
+         UUID idPrueba = UUID.randomUUID();
+         Mockito.when(jDAO.listarPorIdPrueba(idPrueba, 0, 10)).thenThrow(new RuntimeException("Error interno"));
+         assertThrows(RuntimeException.class, () -> cut.listarJornadas(idPrueba, 0, 10));
      }
-
 
      @Test
      public void listarJornadasBadRequestFirstNegativo(){
@@ -305,15 +305,6 @@ public class PruebaJornadaResourceTest {
          UUID idPrueba = UUID.randomUUID();
          Response respuesta = cut.listarJornadas(idPrueba, 0, 0);
          assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), respuesta.getStatus());
-     }
-
-     @Test
-     public void listarJornadasErrorInterno(){
-         System.out.println("EjecutandoTest: listarJornadasErrorInterno");
-         UUID idPrueba = UUID.randomUUID();
-         cut.jDAO = null;
-         Response respuesta = cut.listarJornadas(idPrueba, 0, 10);
-         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), respuesta.getStatus());
      }
 
  }

@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -120,9 +121,7 @@ public class AspiranteExamenResourceTest {
         Mockito.when(mockDAO.obtenerResultadoExamenPorAspiranteYPrueba(idAspirante, idPrueba))
                 .thenThrow(new IllegalStateException("Error al buscar"));
 
-        Response resultado = cut.actualizarResultado(idAspirante, idPrueba, entity);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(IllegalStateException.class, () -> cut.actualizarResultado(idAspirante, idPrueba, entity));
         Mockito.verify(mockDAO, Mockito.never()).actualizar(Mockito.any());
     }
 
@@ -139,9 +138,7 @@ public class AspiranteExamenResourceTest {
         Mockito.when(mockDAO.obtenerResultadoExamenPorAspiranteYPrueba(idAspirante, idPrueba)).thenReturn(existente);
         Mockito.doThrow(new IllegalArgumentException("Error al actualizar")).when(mockDAO).actualizar(existente);
 
-        Response resultado = cut.actualizarResultado(idAspirante, idPrueba, entity);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(IllegalArgumentException.class, () -> cut.actualizarResultado(idAspirante, idPrueba, entity));
         Mockito.verify(mockDAO).actualizar(existente);
     }
 
@@ -198,8 +195,7 @@ public class AspiranteExamenResourceTest {
     @Test
     public void listarResultadoExamenErrorTest() {
         Mockito.when(cut.pruebaJornadaAulaAspiranteOpcionExamenDAO.obtenerResultadoExamenPorAspiranteYPrueba(Mockito.any(), Mockito.any())).thenThrow(new RuntimeException());
-        Response res = cut.buscarResultadoExamen(UUID.randomUUID(), UUID.randomUUID());
-        assertEquals(500, res.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarResultadoExamen(UUID.randomUUID(), UUID.randomUUID()));
     }
 
     @Test
@@ -228,8 +224,7 @@ public class AspiranteExamenResourceTest {
     public void listarPruebasPorAspiranteErrorTest() {
         UUID id = UUID.randomUUID();
         Mockito.when(cut.pruebaDAO.findByIdAspirante(id)).thenThrow(new RuntimeException());
-        Response res = cut.listarPruebasPorAspirante(id);
-        assertEquals(500, res.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.listarPruebasPorAspirante(id));
     }
 
     @Test

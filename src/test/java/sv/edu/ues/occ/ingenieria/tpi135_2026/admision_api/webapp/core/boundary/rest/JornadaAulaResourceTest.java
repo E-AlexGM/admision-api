@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -72,8 +73,7 @@ public class JornadaAulaResourceTest {
 
         Mockito.when(jDAO.buscarPorId(j.getIdJornada())).thenReturn(j);
         Mockito.doThrow(new RuntimeException("Error interno")).when(jADAO).crear(Mockito.any());
-        Response respuesta = cut.crear(idJornada, request, uriInfo);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), respuesta.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.crear(idJornada, request, uriInfo));
     }
 
     @Test
@@ -121,12 +121,9 @@ public class JornadaAulaResourceTest {
     @Test 
     public void eliminar_JornadaAula_ErrorInterno() {
         System.out.println("Ejecutando test: eliminar_JornadaAula_ErrorInterno");
-        cut.eliminar(idJornada, idAula.toString());
-
         Mockito.doThrow(new RuntimeException("Error interno")).when(jADAO).eliminar(Mockito.any());
         Mockito.when(jADAO.buscarPorJornadaYAula(idJornada, idAula.toString())).thenReturn(new JornadaAula(UUID.randomUUID()));
-        Response respuesta = cut.eliminar(idJornada, idAula.toString());
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), respuesta.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.eliminar(idJornada, idAula.toString()));
     }
 
     @Test
@@ -183,10 +180,7 @@ public class JornadaAulaResourceTest {
      @Test 
      public void listar_JornadaAula_ErrorInterno() {
          System.out.println("Ejecutando test: listar_JornadaAula_ErrorInterno");
-         cut.listarAulaJornadas(idJornada);
-
          Mockito.doThrow(new RuntimeException("Error interno")).when(jADAO).listarPorJornada(idJornada);
-         Response respuesta = cut.listarAulaJornadas(idJornada);
-         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), respuesta.getStatus());
+         assertThrows(RuntimeException.class, () -> cut.listarAulaJornadas(idJornada));
      }
 }

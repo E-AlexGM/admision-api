@@ -54,33 +54,29 @@ public class PruebaJornadaAulaAspiranteOpcionResource implements Serializable {
             return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "IDs de ruta o AspiranteOpcion faltantes").build();
         }
 
-        try {
-            PruebaJornada prueba = pruebaJornadaDAO.buscarPorId(new PruebaJornadaPK(idPrueba, idJornada));
-            JornadaAula aula = jornadaAulaDAO.buscarPorJornadaYAula(idJornada, idAula);
-            AspiranteOpcion aspirante = aspiranteOpcionDAO.buscarPorId(entity.getIdAspiranteOpcion().getIdAspiranteOpcion());
+        PruebaJornada prueba = pruebaJornadaDAO.buscarPorId(new PruebaJornadaPK(idPrueba, idJornada));
+        JornadaAula aula = jornadaAulaDAO.buscarPorJornadaYAula(idJornada, idAula);
+        AspiranteOpcion aspirante = aspiranteOpcionDAO.buscarPorId(entity.getIdAspiranteOpcion().getIdAspiranteOpcion());
 
-            if (prueba == null || aula == null || aspirante == null) {
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Dependencia no encontrada").build();
-            }
-
-            // Validación de pertenencia a la misma jornada
-            if (aula.getIdJornada() == null || prueba.getIdJornada() == null || 
-                !aula.getIdJornada().getIdJornada().equals(prueba.getIdJornada().getIdJornada())) {
-                return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Conflicto de Jornada").build();
-            }
-
-            entity.setIdPrueba(prueba.getIdPrueba());
-            entity.setIdJornada(prueba.getIdJornada());
-            entity.setIdAula(idAula);
-            entity.setIdAspiranteOpcion(aspirante);
-            
-            pruebaJornadaAulaAspiranteOpcionDAO.crear(entity);
-            UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-            uriBuilder.path(aspirante.getIdAspiranteOpcion().toString());
-            return Response.created(uriBuilder.build()).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+        if (prueba == null || aula == null || aspirante == null) {
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Dependencia no encontrada").build();
         }
+
+        // Validación de pertenencia a la misma jornada
+        if (aula.getIdJornada() == null || prueba.getIdJornada() == null || 
+            !aula.getIdJornada().getIdJornada().equals(prueba.getIdJornada().getIdJornada())) {
+            return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Conflicto de Jornada").build();
+        }
+
+        entity.setIdPrueba(prueba.getIdPrueba());
+        entity.setIdJornada(prueba.getIdJornada());
+        entity.setIdAula(idAula);
+        entity.setIdAspiranteOpcion(aspirante);
+        
+        pruebaJornadaAulaAspiranteOpcionDAO.crear(entity);
+        UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+        uriBuilder.path(aspirante.getIdAspiranteOpcion().toString());
+        return Response.created(uriBuilder.build()).build();
     }
 
     @GET
@@ -96,13 +92,9 @@ public class PruebaJornadaAulaAspiranteOpcionResource implements Serializable {
             return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Parámetros inválidos").build();
         }
 
-        try {
-            List<PruebaJornadaAulaAspiranteOpcion> registros = pruebaJornadaAulaAspiranteOpcionDAO.buscarPorPruebaJornadaYJornadaAulaRango(idPrueba, idJornada, idAula, first, max);
-            Long total = pruebaJornadaAulaAspiranteOpcionDAO.contarPorPruebaJornadaYJornadaAula(idPrueba, idJornada, idAula);
-            return Response.ok(registros).header(ResponseHeaders.TOTAL_RECORDS.toString(), total).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
-        }
+        List<PruebaJornadaAulaAspiranteOpcion> registros = pruebaJornadaAulaAspiranteOpcionDAO.buscarPorPruebaJornadaYJornadaAulaRango(idPrueba, idJornada, idAula, first, max);
+        Long total = pruebaJornadaAulaAspiranteOpcionDAO.contarPorPruebaJornadaYJornadaAula(idPrueba, idJornada, idAula);
+        return Response.ok(registros).header(ResponseHeaders.TOTAL_RECORDS.toString(), total).build();
     }
 
     @GET
@@ -118,17 +110,13 @@ public class PruebaJornadaAulaAspiranteOpcionResource implements Serializable {
             return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "IDs requeridos").build();
         }
 
-        try {
-            PruebaJornadaAulaAspiranteOpcion encontrado = pruebaJornadaAulaAspiranteOpcionDAO
-                .buscarPorId(new PruebaJornadaAulaAspiranteOpcionPK(idPrueba, idJornada, idAula, idAspiranteOpcion));
-            return (encontrado != null)
-                    ? Response.ok(encontrado).build()
-                    : Response.status(Response.Status.NOT_FOUND)
-                            .header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado")
-                            .build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
-        }
+        PruebaJornadaAulaAspiranteOpcion encontrado = pruebaJornadaAulaAspiranteOpcionDAO
+            .buscarPorId(new PruebaJornadaAulaAspiranteOpcionPK(idPrueba, idJornada, idAula, idAspiranteOpcion));
+        return (encontrado != null)
+                ? Response.ok(encontrado).build()
+                : Response.status(Response.Status.NOT_FOUND)
+                        .header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado")
+                        .build();
     }
 
     @PUT
@@ -147,31 +135,27 @@ public class PruebaJornadaAulaAspiranteOpcionResource implements Serializable {
             return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Datos incompletos").build();
         }
 
-        try {
-            if (!idAspiranteOpcion.equals(entity.getIdAspiranteOpcion().getIdAspiranteOpcion())) {
-                return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El idAspiranteOpcion del body debe coincidir con el id del path").build();
-            }
-            PruebaJornadaAulaAspiranteOpcion existente = pruebaJornadaAulaAspiranteOpcionDAO
-                    .buscarPorId(new PruebaJornadaAulaAspiranteOpcionPK(idPrueba, idJornada, idAula, idAspiranteOpcion));
-            if (existente == null) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-
-            AspiranteOpcion aspirante = aspiranteOpcionDAO.buscarPorId(entity.getIdAspiranteOpcion().getIdAspiranteOpcion());
-            if (aspirante == null) {
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "AspiranteOpcion no encontrada").build();
-            }
-            entity.setIdAspiranteOpcion(aspirante);
-
-            entity.setIdPrueba(existente.getIdPrueba());
-            entity.setIdJornada(existente.getIdJornada());
-            entity.setIdAula(idAula);
-            
-            pruebaJornadaAulaAspiranteOpcionDAO.actualizar(entity);
-            return Response.ok(entity).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+        if (!idAspiranteOpcion.equals(entity.getIdAspiranteOpcion().getIdAspiranteOpcion())) {
+            return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El idAspiranteOpcion del body debe coincidir con el id del path").build();
         }
+        PruebaJornadaAulaAspiranteOpcion existente = pruebaJornadaAulaAspiranteOpcionDAO
+                .buscarPorId(new PruebaJornadaAulaAspiranteOpcionPK(idPrueba, idJornada, idAula, idAspiranteOpcion));
+        if (existente == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        AspiranteOpcion aspirante = aspiranteOpcionDAO.buscarPorId(entity.getIdAspiranteOpcion().getIdAspiranteOpcion());
+        if (aspirante == null) {
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "AspiranteOpcion no encontrada").build();
+        }
+        entity.setIdAspiranteOpcion(aspirante);
+
+        entity.setIdPrueba(existente.getIdPrueba());
+        entity.setIdJornada(existente.getIdJornada());
+        entity.setIdAula(idAula);
+        
+        pruebaJornadaAulaAspiranteOpcionDAO.actualizar(entity);
+        return Response.ok(entity).build();
     }
 
     @DELETE
@@ -186,18 +170,14 @@ public class PruebaJornadaAulaAspiranteOpcionResource implements Serializable {
             return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "IDs faltantes").build();
         }
 
-        try {
-            PruebaJornadaAulaAspiranteOpcion existente = pruebaJornadaAulaAspiranteOpcionDAO
-                    .buscarPorId(new PruebaJornadaAulaAspiranteOpcionPK(idPrueba, idJornada, idAula, idAspiranteOpcion));
-            if (existente == null) {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            
-            pruebaJornadaAulaAspiranteOpcionDAO.eliminar(existente);
-            return Response.noContent().build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+        PruebaJornadaAulaAspiranteOpcion existente = pruebaJornadaAulaAspiranteOpcionDAO
+                .buscarPorId(new PruebaJornadaAulaAspiranteOpcionPK(idPrueba, idJornada, idAula, idAspiranteOpcion));
+        if (existente == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
+        
+        pruebaJornadaAulaAspiranteOpcionDAO.eliminar(existente);
+        return Response.noContent().build();
     }
 
 }

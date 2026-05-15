@@ -74,24 +74,18 @@ public class DistractorAreaResource implements Serializable {
             @PathParam("id_distractor") UUID idDistractor,
             @QueryParam("first") @DefaultValue("0") int firstResult,
             @QueryParam("max") @DefaultValue("50") int maxResults) {
-        try {
-            if (idDistractor != null && firstResult >= 0 && maxResults > 0 && maxResults <= 50) {
-                List<DistractorArea> registros = distractorAreaDAO.buscarPorDistractorRango(idDistractor, firstResult, maxResults);
-                Long total = distractorAreaDAO.contarPorDistractor(idDistractor);
-                return Response.ok(registros)
-                        .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
-                        .type(MediaType.APPLICATION_JSON)
-                        .build();
-            }
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .header(ResponseHeaders.WRONG_PARAMETER.toString(),
-                            "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50")
-                    .build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
-                    .build();
+        if (idDistractor != null && firstResult >= 0 && maxResults > 0 && maxResults <= 50) {
+            List<DistractorArea> registros = distractorAreaDAO.buscarPorDistractorRango(idDistractor, firstResult, maxResults);
+            Long total = distractorAreaDAO.contarPorDistractor(idDistractor);
+            return Response.ok(registros)
+                .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
+                .type(MediaType.APPLICATION_JSON)
+                .build();
         }
+        return Response.status(Response.Status.BAD_REQUEST)
+            .header(ResponseHeaders.WRONG_PARAMETER.toString(),
+                "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50")
+            .build();
     }
 
     @GET
@@ -101,19 +95,13 @@ public class DistractorAreaResource implements Serializable {
             @PathParam("id_distractor") UUID idDistractor,
             @PathParam("id_area") UUID idArea) {
         if (idDistractor != null && idArea != null) {
-            try {
-                DistractorArea encontrado = distractorAreaDAO.buscarPorId(new DistractorAreaPK(idDistractor, idArea));
-                if (encontrado != null) {
-                    return Response.ok(encontrado).type(MediaType.APPLICATION_JSON).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND)
-                        .header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado")
-                        .build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
-                        .build();
+            DistractorArea encontrado = distractorAreaDAO.buscarPorId(new DistractorAreaPK(idDistractor, idArea));
+            if (encontrado != null) {
+                return Response.ok(encontrado).type(MediaType.APPLICATION_JSON).build();
             }
+            return Response.status(Response.Status.NOT_FOUND)
+                    .header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado")
+                    .build();
         }
         return Response.status(Response.Status.BAD_REQUEST)
                 .header(ResponseHeaders.WRONG_PARAMETER.toString(), "idDistractor e idArea no pueden ser nulos")
@@ -126,20 +114,14 @@ public class DistractorAreaResource implements Serializable {
             @PathParam("id_distractor") UUID idDistractor,
             @PathParam("id_area") UUID idArea) {
         if (idDistractor != null && idArea != null) {
-            try {
-                DistractorArea distractorArea = distractorAreaDAO.buscarPorId(new DistractorAreaPK(idDistractor, idArea));
-                if (distractorArea != null) {
-                    distractorAreaDAO.eliminar(distractorArea);
-                    return Response.noContent().build();
-                }
-                return Response.status(Response.Status.NOT_FOUND)
-                        .header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado")
-                        .build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
-                        .build();
+            DistractorArea distractorArea = distractorAreaDAO.buscarPorId(new DistractorAreaPK(idDistractor, idArea));
+            if (distractorArea != null) {
+                distractorAreaDAO.eliminar(distractorArea);
+                return Response.noContent().build();
             }
+            return Response.status(Response.Status.NOT_FOUND)
+                    .header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado")
+                    .build();
         }
         return Response.status(Response.Status.BAD_REQUEST)
                 .header(ResponseHeaders.WRONG_PARAMETER.toString(), "idDistractor e idArea no pueden ser nulos")

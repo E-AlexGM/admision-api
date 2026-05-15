@@ -1,25 +1,23 @@
 package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.rest;
 
-import static org.junit.Assert.assertEquals;
-
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.ws.rs.core.UriBuilder;
-import jakarta.ws.rs.core.UriInfo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import jakarta.ws.rs.core.Response;
-
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.AreaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaClaveDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaDAO;
-import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaClave;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Prueba;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.PruebaClave;
 
 public class PruebaClaveResourceTest {
 
@@ -100,8 +98,7 @@ public class PruebaClaveResourceTest {
 
          Mockito.when(pDAO.buscarPorId(p.getIdPrueba())).thenReturn(p);
          Mockito.doThrow(new RuntimeException("Error al crear la clave")).when(pCDAO).crear(Mockito.any(PruebaClave.class));
-         Response respuesta = cut.asignarClave(p.getIdPrueba(), pC, mockUriInfo);
-         assertEquals(respuesta.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+         assertThrows(RuntimeException.class, () -> cut.asignarClave(p.getIdPrueba(), pC, mockUriInfo));
     }
 
     @Test 
@@ -151,8 +148,7 @@ public class PruebaClaveResourceTest {
          Prueba p = new Prueba(UUID.randomUUID());
          Mockito.when(pDAO.buscarPorId(p.getIdPrueba())).thenReturn(p);
          Mockito.doThrow(new RuntimeException("Error al listar las claves")).when(pCDAO).listarClavesPorPrueba(Mockito.any(UUID.class));
-         Response respuesta = cut.listarClaves(p.getIdPrueba());
-         assertEquals(respuesta.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+         assertThrows(RuntimeException.class, () -> cut.listarClaves(p.getIdPrueba()));
     }
 
     @Test
@@ -214,8 +210,7 @@ public class PruebaClaveResourceTest {
         Mockito.when(pDAO.buscarPorId(p.getIdPrueba())).thenReturn(p);
         Mockito.when(pCDAO.buscarPorId(Mockito.any(UUID.class))).thenReturn(pC);
         Mockito.doThrow(new RuntimeException("Error al eliminar la clave")).when(pCDAO).eliminar(Mockito.any(PruebaClave.class));
-        Response respuesta = cut.eliminarClave(p.getIdPrueba(), UUID.randomUUID());
-        assertEquals(respuesta.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+        assertThrows(RuntimeException.class, () -> cut.eliminarClave(p.getIdPrueba(), UUID.randomUUID()));
     }
 
     @Test 
@@ -263,8 +258,7 @@ public class PruebaClaveResourceTest {
      @Test
      public void test_PruebaClave_buscarPorId_ErrorInterno(){
          Mockito.when(pCDAO.buscarPorId(Mockito.any(UUID.class))).thenThrow(new RuntimeException("Error al buscar la clave"));
-         Response respuesta = cut.buscarPorId(UUID.randomUUID(), UUID.randomUUID());
-         assertEquals(respuesta.getStatus(), Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+         assertThrows(RuntimeException.class, () -> cut.buscarPorId(UUID.randomUUID(), UUID.randomUUID()));
      }
 
  }

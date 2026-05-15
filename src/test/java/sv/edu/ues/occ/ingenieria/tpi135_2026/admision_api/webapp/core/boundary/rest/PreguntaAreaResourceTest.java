@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -137,9 +138,7 @@ public class PreguntaAreaResourceTest {
         nueva.setIdArea(new Area(idArea));
         Mockito.doThrow(new RuntimeException("Error en base de datos")).when(mockPAA).crear(Mockito.any(PreguntaArea.class));
 
-        Response resultado = cut.crear(idPregunta, nueva, mockUriInfo);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.crear(idPregunta, nueva, mockUriInfo));
         Mockito.verify(mockPAA).crear(Mockito.any(PreguntaArea.class));
     }
 
@@ -176,9 +175,7 @@ public class PreguntaAreaResourceTest {
         Mockito.when(mockPAA.buscarPorPreguntaRango(idPregunta, 0, 50))
                 .thenThrow(new RuntimeException("Error en base de datos"));
 
-        Response resultado = cut.buscarPorRango(idPregunta, 0, 50);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorRango(idPregunta, 0, 50));
         Mockito.verify(mockPAA).buscarPorPreguntaRango(idPregunta, 0, 50);
     }
 
@@ -222,9 +219,7 @@ public class PreguntaAreaResourceTest {
         Mockito.when(mockPAA.buscarPorId(new PreguntaAreaPK(idPregunta, idArea)))
                 .thenThrow(new RuntimeException("Error en base de datos"));
 
-        Response resultado = cut.buscarPorId(idPregunta, idArea);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorId(idPregunta, idArea));
         Mockito.verify(mockPAA).buscarPorId(new PreguntaAreaPK(idPregunta, idArea));
     }
 
@@ -267,9 +262,7 @@ public class PreguntaAreaResourceTest {
         Mockito.when(mockPAA.buscarPorId(new PreguntaAreaPK(idPregunta, idArea))).thenReturn(existente);
         Mockito.doThrow(new RuntimeException("Error en base de datos")).when(mockPAA).eliminar(existente);
 
-        Response resultado = cut.eliminar(idPregunta, idArea);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.eliminar(idPregunta, idArea));
         Mockito.verify(mockPAA).eliminar(existente);
     }
 

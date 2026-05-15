@@ -41,14 +41,10 @@ public class JornadaAulaResource implements Serializable {
     @Produces(MediaType.APPLICATION_JSON)
     public Response listarAulaJornadas(@PathParam("id_jornada") UUID idJornada){
         if(idJornada != null){
-            try {
-                List<JornadaAula> aulas = jADAO.listarPorJornada(idJornada);
-                Response.ResponseBuilder responseBuilder = Response.ok(aulas)
-                        .type(MediaType.APPLICATION_JSON);
-                return responseBuilder.build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
-            }
+            List<JornadaAula> aulas = jADAO.listarPorJornada(idJornada);
+            Response.ResponseBuilder responseBuilder = Response.ok(aulas)
+                    .type(MediaType.APPLICATION_JSON);
+            return responseBuilder.build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
@@ -64,16 +60,12 @@ public class JornadaAulaResource implements Serializable {
     public Response eliminar(@PathParam("id_jornada") UUID idJornada, @PathParam("id_aula") String idAula){
 
         if(idJornada != null && idAula != null){    
-            try {
-                JornadaAula jA = jADAO.buscarPorJornadaYAula(idJornada, idAula);
-                if(jA != null){
-                    jADAO.eliminar(jA);
-                    return Response.status(Response.Status.NO_CONTENT).build();
-                } 
-                return Response.status(Response.Status.NOT_FOUND).entity("No se encontró el aula para la jornada especificada.").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            JornadaAula jA = jADAO.buscarPorJornadaYAula(idJornada, idAula);
+            if(jA != null){
+                jADAO.eliminar(jA);
+                return Response.status(Response.Status.NO_CONTENT).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).entity("No se encontró el aula para la jornada especificada.").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
@@ -89,23 +81,18 @@ public class JornadaAulaResource implements Serializable {
     @Produces({MediaType.APPLICATION_JSON})
     public Response crear(@PathParam("id_jornada") UUID idJornada, JornadaAula jornadaAula, @Context UriInfo uriInfo){
         if(idJornada != null && jornadaAula != null && jornadaAula.getIdAula() != null){
-            try {
-                Jornada j = jDAO.buscarPorId(idJornada);
-                if(j != null){
-                    jornadaAula.setIdJornada(j);
-                    if (jornadaAula.getIdJornadaAula() == null) {
-                        jornadaAula.setIdJornadaAula(UUID.randomUUID());
-                    }
-                    jADAO.crear(jornadaAula);
-                    UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                    uriBuilder.path(jornadaAula.getIdJornadaAula().toString());
-                    return Response.created(uriBuilder.build()).build();
+            Jornada j = jDAO.buscarPorId(idJornada);
+            if(j != null){
+                jornadaAula.setIdJornada(j);
+                if (jornadaAula.getIdJornadaAula() == null) {
+                    jornadaAula.setIdJornadaAula(UUID.randomUUID());
                 }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "jornada").build();
-
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+                jADAO.crear(jornadaAula);
+                UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+                uriBuilder.path(jornadaAula.getIdJornadaAula().toString());
+                return Response.created(uriBuilder.build()).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "jornada").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }

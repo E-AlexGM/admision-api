@@ -64,24 +64,18 @@ public class AspiranteExamenResource implements Serializable {
                     .header(ResponseHeaders.WRONG_PARAMETER.toString(), "Los IDs de aspirante y prueba no pueden ser nulos")
                     .build();
         }
-        try {
-            PruebaJornadaAulaAspiranteOpcionExamen examen = pruebaJornadaAulaAspiranteOpcionExamenDAO
-                    .obtenerResultadoExamenPorAspiranteYPrueba(idAspirante, idPrueba);
-            if (examen == null || examen.getIdPrueba() == null) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .header(ResponseHeaders.NOT_FOUND.toString(), "Resultado no encontrado para el aspirante y prueba especificados")
-                        .build();
-            }
-            Prueba prueba = examen.getIdPrueba();
-            String tipoPruebaValor = prueba.getIdTipoPrueba().getValor();
-            ExamenStrategy estrategiaAplicar = estrategiasEstado.getOrDefault(tipoPruebaValor, examenDefaultStrategy);
-            ExamenResultadosEnum estadoExamen = estrategiaAplicar.obtenerEstado(prueba.getNotaAprobacion(), examen.getResultado());
-            return Response.ok(estadoExamen).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
-                    .build();
+        PruebaJornadaAulaAspiranteOpcionExamen examen = pruebaJornadaAulaAspiranteOpcionExamenDAO
+            .obtenerResultadoExamenPorAspiranteYPrueba(idAspirante, idPrueba);
+        if (examen == null || examen.getIdPrueba() == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                .header(ResponseHeaders.NOT_FOUND.toString(), "Resultado no encontrado para el aspirante y prueba especificados")
+                .build();
         }
+        Prueba prueba = examen.getIdPrueba();
+        String tipoPruebaValor = prueba.getIdTipoPrueba().getValor();
+        ExamenStrategy estrategiaAplicar = estrategiasEstado.getOrDefault(tipoPruebaValor, examenDefaultStrategy);
+        ExamenResultadosEnum estadoExamen = estrategiaAplicar.obtenerEstado(prueba.getNotaAprobacion(), examen.getResultado());
+        return Response.ok(estadoExamen).build();
     }
 
 
@@ -100,25 +94,19 @@ public class AspiranteExamenResource implements Serializable {
                     .build();
         }
 
-        try {
-            PruebaJornadaAulaAspiranteOpcionExamen examen = pruebaJornadaAulaAspiranteOpcionExamenDAO
-                    .obtenerResultadoExamenPorAspiranteYPrueba(idAspirante, idPrueba);
+        PruebaJornadaAulaAspiranteOpcionExamen examen = pruebaJornadaAulaAspiranteOpcionExamenDAO
+            .obtenerResultadoExamenPorAspiranteYPrueba(idAspirante, idPrueba);
 
-            if (examen == null) {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .header(ResponseHeaders.NOT_FOUND.toString(), "Examen no encontrado para el aspirante y prueba especificados")
-                        .build();
-            }
-
-            examen.setResultado(entity.getResultado());
-            examen.setFechaResultado(OffsetDateTime.now());
-            pruebaJornadaAulaAspiranteOpcionExamenDAO.actualizar(examen);
-            return Response.ok(examen).build();
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
-                    .build();
+        if (examen == null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                .header(ResponseHeaders.NOT_FOUND.toString(), "Examen no encontrado para el aspirante y prueba especificados")
+                .build();
         }
+
+        examen.setResultado(entity.getResultado());
+        examen.setFechaResultado(OffsetDateTime.now());
+        pruebaJornadaAulaAspiranteOpcionExamenDAO.actualizar(examen);
+        return Response.ok(examen).build();
     }
 
 
@@ -130,16 +118,10 @@ public class AspiranteExamenResource implements Serializable {
                     .header(ResponseHeaders.WRONG_PARAMETER.toString(), "El ID de aspirante no puede ser nulo")
                     .build();
         }
-        try{
-            List<Prueba> pruebas = pruebaDAO.findByIdAspirante(idAspirante);
-            Response.ResponseBuilder responseBuilder = Response.ok(pruebas)
-                    .type(MediaType.APPLICATION_JSON);
-            return responseBuilder.build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
-                    .build();
-        }
+        List<Prueba> pruebas = pruebaDAO.findByIdAspirante(idAspirante);
+        Response.ResponseBuilder responseBuilder = Response.ok(pruebas)
+            .type(MediaType.APPLICATION_JSON);
+        return responseBuilder.build();
 
     }
 

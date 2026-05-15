@@ -7,6 +7,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -141,9 +142,7 @@ public class PruebaClaveAreaResourceTest {
         Mockito.when(mockAreaDAO.buscarPorId(idArea)).thenReturn(new Area(idArea));
         Mockito.doThrow(new IllegalStateException("Error en base de datos")).when(mockDAO).crear(nueva);
 
-        Response resultado = cut.crear(idPruebaClave, nueva, mockUriInfo);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(IllegalStateException.class, () -> cut.crear(idPruebaClave, nueva, mockUriInfo));
         Mockito.verify(mockPCD).buscarPorId(idPruebaClave);
         Mockito.verify(mockDAO).crear(nueva);
     }
@@ -187,9 +186,7 @@ public class PruebaClaveAreaResourceTest {
         PruebaClaveArea nueva = nuevaConArea(idArea);
         Mockito.when(mockPCD.buscarPorId(idPruebaClave)).thenThrow(new IllegalArgumentException("Argumento inválido"));
 
-        Response resultado = cut.crear(idPruebaClave, nueva, mockUriInfo);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(IllegalArgumentException.class, () -> cut.crear(idPruebaClave, nueva, mockUriInfo));
         Mockito.verify(mockPCD).buscarPorId(idPruebaClave);
     }
 
@@ -249,9 +246,7 @@ public class PruebaClaveAreaResourceTest {
         Mockito.when(mockDAO.buscarPorPruebaClaveRango(idPruebaClave, 0, 50))
                 .thenThrow(new RuntimeException("Error en base de datos"));
 
-        Response resultado = cut.buscarPorRango(idPruebaClave, 0, 50);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorRango(idPruebaClave, 0, 50));
         Mockito.verify(mockDAO).buscarPorPruebaClaveRango(idPruebaClave, 0, 50);
     }
 
@@ -287,9 +282,7 @@ public class PruebaClaveAreaResourceTest {
         Mockito.when(mockDAO.buscarPorId(new PruebaClaveAreaPK(idPruebaClave, idArea)))
                 .thenThrow(new RuntimeException("Error en base de datos"));
 
-        Response resultado = cut.buscarPorId(idPruebaClave, idArea);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorId(idPruebaClave, idArea));
         Mockito.verify(mockDAO).buscarPorId(new PruebaClaveAreaPK(idPruebaClave, idArea));
     }
 
@@ -385,9 +378,7 @@ public class PruebaClaveAreaResourceTest {
         Mockito.when(mockAreaDAO.buscarPorId(idArea)).thenReturn(new Area(idArea));
         Mockito.doThrow(new IllegalStateException("Error en base de datos")).when(mockDAO).actualizar(pruebaClaveArea);
 
-        Response resultado = cut.actualizar(idPruebaClave, idArea, pruebaClaveArea);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(IllegalStateException.class, () -> cut.actualizar(idPruebaClave, idArea, pruebaClaveArea));
         Mockito.verify(mockDAO).buscarPorId(new PruebaClaveAreaPK(idPruebaClave, idArea));
         Mockito.verify(mockDAO).actualizar(pruebaClaveArea);
     }
@@ -450,9 +441,7 @@ public class PruebaClaveAreaResourceTest {
         Mockito.when(mockAreaDAO.buscarPorId(idArea)).thenReturn(new Area(idArea));
         Mockito.doThrow(new IllegalArgumentException("Error de validación")).when(mockDAO).actualizar(pruebaClaveArea);
 
-        Response resultado = cut.actualizar(idPruebaClave, idArea, pruebaClaveArea);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(IllegalArgumentException.class, () -> cut.actualizar(idPruebaClave, idArea, pruebaClaveArea));
         Mockito.verify(mockDAO).actualizar(pruebaClaveArea);
     }
 
@@ -491,9 +480,7 @@ public class PruebaClaveAreaResourceTest {
         Mockito.when(mockDAO.buscarPorId(new PruebaClaveAreaPK(idPruebaClave, idArea))).thenReturn(existente);
         Mockito.doThrow(new RuntimeException("Error en base de datos")).when(mockDAO).eliminar(existente);
 
-        Response resultado = cut.eliminar(idPruebaClave, idArea);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.eliminar(idPruebaClave, idArea));
         Mockito.verify(mockDAO).buscarPorId(new PruebaClaveAreaPK(idPruebaClave, idArea));
         Mockito.verify(mockDAO).eliminar(existente);
     }

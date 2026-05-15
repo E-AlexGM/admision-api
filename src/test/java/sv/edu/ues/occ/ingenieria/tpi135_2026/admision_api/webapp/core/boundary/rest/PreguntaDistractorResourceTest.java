@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -112,9 +113,8 @@ public class PreguntaDistractorResourceTest {
         Mockito.when(pDAO.buscarPorId(idPregunta)).thenReturn(p);
         Mockito.when(dDAO.buscarPorId(idDistractor)).thenReturn(d);
         Mockito.doThrow(new RuntimeException("Error de prueba")).when(pDDAO).crear(Mockito.any(PreguntaDistractor.class));
-        Response response = cut.crear(idPregunta, pD, mockUriInfo);
+        assertThrows(RuntimeException.class, () -> cut.crear(idPregunta, pD, mockUriInfo));
         Mockito.verify(pDDAO).crear(Mockito.any(PreguntaDistractor.class));
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
     }
 
      @Test
@@ -144,10 +144,9 @@ public class PreguntaDistractorResourceTest {
           PreguntaDistractorPK pk = new PreguntaDistractorPK(idPregunta, idDistractor);
           Mockito.when(pDDAO.buscarPorId(pk)).thenReturn(pD);
           Mockito.doThrow(new RuntimeException("Error de prueba")).when(pDDAO).eliminar(pD);
-          Response response = cut.eliminar(idPregunta, idDistractor);
+          assertThrows(RuntimeException.class, () -> cut.eliminar(idPregunta, idDistractor));
           Mockito.verify(pDDAO).buscarPorId(pk);
           Mockito.verify(pDDAO).eliminar(pD);
-          assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
       }
 
      @Test
@@ -238,10 +237,8 @@ public class PreguntaDistractorResourceTest {
         Pregunta p = new Pregunta(idPregunta);
         Mockito.when(pDAO.buscarPorId(idPregunta)).thenReturn(p);
         Mockito.when(pDDAO.buscarPorIdPregunta(idPregunta)).thenThrow(new RuntimeException("Error de prueba"));
-
-        Response response = cut.listar(idPregunta);
+        assertThrows(RuntimeException.class, () -> cut.listar(idPregunta));
         Mockito.verify(pDDAO).buscarPorIdPregunta(idPregunta);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
     }
 
     @Test

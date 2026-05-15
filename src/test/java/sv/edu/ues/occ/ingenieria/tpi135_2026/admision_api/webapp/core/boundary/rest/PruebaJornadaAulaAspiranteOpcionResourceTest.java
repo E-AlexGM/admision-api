@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -176,7 +177,7 @@ public class PruebaJornadaAulaAspiranteOpcionResourceTest {
         entity.setIdAspiranteOpcion(new AspiranteOpcion(UUID.randomUUID()));
 
         Mockito.when(mockPJDAO.buscarPorId(Mockito.any())).thenThrow(new RuntimeException("Error BD"));
-        assertEquals(500, cut.crear(idPrueba, idJornada, idAula, entity, mockUriInfo).getStatus());
+        assertThrows(RuntimeException.class, () -> cut.crear(idPrueba, idJornada, idAula, entity, mockUriInfo));
     }
 
     // ============================================================
@@ -204,7 +205,7 @@ public class PruebaJornadaAulaAspiranteOpcionResourceTest {
     public void buscarPorRangoExcepcionTest() {
         Mockito.when(mockDAO.buscarPorPruebaJornadaYJornadaAulaRango(Mockito.any(), Mockito.any(), Mockito.anyString(), Mockito.anyInt(), Mockito.anyInt()))
                 .thenThrow(new RuntimeException("Error"));
-        assertEquals(500, cut.buscarPorRango(idPrueba, idJornada, idAula, 0, 50).getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorRango(idPrueba, idJornada, idAula, 0, 50));
     }
 
     // ============================================================
@@ -241,7 +242,7 @@ public class PruebaJornadaAulaAspiranteOpcionResourceTest {
     public void buscarPorIdExcepcionTest() {
         Mockito.when(mockDAO.buscarPorId(Mockito.any(PruebaJornadaAulaAspiranteOpcionPK.class)))
                 .thenThrow(new RuntimeException("DB Error"));
-        assertEquals(500, cut.buscarPorId(idPrueba, idJornada, idAula, UUID.randomUUID()).getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorId(idPrueba, idJornada, idAula, UUID.randomUUID()));
     }
 
     // ============================================================
@@ -355,7 +356,7 @@ public class PruebaJornadaAulaAspiranteOpcionResourceTest {
         PruebaJornadaAulaAspiranteOpcion entity = nuevaEntidad(id);
         Mockito.when(mockDAO.buscarPorId(Mockito.any(PruebaJornadaAulaAspiranteOpcionPK.class)))
                 .thenThrow(new RuntimeException("DB Error"));
-        assertEquals(500, cut.actualizar(idPrueba, idJornada, idAula, id, entity).getStatus());
+        assertThrows(RuntimeException.class, () -> cut.actualizar(idPrueba, idJornada, idAula, id, entity));
     }
 
     // ============================================================
@@ -392,6 +393,6 @@ public class PruebaJornadaAulaAspiranteOpcionResourceTest {
         UUID id = UUID.randomUUID();
         Mockito.when(mockDAO.buscarPorId(Mockito.any(PruebaJornadaAulaAspiranteOpcionPK.class)))
                 .thenThrow(new RuntimeException("Error"));
-        assertEquals(500, cut.eliminar(idPrueba, idJornada, idAula, id).getStatus());
+        assertThrows(RuntimeException.class, () -> cut.eliminar(idPrueba, idJornada, idAula, id));
     }
 }

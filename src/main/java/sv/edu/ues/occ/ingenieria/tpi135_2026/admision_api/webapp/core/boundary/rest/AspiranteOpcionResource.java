@@ -45,22 +45,18 @@ public class AspiranteOpcionResource implements Serializable {
         if (aspiranteOpcion == null || idAspirante == null) {
             return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El recurso no puede ser nulo y idAspirante no puede ser nulo").build();
         }
-        try {
-            Aspirante aspirante = aspiranteDAO.buscarPorId(idAspirante);
-            if (aspirante == null) {
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Aspirante no encontrado").build();
-            }
-            aspiranteOpcion.setIdAspiranteOpcion(UUID.randomUUID());
-            aspiranteOpcion.setIdAspirante(aspirante);
-            if (aspiranteOpcion.getFechaCreacion() == null) {
-                aspiranteOpcion.setFechaCreacion(OffsetDateTime.now());
-            }
-            aspiranteOpcionDAO.crear(aspiranteOpcion);
-            UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder().path(aspiranteOpcion.getIdAspiranteOpcion().toString());
-            return Response.created(uriBuilder.build()).build();
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+        Aspirante aspirante = aspiranteDAO.buscarPorId(idAspirante);
+        if (aspirante == null) {
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Aspirante no encontrado").build();
         }
+        aspiranteOpcion.setIdAspiranteOpcion(UUID.randomUUID());
+        aspiranteOpcion.setIdAspirante(aspirante);
+        if (aspiranteOpcion.getFechaCreacion() == null) {
+            aspiranteOpcion.setFechaCreacion(OffsetDateTime.now());
+        }
+        aspiranteOpcionDAO.crear(aspiranteOpcion);
+        UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder().path(aspiranteOpcion.getIdAspiranteOpcion().toString());
+        return Response.created(uriBuilder.build()).build();
     }
 
     @GET
@@ -72,15 +68,11 @@ public class AspiranteOpcionResource implements Serializable {
         if (idAspirante == null || firstResult < 0 || maxResults <= 0 || maxResults > 50) {
             return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50").build();
         }
-        try {
-            List<AspiranteOpcion> registros = aspiranteOpcionDAO.buscarPorAspiranteRango(idAspirante, firstResult, maxResults);
-            Long total = aspiranteOpcionDAO.contarPorAspirante(idAspirante);
-            return Response.ok(registros)
-                    .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
-                    .build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
-        }
+        List<AspiranteOpcion> registros = aspiranteOpcionDAO.buscarPorAspiranteRango(idAspirante, firstResult, maxResults);
+        Long total = aspiranteOpcionDAO.contarPorAspirante(idAspirante);
+        return Response.ok(registros)
+            .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
+            .build();
     }
 
     @GET
@@ -92,15 +84,11 @@ public class AspiranteOpcionResource implements Serializable {
         if (id == null || idAspirante == null) {
             return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "idAspirante e id no pueden ser nulos").build();
         }
-        try {
-            AspiranteOpcion encontrado = aspiranteOpcionDAO.buscarPorIdYAspirante(id, idAspirante);
-            if (encontrado != null) {
-                return Response.ok(encontrado).build();
-            }
-            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+        AspiranteOpcion encontrado = aspiranteOpcionDAO.buscarPorIdYAspirante(id, idAspirante);
+        if (encontrado != null) {
+            return Response.ok(encontrado).build();
         }
+        return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
     }
 
     @PUT
@@ -114,21 +102,17 @@ public class AspiranteOpcionResource implements Serializable {
         if (aspiranteOpcion == null || idAspirante == null || id == null) {
             return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El recurso o los identificadores no pueden ser nulos").build();
         }
-        try {
-            AspiranteOpcion existente = aspiranteOpcionDAO.buscarPorIdYAspirante(id, idAspirante);
-            if (existente == null) {
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            }
-            aspiranteOpcion.setIdAspiranteOpcion(id);
-            aspiranteOpcion.setIdAspirante(existente.getIdAspirante());
-            if (aspiranteOpcion.getFechaCreacion() == null) {
-                aspiranteOpcion.setFechaCreacion(existente.getFechaCreacion());
-            }
-            aspiranteOpcionDAO.actualizar(aspiranteOpcion);
-            return Response.ok(aspiranteOpcion).build();
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+        AspiranteOpcion existente = aspiranteOpcionDAO.buscarPorIdYAspirante(id, idAspirante);
+        if (existente == null) {
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
+        aspiranteOpcion.setIdAspiranteOpcion(id);
+        aspiranteOpcion.setIdAspirante(existente.getIdAspirante());
+        if (aspiranteOpcion.getFechaCreacion() == null) {
+            aspiranteOpcion.setFechaCreacion(existente.getFechaCreacion());
+        }
+        aspiranteOpcionDAO.actualizar(aspiranteOpcion);
+        return Response.ok(aspiranteOpcion).build();
     }
 
     @DELETE
@@ -139,15 +123,11 @@ public class AspiranteOpcionResource implements Serializable {
         if (id == null || idAspirante == null) {
             return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "idAspirante e id no pueden ser nulos").build();
         }
-        try {
-            AspiranteOpcion aspiranteOpcion = aspiranteOpcionDAO.buscarPorIdYAspirante(id, idAspirante);
-            if (aspiranteOpcion != null) {
-                aspiranteOpcionDAO.eliminar(aspiranteOpcion);
-                return Response.noContent().build();
-            }
-            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+        AspiranteOpcion aspiranteOpcion = aspiranteOpcionDAO.buscarPorIdYAspirante(id, idAspirante);
+        if (aspiranteOpcion != null) {
+            aspiranteOpcionDAO.eliminar(aspiranteOpcion);
+            return Response.noContent().build();
         }
+        return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
     }
 }
