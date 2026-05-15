@@ -129,21 +129,6 @@ public class DistractorAreaResourceTest {
     }
 
     @Test
-    public void crearConExcepcionTest() {
-        System.out.println("Ejecutando test: crearConExcepcionTest en DistractorAreaResource");
-        Mockito.when(mockDD.buscarPorId(idDistractor)).thenReturn(new Distractor(idDistractor));
-        Mockito.when(mockAreaDAO.buscarPorId(idArea)).thenReturn(new Area(idArea));
-        DistractorArea nueva = new DistractorArea();
-        nueva.setIdArea(new Area(idArea));
-        Mockito.doThrow(new RuntimeException("Error en base de datos")).when(mockDAA).crear(Mockito.any(DistractorArea.class));
-
-        Response resultado = cut.crear(idDistractor, nueva, mockUriInfo);
-
-        assertEquals(500, resultado.getStatus());
-        Mockito.verify(mockDAA).crear(Mockito.any(DistractorArea.class));
-    }
-
-    @Test
     public void crearBadRequestTest() {
         System.out.println("Ejecutando test: crearBadRequestTest en DistractorAreaResource");
         DistractorArea nueva = new DistractorArea();

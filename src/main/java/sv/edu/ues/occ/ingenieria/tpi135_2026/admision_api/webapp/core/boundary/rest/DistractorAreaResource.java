@@ -53,25 +53,19 @@ public class DistractorAreaResource implements Serializable {
                             "Se requiere idDistractor e idArea")
                     .build();
         }
-        try {
-            Distractor distractor = distractorDAO.buscarPorId(idDistractor);
-            Area area = areaDAO.buscarPorId(distractorArea.getIdArea().getIdArea());
-            if (distractor == null || area == null) {
-                String mensaje = distractor == null ? "Distractor no encontrado" : "Area no encontrada";
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), mensaje).build();
-            }
-            distractorArea.setIdDistractor(distractor);
-            distractorArea.setIdArea(area);
-            distractorAreaDAO.crear(distractorArea);
-
-            UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-            uriBuilder.path(distractorArea.getIdArea().getIdArea().toString());
-            return Response.created(uriBuilder.build()).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
-                    .build();
+        Distractor distractor = distractorDAO.buscarPorId(idDistractor);
+        Area area = areaDAO.buscarPorId(distractorArea.getIdArea().getIdArea());
+        if (distractor == null || area == null) {
+            String mensaje = distractor == null ? "Distractor no encontrado" : "Area no encontrada";
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), mensaje).build();
         }
+        distractorArea.setIdDistractor(distractor);
+        distractorArea.setIdArea(area);
+        distractorAreaDAO.crear(distractorArea);
+
+        UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+        uriBuilder.path(distractorArea.getIdArea().getIdArea().toString());
+        return Response.created(uriBuilder.build()).build();
     }
 
     @GET
