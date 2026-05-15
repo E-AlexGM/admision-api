@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -58,9 +59,8 @@ public class PreguntaResourceTest {
     public void crear_Pregunta_ErrorInterno(){
         System.out.println("Ejecutando Test: crear_Pregunta_ErrorInterno");
         Pregunta nuevaPregunta = new Pregunta();
-        cut.pDAO = null; // Simular un error al no inyectar el DAO
-        Response response = cut.crear(nuevaPregunta, mockUriInfo);  
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        Mockito.doThrow(new RuntimeException("Error interno")).when(mockPDAO).crear(nuevaPregunta);
+        assertThrows(RuntimeException.class, () -> cut.crear(nuevaPregunta, mockUriInfo));
     }
 
     @Test 
@@ -102,17 +102,9 @@ public class PreguntaResourceTest {
     @Test
     public void buscarPorId_Pregunta_ErrorInterno(){
         System.out.println("Ejecutando Test: buscarPorId_Pregunta_ErrorInterno");
-        // Configurar el mock para simular una excepción al buscar la Pregunta
         UUID idPregunta = UUID.randomUUID();
-
-        cut.pDAO = null; // Simular un error al no inyectar el DAO
-        // Llamar al método buscarPorId
-        Response response = cut.buscarPorId(idPregunta);
-
-        // Verificar que se haya llamado al método buscarPorId del DAO
-
-        // Verificar que la respuesta sea INTERNAL_SERVER_ERROR
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        Mockito.when(mockPDAO.buscarPorId(idPregunta)).thenThrow(new RuntimeException("Error interno"));
+        assertThrows(RuntimeException.class, () -> cut.buscarPorId(idPregunta));
     }
 
     @Test
@@ -156,11 +148,10 @@ public class PreguntaResourceTest {
     @Test
     public void actualizar_Pregunta_ErrorInterno(){
         System.out.println("Ejecutando Test: actualizar_Pregunta_ErrorInterno");
-        // Configurar el mock para simular una excepción al buscar la Pregunta
         UUID idPregunta = UUID.randomUUID();
-        cut.pDAO = null; // Simular un error al no inyectar el DAO
-        Response response = cut.actualizar(new Pregunta(), idPregunta);
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        Pregunta pExistente = new Pregunta();
+        Mockito.when(mockPDAO.buscarPorId(idPregunta)).thenThrow(new RuntimeException("Error interno"));
+        assertThrows(RuntimeException.class, () -> cut.actualizar(pExistente, idPregunta));
     }
 
      @Test
@@ -233,13 +224,9 @@ public class PreguntaResourceTest {
     @Test
     public void eliminar_Pregunta_ErrorInterno(){
         System.out.println("eliminar_Pregunta_ErrorInterno");
-        // Configurar el mock para simular una excepción al buscar la Pregunta
         UUID idPregunta = UUID.randomUUID();
-        cut.pDAO = null; // Simular un error al no inyectar el DAO
-        // Llamar al método eliminar
-        Response response = cut.eliminar(idPregunta);
-        // Verificar que la respuesta sea INTERNAL_SERVER_ERROR
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        Mockito.when(mockPDAO.buscarPorId(idPregunta)).thenThrow(new RuntimeException("Error interno"));
+        assertThrows(RuntimeException.class, () -> cut.eliminar(idPregunta));
     }
 
     @Test
@@ -326,12 +313,10 @@ public class PreguntaResourceTest {
      @Test
      public void buscarPorRango_Preguntas_ErrorInterno(){
          System.out.println("Ejecutando Test: buscarPorRango_Preguntas_ErrorInterno");
-         // Configurar el mock para simular una excepción al buscar las Preguntas
          int first = 0;
          int size = 50;
-         cut.pDAO = null; // Simular un error al no inyectar el DAO
-         Response response = cut.buscarPorRango(first, size);
-         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+         Mockito.when(mockPDAO.buscarPorRango(first, size)).thenThrow(new RuntimeException("Error interno"));
+         assertThrows(RuntimeException.class, () -> cut.buscarPorRango(first, size));
      }
 
 }

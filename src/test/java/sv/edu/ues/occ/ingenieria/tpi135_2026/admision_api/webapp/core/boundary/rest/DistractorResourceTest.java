@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -57,9 +58,7 @@ public class DistractorResourceTest {
         Mockito.doThrow(new RuntimeException("Error en base de datos"))
                 .when(mockDD).crear(nuevo);
 
-        Response resultado = cut.crear(nuevo, mockUriInfo);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.crear(nuevo, mockUriInfo));
         Mockito.verify(mockDD).crear(nuevo);
     }
 
@@ -117,8 +116,7 @@ public class DistractorResourceTest {
         Mockito.when(mockDD.buscarPorId(id)).thenReturn(distractorExistente);
         Mockito.doThrow(new RuntimeException("Error en base de datos"))
                 .when(mockDD).eliminar(distractorExistente);
-        Response resultado = cut.eliminar(id);
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.eliminar(id));
         Mockito.verify(mockDD).buscarPorId(id);
         Mockito.verify(mockDD).eliminar(distractorExistente);
     }
@@ -171,8 +169,7 @@ public class DistractorResourceTest {
     public void buscarPorRangoConExcepcionTest() {
         System.out.println("Ejecutando test: buscarPorRangoConExcepcionTest en DistractorResource");
         Mockito.when(mockDD.buscarPorRango(0, 50)).thenThrow(new RuntimeException("Error en base de datos"));
-        Response resultado = cut.buscarPorRango(0, 50);
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorRango(0, 50));
         Mockito.verify(mockDD).buscarPorRango(0, 50);
     }
 
@@ -202,8 +199,7 @@ public class DistractorResourceTest {
         System.out.println("Ejecutando test: buscarPorIdConExcepcionTest en DistractorResource");
         UUID id = UUID.randomUUID();
         Mockito.when(mockDD.buscarPorId(id)).thenThrow(new RuntimeException("Error en base de datos"));
-        Response resultado = cut.buscarPorId(id);
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorId(id));
         Mockito.verify(mockDD).buscarPorId(id);
     }
 
@@ -251,9 +247,7 @@ public class DistractorResourceTest {
         Mockito.doThrow(new RuntimeException("Error en base de datos"))
                 .when(mockDD).actualizar(distractor);
 
-        Response resultado = cut.actualizar(distractor.getIdDistractor(), distractor);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.actualizar(distractor.getIdDistractor(), distractor));
         Mockito.verify(mockDD).buscarPorId(distractor.getIdDistractor());
         Mockito.verify(mockDD).actualizar(distractor);
     }

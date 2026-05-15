@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -167,10 +168,7 @@ class PruebaClaveAreaPreguntaResourceTest {
         void crear_Excepcion() {
             PruebaClaveAreaPK pk = new PruebaClaveAreaPK(idPruebaClave, idArea);
             when(pCADAO.buscarPorId(pk)).thenThrow(new RuntimeException("Error de BD"));
-
-            Response response = resource.crear(idPruebaClave, idArea, pruebaClaveAreaPregunta);
-
-            assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+            assertThrows(RuntimeException.class, () -> resource.crear(idPruebaClave, idArea, pruebaClaveAreaPregunta));
         }
     }
 
@@ -232,10 +230,7 @@ class PruebaClaveAreaPreguntaResourceTest {
         void eliminar_Excepcion() {
             when(pCAPDAO.buscarPorId(any(PruebaClaveAreaPreguntaPK.class)))
                     .thenThrow(new RuntimeException("Error al eliminar"));
-
-            Response response = resource.eliminar(idPruebaClave, idArea, idPregunta);
-
-            assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+            assertThrows(RuntimeException.class, () -> resource.eliminar(idPruebaClave, idArea, idPregunta));
         }
     }
 
@@ -296,10 +291,7 @@ class PruebaClaveAreaPreguntaResourceTest {
         void listar_Excepcion() {
             when(pCAPDAO.buscarPorClaveYArea(idPruebaClave, idArea))
                     .thenThrow(new RuntimeException("Error de consulta"));
-
-            Response response = resource.listar(idPruebaClave, idArea);
-
-            assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+            assertThrows(RuntimeException.class, () -> resource.listar(idPruebaClave, idArea));
         }
     }
 
@@ -355,10 +347,7 @@ class PruebaClaveAreaPreguntaResourceTest {
     void buscarPorId_Excepcion() {
         PruebaClaveAreaPreguntaPK pk = new PruebaClaveAreaPreguntaPK(idPruebaClave, idArea, idPregunta);
         when(pCAPDAO.buscarPorId(pk)).thenThrow(new RuntimeException("Error de consulta"));
-
-        Response response = resource.buscarPorId(idPruebaClave, idArea, idPregunta);
-
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        assertThrows(RuntimeException.class, () -> resource.buscarPorId(idPruebaClave, idArea, idPregunta));
     }
 
     @Nested
@@ -445,10 +434,7 @@ class PruebaClaveAreaPreguntaResourceTest {
         void actualizarExcepcion() {
             PruebaClaveAreaPK pk = new PruebaClaveAreaPK(idPruebaClave, idArea);
             when(pCADAO.buscarPorId(pk)).thenThrow(new RuntimeException("Error de BD"));
-
-            Response response = resource.actualizar(idPruebaClave, idArea, pruebaClaveAreaPregunta);
-
-            assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+            assertThrows(RuntimeException.class, () -> resource.actualizar(idPruebaClave, idArea, pruebaClaveAreaPregunta));
         }
     }
 

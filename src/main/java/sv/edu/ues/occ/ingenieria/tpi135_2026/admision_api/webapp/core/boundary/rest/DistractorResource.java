@@ -34,15 +34,11 @@ public class DistractorResource implements Serializable {
     @Consumes({MediaType.APPLICATION_JSON})
     public Response crear(Distractor distractor, @Context UriInfo uriInfo) {
         if (distractor != null && distractor.getIdDistractor() == null) {
-            try {
-                distractor.setIdDistractor(UUID.randomUUID());
-                distractorDAO.crear(distractor);
-                UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                uriBuilder.path(distractor.getIdDistractor().toString());
-                return Response.created(uriBuilder.build()).build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
-            }
+            distractor.setIdDistractor(UUID.randomUUID());
+            distractorDAO.crear(distractor);
+            UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+            uriBuilder.path(distractor.getIdDistractor().toString());
+            return Response.created(uriBuilder.build()).build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El recurso no puede ser nulo y no debe tener un ID asignado").build();
     }
@@ -51,16 +47,12 @@ public class DistractorResource implements Serializable {
     @Path("{id}")
     public Response eliminar(@PathParam("id") UUID id) {
         if (id != null) {
-            try {
-                Distractor distractor = distractorDAO.buscarPorId(id);
-                if (distractor != null) {
-                    distractorDAO.eliminar(distractor);
-                    return Response.noContent().build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Distractor distractor = distractorDAO.buscarPorId(id);
+            if (distractor != null) {
+                distractorDAO.eliminar(distractor);
+                return Response.noContent().build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El ID no puede ser nulo").build();
     }
@@ -74,20 +66,15 @@ public class DistractorResource implements Serializable {
             @QueryParam("max")
             @DefaultValue("50")
             int maxResults) {
-        try {
-            if (firstResult >= 0 && maxResults > 0 && maxResults <= 50) {
-                List<Distractor> distractores = distractorDAO.buscarPorRango(firstResult, maxResults);
-                Long total = distractorDAO.contar();
-                Response.ResponseBuilder responseBuilder = Response.ok(distractores)
-                        .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
-                        .type(MediaType.APPLICATION_JSON);
-                return responseBuilder.build();
-            } else {
-                return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50").build();
-            }
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+        if (firstResult >= 0 && maxResults > 0 && maxResults <= 50) {
+            List<Distractor> distractores = distractorDAO.buscarPorRango(firstResult, maxResults);
+            Long total = distractorDAO.contar();
+            Response.ResponseBuilder responseBuilder = Response.ok(distractores)
+                    .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
+                    .type(MediaType.APPLICATION_JSON);
+            return responseBuilder.build();
         }
+        return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50").build();
     }
 
     @GET
@@ -95,16 +82,12 @@ public class DistractorResource implements Serializable {
     @Produces(MediaType.APPLICATION_JSON)
     public Response buscarPorId(@PathParam("id") UUID id) {
         if (id != null) {
-            try {
-                Distractor encontrado = distractorDAO.buscarPorId(id);
-                if (encontrado != null) {
-                    Response.ResponseBuilder builder = Response.ok(encontrado).type(MediaType.APPLICATION_JSON);
-                    return builder.build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Distractor encontrado = distractorDAO.buscarPorId(id);
+            if (encontrado != null) {
+                Response.ResponseBuilder builder = Response.ok(encontrado).type(MediaType.APPLICATION_JSON);
+                return builder.build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "id: " + id).build();
     }
@@ -115,17 +98,13 @@ public class DistractorResource implements Serializable {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response actualizar(@PathParam("id") UUID id, Distractor distractor) {
         if (distractor != null && id != null) {
-            try {
-                Distractor existente = distractorDAO.buscarPorId(id);
-                if (existente != null) {
-                    distractor.setIdDistractor(id);
-                    distractorDAO.actualizar(distractor);
-                    return Response.ok(distractor).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Distractor existente = distractorDAO.buscarPorId(id);
+            if (existente != null) {
+                distractor.setIdDistractor(id);
+                distractorDAO.actualizar(distractor);
+                return Response.ok(distractor).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El recurso no puede ser nulo y debe tener un ID asignado").build();
     }

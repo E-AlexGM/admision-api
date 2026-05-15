@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -65,9 +66,7 @@ public class AspiranteResourceTest {
         Mockito.doThrow(new RuntimeException("Error en base de datos"))
                 .when(mockAD).crear(nuevo);
 
-        Response resultado = cut.crear(nuevo, mockUriInfo);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.crear(nuevo, mockUriInfo));
         Mockito.verify(mockAD).crear(nuevo);
     }
 
@@ -125,8 +124,7 @@ public class AspiranteResourceTest {
         Mockito.when(mockAD.buscarPorId(id)).thenReturn(areaExistente);
         Mockito.doThrow(new RuntimeException("Error en base de datos"))
                 .when(mockAD).eliminar(areaExistente);
-        Response resultado = cut.eliminar(id);
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.eliminar(id));
         Mockito.verify(mockAD).buscarPorId(id);
         Mockito.verify(mockAD).eliminar(areaExistente);
     }
@@ -179,8 +177,7 @@ public class AspiranteResourceTest {
     public void buscarPorRangoConExcepcionTest(){
         System.out.println("Ejecutando test: buscarPorRangoConExcepcionTest en AspiranteResource");
         Mockito.when(mockAD.buscarPorRango(0, 50)).thenThrow(new RuntimeException("Error en base de datos"));
-        Response resultado = cut.buscarPorRango(0, 50);
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorRango(0, 50));
         Mockito.verify(mockAD).buscarPorRango(0, 50);
     }
 
@@ -234,10 +231,7 @@ public class AspiranteResourceTest {
     public void buscarPorApellidosConExcepcionTest() {
         System.out.println("Ejecutando test: buscarPorApellidosConExcepcionTest en AspiranteResource");
         Mockito.when(mockAD.buscarPorApellidos("Lopez")).thenThrow(new RuntimeException("Error en base de datos"));
-
-        Response resultado = cut.buscarPorApellidos("Lopez");
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorApellidos("Lopez"));
         Mockito.verify(mockAD).buscarPorApellidos("Lopez");
     }
 
@@ -267,8 +261,7 @@ public class AspiranteResourceTest {
         System.out.println("Ejecutando test: buscarPorIdConExcepcionTest en AspiranteResource");
         UUID id = UUID.randomUUID();
         Mockito.when(mockAD.buscarPorId(id)).thenThrow(new RuntimeException("Error en base de datos"));
-        Response resultado = cut.buscarPorId(id);
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorId(id));
         Mockito.verify(mockAD).buscarPorId(id);
     }
 
@@ -316,9 +309,7 @@ public class AspiranteResourceTest {
         Mockito.doThrow(new RuntimeException("Error en base de datos"))
                 .when(mockAD).actualizar(aspirante);
 
-        Response resultado = cut.actualizar(aspirante.getIdAspirante(), aspirante);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.actualizar(aspirante.getIdAspirante(), aspirante));
         Mockito.verify(mockAD).buscarPorId(aspirante.getIdAspirante());
         Mockito.verify(mockAD).actualizar(aspirante);
     }

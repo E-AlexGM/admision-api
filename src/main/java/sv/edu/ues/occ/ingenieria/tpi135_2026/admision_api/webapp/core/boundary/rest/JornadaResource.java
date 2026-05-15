@@ -34,15 +34,11 @@ public class JornadaResource implements Serializable {
     @Consumes({MediaType.APPLICATION_JSON})
     public Response crear(Jornada jornada, @Context UriInfo uriInfo) {
         if (jornada != null && jornada.getIdJornada() == null) {
-            try {
-                jornada.setIdJornada(UUID.randomUUID());
-                jornadaDAO.crear(jornada);
-                UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                uriBuilder.path(jornada.getIdJornada().toString());
-                return Response.created(uriBuilder.build()).build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
-            }
+            jornada.setIdJornada(UUID.randomUUID());
+            jornadaDAO.crear(jornada);
+            UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+            uriBuilder.path(jornada.getIdJornada().toString());
+            return Response.created(uriBuilder.build()).build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El recurso no puede ser nulo y no debe tener un ID asignado").build();
     }
@@ -51,16 +47,12 @@ public class JornadaResource implements Serializable {
     @Path("{id}")
     public Response eliminar(@PathParam("id") UUID id) {
         if (id != null) {
-            try {
-                Jornada jornada = jornadaDAO.buscarPorId(id);
-                if (jornada != null) {
-                    jornadaDAO.eliminar(jornada);
-                    return Response.noContent().build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Jornada jornada = jornadaDAO.buscarPorId(id);
+            if (jornada != null) {
+                jornadaDAO.eliminar(jornada);
+                return Response.noContent().build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El ID no puede ser nulo").build();
     }
@@ -74,20 +66,15 @@ public class JornadaResource implements Serializable {
             @QueryParam("max")
             @DefaultValue("50")
             int maxResults) {
-        try {
-            if (firstResult >= 0 && maxResults > 0 && maxResults <= 50) {
-                List<Jornada> jornadas = jornadaDAO.buscarPorRango(firstResult, maxResults);
-                Long total = jornadaDAO.contar();
-                Response.ResponseBuilder responseBuilder = Response.ok(jornadas)
-                        .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
-                        .type(MediaType.APPLICATION_JSON);
-                return responseBuilder.build();
-            } else {
-                return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50").build();
-            }
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+        if (firstResult >= 0 && maxResults > 0 && maxResults <= 50) {
+            List<Jornada> jornadas = jornadaDAO.buscarPorRango(firstResult, maxResults);
+            Long total = jornadaDAO.contar();
+            Response.ResponseBuilder responseBuilder = Response.ok(jornadas)
+                    .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
+                    .type(MediaType.APPLICATION_JSON);
+            return responseBuilder.build();
         }
+        return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50").build();
     }
 
     @GET
@@ -95,16 +82,12 @@ public class JornadaResource implements Serializable {
     @Produces(MediaType.APPLICATION_JSON)
     public Response buscarPorId(@PathParam("id") UUID id) {
         if (id != null) {
-            try {
-                Jornada encontrado = jornadaDAO.buscarPorId(id);
-                if (encontrado != null) {
-                    Response.ResponseBuilder builder = Response.ok(encontrado).type(MediaType.APPLICATION_JSON);
-                    return builder.build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Jornada encontrado = jornadaDAO.buscarPorId(id);
+            if (encontrado != null) {
+                Response.ResponseBuilder builder = Response.ok(encontrado).type(MediaType.APPLICATION_JSON);
+                return builder.build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "id: " + id).build();
     }
@@ -115,17 +98,13 @@ public class JornadaResource implements Serializable {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response actualizar(@PathParam("id") UUID id, Jornada jornada) {
         if (jornada != null && id != null) {
-            try {
-                Jornada existente = jornadaDAO.buscarPorId(id);
-                if (existente != null) {
-                    jornada.setIdJornada(id);
-                    jornadaDAO.actualizar(jornada);
-                    return Response.ok(jornada).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Jornada existente = jornadaDAO.buscarPorId(id);
+            if (existente != null) {
+                jornada.setIdJornada(id);
+                jornadaDAO.actualizar(jornada);
+                return Response.ok(jornada).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El recurso no puede ser nulo y debe tener un ID asignado").build();
     }

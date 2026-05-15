@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -161,9 +162,7 @@ public class DistractorAreaResourceTest {
         Mockito.when(mockDAA.buscarPorDistractorRango(idDistractor, 0, 50))
                 .thenThrow(new RuntimeException("Error en base de datos"));
 
-        Response resultado = cut.buscarPorRango(idDistractor, 0, 50);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorRango(idDistractor, 0, 50));
         Mockito.verify(mockDAA).buscarPorDistractorRango(idDistractor, 0, 50);
     }
 
@@ -207,9 +206,7 @@ public class DistractorAreaResourceTest {
         Mockito.when(mockDAA.buscarPorId(new DistractorAreaPK(idDistractor, idArea)))
                 .thenThrow(new RuntimeException("Error en base de datos"));
 
-        Response resultado = cut.buscarPorId(idDistractor, idArea);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorId(idDistractor, idArea));
         Mockito.verify(mockDAA).buscarPorId(new DistractorAreaPK(idDistractor, idArea));
     }
 
@@ -252,9 +249,7 @@ public class DistractorAreaResourceTest {
         Mockito.when(mockDAA.buscarPorId(new DistractorAreaPK(idDistractor, idArea))).thenReturn(existente);
         Mockito.doThrow(new RuntimeException("Error en base de datos")).when(mockDAA).eliminar(existente);
 
-        Response resultado = cut.eliminar(idDistractor, idArea);
-
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.eliminar(idDistractor, idArea));
         Mockito.verify(mockDAA).eliminar(existente);
     }
 

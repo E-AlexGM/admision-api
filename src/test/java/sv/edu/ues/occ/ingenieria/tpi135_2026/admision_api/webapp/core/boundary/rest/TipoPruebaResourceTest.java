@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -60,15 +61,9 @@ public class TipoPruebaResourceTest {
     @Test
     public void crear_TipoPrueba_ErrorInterno(){
         System.out.println("crear_TipoPrueba_ErrorInterno");
-        // Configurar el mock para simular una excepción al crear el TipoPrueba
         TipoPrueba tp = new TipoPrueba();
-        cut.tpDAO = null; // Simular un error al no inyectar el DAO
-
-        // Llamar al método crear
-        Response response = cut.crear(tp, mockUriInfo);
-
-        // Verificar que la respuesta sea INTERNAL_SERVER_ERROR
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        Mockito.doThrow(new RuntimeException("Error interno")).when(mockTpDAO).crear(tp);
+        assertThrows(RuntimeException.class, () -> cut.crear(tp, mockUriInfo));
     }
 
     @Test 
@@ -129,18 +124,11 @@ public class TipoPruebaResourceTest {
     @Test 
     public void actualizar_TipoPrueba_ErrorInterno(){
         System.out.println("actualizar_TipoPrueba_ErrorInterno");
-        // Configurar el mock para simular una excepción al buscar el TipoPrueba
         UUID idTipoPrueba = UUID.randomUUID();
-        cut.tpDAO = null; // Simular un error al no inyectar el DAO
-
-        // Llamar al método actualizar
         TipoPrueba tpActualizado = new TipoPrueba();
-        Response response = cut.actualizar(tpActualizado, idTipoPrueba);
-
-        // Verificar que la respuesta sea INTERNAL_SERVER_ERROR
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
-    
-    } 
+        Mockito.when(mockTpDAO.buscarPorId(idTipoPrueba)).thenThrow(new RuntimeException("Error interno"));
+        assertThrows(RuntimeException.class, () -> cut.actualizar(tpActualizado, idTipoPrueba));
+    }
 
     @Test 
     public void actualizar_TipoPrueba_BadRequest_IdTipoPrueba(){
@@ -252,16 +240,10 @@ public class TipoPruebaResourceTest {
     @Test 
     public void buscarPorRango_TipoPrueba_ErrorInterno(){
         System.out.println("buscarPorRango_TipoPrueba_ErrorInterno");
-        // Configurar el mock para simular una excepción al buscar los TipoPrueba
         int first = 0;
         int max = 10;
-        cut.tpDAO = null; // Simular un error al no inyectar el DAO
-
-        // Llamar al método buscarPorRango
-        Response response = cut.buscarPorRango(first, max);
-
-        // Verificar que la respuesta sea INTERNAL_SERVER_ERROR
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        Mockito.when(mockTpDAO.buscarPorRango(first, max)).thenThrow(new RuntimeException("Error interno"));
+        assertThrows(RuntimeException.class, () -> cut.buscarPorRango(first, max));
     }
 
     @Test
@@ -311,13 +293,11 @@ public class TipoPruebaResourceTest {
     @Test
     public void eliminar_TipoPrueba_ErrorInterno(){
         System.out.println("eliminar_TipoPrueba_ErrorInterno");
-        // Configurar el mock para simular una excepción al buscar el TipoPrueba
         UUID idTipoPrueba = UUID.randomUUID();
-        cut.tpDAO = null; // Simular un error al no inyectar el DAO
-        // Llamar al método eliminar
-        Response response = cut.eliminar(idTipoPrueba);
-        // Verificar que la respuesta sea INTERNAL_SERVER_ERROR
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        TipoPrueba tpExistente = new TipoPrueba();
+        Mockito.when(mockTpDAO.buscarPorId(idTipoPrueba)).thenReturn(tpExistente);
+        Mockito.doThrow(new RuntimeException("Error interno")).when(mockTpDAO).eliminar(tpExistente);
+        assertThrows(RuntimeException.class, () -> cut.eliminar(idTipoPrueba));
     }
 
     @Test

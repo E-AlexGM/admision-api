@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -96,8 +97,7 @@ public class AspiranteOpcionResourceTest {
         UUID idAspirante = UUID.randomUUID();
         AspiranteOpcion aspiranteOpcion = new AspiranteOpcion();
         Mockito.when(mockAD.buscarPorId(idAspirante)).thenThrow(new IllegalArgumentException("Error"));
-        Response resultado = cut.crear(idAspirante, aspiranteOpcion, mockUriInfo);
-        assertEquals(500, resultado.getStatus());
+        assertThrows(IllegalArgumentException.class, () -> cut.crear(idAspirante, aspiranteOpcion, mockUriInfo));
     }
 
     @Test
@@ -145,8 +145,7 @@ public class AspiranteOpcionResourceTest {
         System.out.println("Ejecutando test: buscarPorRangoConExcepcionTest en AspiranteOpcionResource");
         UUID idAspirante = UUID.randomUUID();
         Mockito.when(mockAOD.contarPorAspirante(idAspirante)).thenThrow(new RuntimeException("Error"));
-        Response resultado = cut.buscarPorRango(idAspirante, 0, 10);
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorRango(idAspirante, 0, 10));
     }
 
     @Test
@@ -191,8 +190,7 @@ public class AspiranteOpcionResourceTest {
         UUID idAspirante = UUID.randomUUID();
         UUID idOpcion = UUID.randomUUID();
         Mockito.when(mockAOD.buscarPorIdYAspirante(idOpcion, idAspirante)).thenThrow(new RuntimeException("Error"));
-        Response resultado = cut.buscarPorId(idAspirante, idOpcion);
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.buscarPorId(idAspirante, idOpcion));
     }
 
     @Test
@@ -255,8 +253,7 @@ public class AspiranteOpcionResourceTest {
         UUID idOpcion = UUID.randomUUID();
         AspiranteOpcion nuevaOpcion = new AspiranteOpcion(idOpcion);
         Mockito.when(mockAOD.buscarPorIdYAspirante(idOpcion, idAspirante)).thenThrow(new IllegalArgumentException("Error"));
-        Response resultado = cut.actualizar(idAspirante, idOpcion, nuevaOpcion);
-        assertEquals(500, resultado.getStatus());
+        assertThrows(IllegalArgumentException.class, () -> cut.actualizar(idAspirante, idOpcion, nuevaOpcion));
     }
 
     @Test
@@ -301,7 +298,6 @@ public class AspiranteOpcionResourceTest {
         UUID idAspirante = UUID.randomUUID();
         UUID idOpcion = UUID.randomUUID();
         Mockito.when(mockAOD.buscarPorIdYAspirante(idOpcion, idAspirante)).thenThrow(new RuntimeException("Error"));
-        Response resultado = cut.eliminar(idAspirante, idOpcion);
-        assertEquals(500, resultado.getStatus());
+        assertThrows(RuntimeException.class, () -> cut.eliminar(idAspirante, idOpcion));
     }
 }

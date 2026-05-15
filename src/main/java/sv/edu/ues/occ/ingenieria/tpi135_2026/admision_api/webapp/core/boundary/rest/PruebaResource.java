@@ -37,15 +37,11 @@ public class PruebaResource implements Serializable {
     @Produces({MediaType.APPLICATION_JSON})
     public Response crear(Prueba p, @Context UriInfo uriInfo) {
         if(p != null ) {
-            try {
-                p.setIdPrueba(UUID.randomUUID());
-                pDAO.crear(p);
-                UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                uriBuilder.path(p.getIdPrueba().toString());
-                return Response.created(uriBuilder.build()).build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
-            }
+            p.setIdPrueba(UUID.randomUUID());
+            pDAO.crear(p);
+            UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+            uriBuilder.path(p.getIdPrueba().toString());
+            return Response.created(uriBuilder.build()).build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "prueba").build();
     }
@@ -54,18 +50,13 @@ public class PruebaResource implements Serializable {
     @Path("{id_prueba}")
     public Response eliminar(@PathParam("id_prueba") UUID idPrueba) {
         if(idPrueba != null) {
-            try {
-                Prueba p = pDAO.buscarPorId(idPrueba);
-                if(p != null) {
-                    p.setIdPrueba(idPrueba);
-                    pDAO.eliminar(p);
-                    return Response.status(Response.Status.NO_CONTENT).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();   
+            Prueba p = pDAO.buscarPorId(idPrueba);
+            if(p != null) {
+                p.setIdPrueba(idPrueba);
+                pDAO.eliminar(p);
+                return Response.status(Response.Status.NO_CONTENT).build();
             }
-          
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "idPrueba").build();
     }
@@ -75,18 +66,14 @@ public class PruebaResource implements Serializable {
     @Consumes({MediaType.APPLICATION_JSON})
     public Response actualizar(@PathParam("id_prueba") UUID idPrueba, Prueba p) {
         if(p != null) {
-            try {
-                Prueba pruebaExistente = pDAO.buscarPorId(idPrueba);
-                p.setIdPrueba(idPrueba);
-                if(pruebaExistente != null) {
-                    // Actualizar los campos de la prueba existente con los valores del objeto p
-                    pDAO.actualizar(p);
-                    return Response.status(Response.Status.OK).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Prueba pruebaExistente = pDAO.buscarPorId(idPrueba);
+            p.setIdPrueba(idPrueba);
+            if(pruebaExistente != null) {
+                // Actualizar los campos de la prueba existente con los valores del objeto p
+                pDAO.actualizar(p);
+                return Response.status(Response.Status.OK).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "id").build();
     }   
@@ -96,15 +83,11 @@ public class PruebaResource implements Serializable {
     @Produces({MediaType.APPLICATION_JSON})
     public Response buscarPorId(@PathParam("id_prueba") UUID idPrueba) {
         if(idPrueba != null) {
-            try {
-                Prueba p = pDAO.buscarPorId(idPrueba);
-                if(p != null) {
-                    return Response.status(Response.Status.OK).entity(p).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Prueba p = pDAO.buscarPorId(idPrueba);
+            if(p != null) {
+                return Response.status(Response.Status.OK).entity(p).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "id").build();
     }
@@ -115,15 +98,11 @@ public class PruebaResource implements Serializable {
                         @QueryParam("max") @DefaultValue("50") int max) {
 
         if(first >= 0 && max > 0) {
-            try {
-                List<Prueba> pruebas = pDAO.buscarPorRango(first, max);
-                if(pruebas != null && !pruebas.isEmpty()) {
-                    return Response.status(Response.Status.OK).entity(pruebas).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            List<Prueba> pruebas = pDAO.buscarPorRango(first, max);
+            if(pruebas != null && !pruebas.isEmpty()) {
+                return Response.status(Response.Status.OK).entity(pruebas).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "first o max").build();
     }

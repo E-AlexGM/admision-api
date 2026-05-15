@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
@@ -144,9 +145,7 @@ class PruebaClaveAreaPreguntaDistractorResourceTest {
 
         PruebaClaveAreaPreguntaDistractor body = new PruebaClaveAreaPreguntaDistractor();
         body.setIdDistractor(new Distractor(idDistractor));
-        Response response = resource.crear(idPruebaClave, idArea, idPregunta, body, mock(UriInfo.class));
-
-        assertEquals(500, response.getStatus());
+        assertThrows(RuntimeException.class, () -> resource.crear(idPruebaClave, idArea, idPregunta, body, mock(UriInfo.class)));
     }
 
     // =========================
@@ -215,9 +214,7 @@ class PruebaClaveAreaPreguntaDistractorResourceTest {
         when(mockDAO.buscarPorPadreRango(any(), any(), any(), anyInt(), anyInt()))
                 .thenThrow(new RuntimeException());
 
-        Response response = resource.buscarPorRango(idPruebaClave, idArea, idPregunta, 0, 10);
-
-        assertEquals(500, response.getStatus());
+        assertThrows(RuntimeException.class, () -> resource.buscarPorRango(idPruebaClave, idArea, idPregunta, 0, 10));
     }
 
     // =========================
@@ -281,9 +278,7 @@ class PruebaClaveAreaPreguntaDistractorResourceTest {
         System.out.println("Ejecutando test: buscarPorIdExceptionTest en PruebaClaveAreaPreguntaDistractorResource");
         when(mockDAO.buscarPorId(any())).thenThrow(new RuntimeException());
 
-        Response response = resource.buscarPorId(idPruebaClave, idArea, idPregunta, idDistractor);
-
-        assertEquals(500, response.getStatus());
+        assertThrows(RuntimeException.class, () -> resource.buscarPorId(idPruebaClave, idArea, idPregunta, idDistractor));
     }
 
     // =========================
@@ -346,8 +341,6 @@ class PruebaClaveAreaPreguntaDistractorResourceTest {
         System.out.println("Ejecutando test: eliminarExceptionTest en PruebaClaveAreaPreguntaDistractorResource");
         when(mockDAO.buscarPorId(any())).thenThrow(new RuntimeException());
 
-        Response response = resource.eliminar(idPruebaClave, idArea, idPregunta, idDistractor);
-
-        assertEquals(500, response.getStatus());
+        assertThrows(RuntimeException.class, () -> resource.eliminar(idPruebaClave, idArea, idPregunta, idDistractor));
     }
 }

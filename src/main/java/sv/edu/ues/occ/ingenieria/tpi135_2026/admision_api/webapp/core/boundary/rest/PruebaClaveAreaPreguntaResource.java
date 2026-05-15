@@ -58,35 +58,31 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
                           @Context UriInfo uriInfo) {
 
         if(idPruebaClave != null && idArea != null && pruebaClaveAreaPregunta != null) {
-            try {
-                PruebaClaveAreaPK pk = new PruebaClaveAreaPK(idPruebaClave, idArea);
-                PruebaClaveArea pruebaClaveArea  = pruebaClaveAreaDAO.buscarPorId(pk);
-                Pregunta pregunta = preguntaDAO.buscarPorId(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta());
-                if(pruebaClaveArea != null && pregunta != null) {
-                    pruebaClaveAreaPregunta.setIdPregunta(pregunta);
-                    pruebaClaveAreaPregunta.setIdArea(pruebaClaveArea.getIdArea());
-                    pruebaClaveAreaPregunta.setIdPruebaClave(pruebaClaveArea.getIdPruebaClave());
-                    boolean isValid = pruebaClaveAreaPreguntaDAO.validarPorcentajePrueba(pruebaClaveArea.getIdPruebaClave(), pruebaClaveAreaPregunta);
-                    if(isValid){
-                        pruebaClaveAreaPreguntaDAO.crear(pruebaClaveAreaPregunta);
-                        if (uriInfo != null) {
-                            UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                            uriBuilder.path(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta().toString());
-                            return Response.created(uriBuilder.build()).build();
-                        } else {
-                            java.net.URI created = java.net.URI.create(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta().toString());
-                            return Response.created(created).build();
-                        }
+            PruebaClaveAreaPK pk = new PruebaClaveAreaPK(idPruebaClave, idArea);
+            PruebaClaveArea pruebaClaveArea  = pruebaClaveAreaDAO.buscarPorId(pk);
+            Pregunta pregunta = preguntaDAO.buscarPorId(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta());
+            if(pruebaClaveArea != null && pregunta != null) {
+                pruebaClaveAreaPregunta.setIdPregunta(pregunta);
+                pruebaClaveAreaPregunta.setIdArea(pruebaClaveArea.getIdArea());
+                pruebaClaveAreaPregunta.setIdPruebaClave(pruebaClaveArea.getIdPruebaClave());
+                boolean isValid = pruebaClaveAreaPreguntaDAO.validarPorcentajePrueba(pruebaClaveArea.getIdPruebaClave(), pruebaClaveAreaPregunta);
+                if(isValid){
+                    pruebaClaveAreaPreguntaDAO.crear(pruebaClaveAreaPregunta);
+                    if (uriInfo != null) {
+                        UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+                        uriBuilder.path(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta().toString());
+                        return Response.created(uriBuilder.build()).build();
+                    } else {
+                        java.net.URI created = java.net.URI.create(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta().toString());
+                        return Response.created(created).build();
                     }
-                    return Response.status(Response.Status.CONFLICT)
-                            .header(ResponseHeaders.VIOLATES_BUSINESS_RULES.toString(), "el porcentaje total excede el máximo permitido para esta prueba")
-                            .build();
-
                 }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"pruebaClave, area o pregunta").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                return Response.status(Response.Status.CONFLICT)
+                        .header(ResponseHeaders.VIOLATES_BUSINESS_RULES.toString(), "el porcentaje total excede el máximo permitido para esta prueba")
+                        .build();
+
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"pruebaClave, area o pregunta").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
@@ -102,18 +98,13 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
                     @PathParam("id_area") UUID idArea, @PathParam("id_pregunta") UUID idPregunta) {
 
         if(idPruebaClave != null && idArea != null && idPregunta != null) {
-
-            try {
-                PruebaClaveAreaPreguntaPK pk = new PruebaClaveAreaPreguntaPK(idPruebaClave, idArea, idPregunta);
-                PruebaClaveAreaPregunta pruebaClaveAreaPregunta = pruebaClaveAreaPreguntaDAO.buscarPorId(pk);
-                if(pruebaClaveAreaPregunta != null) {
-                    pruebaClaveAreaPreguntaDAO.eliminar(pruebaClaveAreaPregunta);
-                    return Response.status(Response.Status.NO_CONTENT).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"pruebaClave, area o pregunta").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            PruebaClaveAreaPreguntaPK pk = new PruebaClaveAreaPreguntaPK(idPruebaClave, idArea, idPregunta);
+            PruebaClaveAreaPregunta pruebaClaveAreaPregunta = pruebaClaveAreaPreguntaDAO.buscarPorId(pk);
+            if(pruebaClaveAreaPregunta != null) {
+                pruebaClaveAreaPreguntaDAO.eliminar(pruebaClaveAreaPregunta);
+                return Response.status(Response.Status.NO_CONTENT).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"pruebaClave, area o pregunta").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
@@ -124,14 +115,10 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
                     @PathParam("id_area") UUID idArea) {
 
         if(idPruebaClave != null && idArea != null ) {
-            try {
-                List<PruebaClaveAreaPregunta> pruebaClaveAreaPreguntas = pruebaClaveAreaPreguntaDAO.buscarPorClaveYArea(idPruebaClave, idArea);
-                Response.ResponseBuilder responseBuilder = Response.ok(pruebaClaveAreaPreguntas)
-                        .type(MediaType.APPLICATION_JSON);
-                return responseBuilder.build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
-            }
+            List<PruebaClaveAreaPregunta> pruebaClaveAreaPreguntas = pruebaClaveAreaPreguntaDAO.buscarPorClaveYArea(idPruebaClave, idArea);
+            Response.ResponseBuilder responseBuilder = Response.ok(pruebaClaveAreaPreguntas)
+                    .type(MediaType.APPLICATION_JSON);
+            return responseBuilder.build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
 
@@ -144,16 +131,12 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
                                 @PathParam("id_pregunta") UUID idPregunta) {
 
         if(idPruebaClave != null && idArea != null && idPregunta != null) {
-            try {
-                PruebaClaveAreaPreguntaPK pk = new PruebaClaveAreaPreguntaPK(idPruebaClave, idArea, idPregunta);
-                PruebaClaveAreaPregunta pruebaClaveAreaPregunta = pruebaClaveAreaPreguntaDAO.buscarPorId(pk);
-                if(pruebaClaveAreaPregunta != null) {
-                    return Response.status(Response.Status.OK).entity(pruebaClaveAreaPregunta).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"pruebaClave, area o pregunta").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            PruebaClaveAreaPreguntaPK pk = new PruebaClaveAreaPreguntaPK(idPruebaClave, idArea, idPregunta);
+            PruebaClaveAreaPregunta pruebaClaveAreaPregunta = pruebaClaveAreaPreguntaDAO.buscarPorId(pk);
+            if(pruebaClaveAreaPregunta != null) {
+                return Response.status(Response.Status.OK).entity(pruebaClaveAreaPregunta).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"pruebaClave, area o pregunta").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
@@ -165,28 +148,24 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
                            PruebaClaveAreaPregunta pruebaClaveAreaPregunta){
 
         if(idPruebaClave != null && idArea != null && pruebaClaveAreaPregunta != null) {
-            try {
-                PruebaClaveAreaPK pk = new PruebaClaveAreaPK(idPruebaClave, idArea);
-                PruebaClaveArea pruebaClaveArea  = pruebaClaveAreaDAO.buscarPorId(pk);
-                Pregunta pregunta = preguntaDAO.buscarPorId(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta());
-                if(pruebaClaveArea != null && pregunta != null) {
-                    pruebaClaveAreaPregunta.setIdPregunta(pregunta);
-                    pruebaClaveAreaPregunta.setIdArea(pruebaClaveArea.getIdArea());
-                    pruebaClaveAreaPregunta.setIdPruebaClave(pruebaClaveArea.getIdPruebaClave());
-                    boolean isValid = pruebaClaveAreaPreguntaDAO.validarPorcentajePrueba(pruebaClaveArea.getIdPruebaClave(), pruebaClaveAreaPregunta);
-                    if(isValid){
-                        pruebaClaveAreaPreguntaDAO.actualizar(pruebaClaveAreaPregunta);
-                        return Response.status(Response.Status.OK).build();
-                    }
-                    return Response.status(Response.Status.CONFLICT)
-                            .header(ResponseHeaders.VIOLATES_BUSINESS_RULES.toString(), "el porcentaje total excede el máximo permitido para esta prueba")
-                            .build();
-
+            PruebaClaveAreaPK pk = new PruebaClaveAreaPK(idPruebaClave, idArea);
+            PruebaClaveArea pruebaClaveArea  = pruebaClaveAreaDAO.buscarPorId(pk);
+            Pregunta pregunta = preguntaDAO.buscarPorId(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta());
+            if(pruebaClaveArea != null && pregunta != null) {
+                pruebaClaveAreaPregunta.setIdPregunta(pregunta);
+                pruebaClaveAreaPregunta.setIdArea(pruebaClaveArea.getIdArea());
+                pruebaClaveAreaPregunta.setIdPruebaClave(pruebaClaveArea.getIdPruebaClave());
+                boolean isValid = pruebaClaveAreaPreguntaDAO.validarPorcentajePrueba(pruebaClaveArea.getIdPruebaClave(), pruebaClaveAreaPregunta);
+                if(isValid){
+                    pruebaClaveAreaPreguntaDAO.actualizar(pruebaClaveAreaPregunta);
+                    return Response.status(Response.Status.OK).build();
                 }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"pruebaClave, area o pregunta").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+                return Response.status(Response.Status.CONFLICT)
+                        .header(ResponseHeaders.VIOLATES_BUSINESS_RULES.toString(), "el porcentaje total excede el máximo permitido para esta prueba")
+                        .build();
+
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(),"pruebaClave, area o pregunta").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }

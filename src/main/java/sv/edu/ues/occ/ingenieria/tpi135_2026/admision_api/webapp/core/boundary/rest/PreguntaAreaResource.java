@@ -53,25 +53,19 @@ public class PreguntaAreaResource implements Serializable {
                             "Se requiere idPregunta e idArea")
                     .build();
         }
-        try {
-            Pregunta pregunta = preguntaDAO.buscarPorId(idPregunta);
-            Area area = areaDAO.buscarPorId(preguntaArea.getIdArea().getIdArea());
-            if (pregunta == null || area == null) {
-                String mensaje = pregunta == null ? "Pregunta no encontrada" : "Area no encontrada";
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), mensaje).build();
-            }
-            preguntaArea.setIdPregunta(pregunta);
-            preguntaArea.setIdArea(area);
-            preguntaAreaDAO.crear(preguntaArea);
-
-            UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-            uriBuilder.path(preguntaArea.getIdArea().getIdArea().toString());
-            return Response.created(uriBuilder.build()).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
-                    .build();
+        Pregunta pregunta = preguntaDAO.buscarPorId(idPregunta);
+        Area area = areaDAO.buscarPorId(preguntaArea.getIdArea().getIdArea());
+        if (pregunta == null || area == null) {
+            String mensaje = pregunta == null ? "Pregunta no encontrada" : "Area no encontrada";
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), mensaje).build();
         }
+        preguntaArea.setIdPregunta(pregunta);
+        preguntaArea.setIdArea(area);
+        preguntaAreaDAO.crear(preguntaArea);
+
+        UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+        uriBuilder.path(preguntaArea.getIdArea().getIdArea().toString());
+        return Response.created(uriBuilder.build()).build();
     }
 
     @GET
@@ -80,24 +74,18 @@ public class PreguntaAreaResource implements Serializable {
             @PathParam("id_pregunta") UUID idPregunta,
             @QueryParam("first") @DefaultValue("0") int firstResult,
             @QueryParam("max") @DefaultValue("50") int maxResults) {
-        try {
-            if (idPregunta != null && firstResult >= 0 && maxResults > 0 && maxResults <= 50) {
-                List<PreguntaArea> registros = preguntaAreaDAO.buscarPorPreguntaRango(idPregunta, firstResult, maxResults);
-                Long total = preguntaAreaDAO.contarPorPregunta(idPregunta);
-                return Response.ok(registros)
-                        .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
-                        .type(MediaType.APPLICATION_JSON)
-                        .build();
-            }
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .header(ResponseHeaders.WRONG_PARAMETER.toString(),
-                            "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50")
-                    .build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
-                    .build();
+        if (idPregunta != null && firstResult >= 0 && maxResults > 0 && maxResults <= 50) {
+            List<PreguntaArea> registros = preguntaAreaDAO.buscarPorPreguntaRango(idPregunta, firstResult, maxResults);
+            Long total = preguntaAreaDAO.contarPorPregunta(idPregunta);
+            return Response.ok(registros)
+                .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
+                .type(MediaType.APPLICATION_JSON)
+                .build();
         }
+        return Response.status(Response.Status.BAD_REQUEST)
+            .header(ResponseHeaders.WRONG_PARAMETER.toString(),
+                "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50")
+            .build();
     }
 
     @GET
@@ -107,19 +95,13 @@ public class PreguntaAreaResource implements Serializable {
             @PathParam("id_pregunta") UUID idPregunta,
             @PathParam("id_area") UUID idArea) {
         if (idPregunta != null && idArea != null) {
-            try {
-                PreguntaArea encontrado = preguntaAreaDAO.buscarPorId(new PreguntaAreaPK(idPregunta, idArea));
-                if (encontrado != null) {
-                    return Response.ok(encontrado).type(MediaType.APPLICATION_JSON).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND)
-                        .header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado")
-                        .build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
-                        .build();
+            PreguntaArea encontrado = preguntaAreaDAO.buscarPorId(new PreguntaAreaPK(idPregunta, idArea));
+            if (encontrado != null) {
+                return Response.ok(encontrado).type(MediaType.APPLICATION_JSON).build();
             }
+            return Response.status(Response.Status.NOT_FOUND)
+                    .header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado")
+                    .build();
         }
         return Response.status(Response.Status.BAD_REQUEST)
                 .header(ResponseHeaders.WRONG_PARAMETER.toString(), "idPregunta e idArea no pueden ser nulos")
@@ -132,20 +114,14 @@ public class PreguntaAreaResource implements Serializable {
             @PathParam("id_pregunta") UUID idPregunta,
             @PathParam("id_area") UUID idArea) {
         if (idPregunta != null && idArea != null) {
-            try {
-                PreguntaArea preguntaArea = preguntaAreaDAO.buscarPorId(new PreguntaAreaPK(idPregunta, idArea));
-                if (preguntaArea != null) {
-                    preguntaAreaDAO.eliminar(preguntaArea);
-                    return Response.noContent().build();
-                }
-                return Response.status(Response.Status.NOT_FOUND)
-                        .header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado")
-                        .build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage())
-                        .build();
+            PreguntaArea preguntaArea = preguntaAreaDAO.buscarPorId(new PreguntaAreaPK(idPregunta, idArea));
+            if (preguntaArea != null) {
+                preguntaAreaDAO.eliminar(preguntaArea);
+                return Response.noContent().build();
             }
+            return Response.status(Response.Status.NOT_FOUND)
+                    .header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado")
+                    .build();
         }
         return Response.status(Response.Status.BAD_REQUEST)
                 .header(ResponseHeaders.WRONG_PARAMETER.toString(), "idPregunta e idArea no pueden ser nulos")

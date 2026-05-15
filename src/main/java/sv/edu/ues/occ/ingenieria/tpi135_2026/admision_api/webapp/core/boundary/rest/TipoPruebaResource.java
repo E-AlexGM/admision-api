@@ -35,15 +35,11 @@ public class TipoPruebaResource implements Serializable{
     @Produces({MediaType.APPLICATION_JSON})
     public Response crear(TipoPrueba tp, @Context UriInfo uriInfo){
         if(tp != null){
-            try {
-                tp.setIdTipoPrueba(UUID.randomUUID());
-                tpDAO.crear(tp);
-                UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                uriBuilder.path(tp.getIdTipoPrueba().toString());
-                return Response.created(uriBuilder.build()).build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
-            }
+            tp.setIdTipoPrueba(UUID.randomUUID());
+            tpDAO.crear(tp);
+            UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+            uriBuilder.path(tp.getIdTipoPrueba().toString());
+            return Response.created(uriBuilder.build()).build();
             
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
@@ -55,15 +51,11 @@ public class TipoPruebaResource implements Serializable{
         if(first < 0 || max <= 0){
             return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Los parámetros 'first' y 'max' deben ser números enteros positivos").build();
         }
-        try {
-            List<TipoPrueba> tipoPruebas = tpDAO.buscarPorRango(first, max);
-            if(tipoPruebas == null || tipoPruebas.isEmpty()){
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "TIPO_PRUEBA").build();
-            }
-            return Response.ok(tipoPruebas).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+        List<TipoPrueba> tipoPruebas = tpDAO.buscarPorRango(first, max);
+        if(tipoPruebas == null || tipoPruebas.isEmpty()){
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "TIPO_PRUEBA").build();
         }
+        return Response.ok(tipoPruebas).build();
     }
 
     @PUT
@@ -72,18 +64,13 @@ public class TipoPruebaResource implements Serializable{
     @Path("{id}")
     public Response actualizar(TipoPrueba tp, @PathParam("id") UUID idTipoPrueba){
         if(tp != null && idTipoPrueba != null){
-            try {
-                TipoPrueba tpExistente = tpDAO.buscarPorId(idTipoPrueba);
-                if(tpExistente != null){
-                    tp.setIdTipoPrueba(idTipoPrueba);
-                    tpDAO.actualizar(tp);
-                    return Response.ok(tp).build();
-                }
-                 return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "TIPO_PRUEBA").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            TipoPrueba tpExistente = tpDAO.buscarPorId(idTipoPrueba);
+            if(tpExistente != null){
+                tp.setIdTipoPrueba(idTipoPrueba);
+                tpDAO.actualizar(tp);
+                return Response.ok(tp).build();
             }
-            
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "TIPO_PRUEBA").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
         
@@ -93,17 +80,12 @@ public class TipoPruebaResource implements Serializable{
     @Path("{id}")
     public Response eliminar(@PathParam ("id") UUID idTipoPrueba){
         if(idTipoPrueba != null){
-            try {
-                TipoPrueba tpExistente = tpDAO.buscarPorId(idTipoPrueba);
-                if(tpExistente != null){
-                    tpDAO.eliminar(tpExistente);
-                    return Response.status(Response.Status.NO_CONTENT).build();
-                }
-                 return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "TIPO_PRUEBA").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            TipoPrueba tpExistente = tpDAO.buscarPorId(idTipoPrueba);
+            if(tpExistente != null){
+                tpDAO.eliminar(tpExistente);
+                return Response.status(Response.Status.NO_CONTENT).build();
             }
-            
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "TIPO_PRUEBA").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }    

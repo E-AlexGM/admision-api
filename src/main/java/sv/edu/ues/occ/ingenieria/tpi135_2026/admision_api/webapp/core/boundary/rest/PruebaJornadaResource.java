@@ -47,14 +47,10 @@ public class PruebaJornadaResource implements Serializable{
                                 @QueryParam("max") @DefaultValue("10") int max) {
 
         if(idPrueba != null && first >= 0 && max > 0){
-            try {
-                List<Jornada> jornadas = jDAO.listarPorIdPrueba(idPrueba, first, max);
-                Response.ResponseBuilder responseBuilder = Response.ok(jornadas)
-                        .type(MediaType.APPLICATION_JSON);
-                return responseBuilder.build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
-            }
+            List<Jornada> jornadas = jDAO.listarPorIdPrueba(idPrueba, first, max);
+            Response.ResponseBuilder responseBuilder = Response.ok(jornadas)
+                    .type(MediaType.APPLICATION_JSON);
+            return responseBuilder.build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "idPrueba o first o max").build(); 
     }
@@ -65,21 +61,17 @@ public class PruebaJornadaResource implements Serializable{
     public Response crear(@PathParam("id_prueba") UUID idPrueba, PruebaJornada pruebaJornada, @Context UriInfo uriInfo){
 
         if(idPrueba != null && pruebaJornada != null && pruebaJornada.getIdJornada() != null && pruebaJornada.getIdJornada().getIdJornada() != null){
-            try {
-                Prueba p = pDAO.buscarPorId(idPrueba);
-                Jornada j = jDAO.buscarPorId(pruebaJornada.getIdJornada().getIdJornada());
-                if(p != null && j != null){
-                    pruebaJornada.setIdPrueba(p);
-                    pruebaJornada.setIdJornada(j);
-                    pJDAO.crear(pruebaJornada);
-                    UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                    uriBuilder.path(pruebaJornada.getIdJornada().getIdJornada().toString());
-                    return Response.created(uriBuilder.build()).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Prueba p = pDAO.buscarPorId(idPrueba);
+            Jornada j = jDAO.buscarPorId(pruebaJornada.getIdJornada().getIdJornada());
+            if(p != null && j != null){
+                pruebaJornada.setIdPrueba(p);
+                pruebaJornada.setIdJornada(j);
+                pJDAO.crear(pruebaJornada);
+                UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+                uriBuilder.path(pruebaJornada.getIdJornada().getIdJornada().toString());
+                return Response.created(uriBuilder.build()).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).build();
         
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
@@ -92,20 +84,16 @@ public class PruebaJornadaResource implements Serializable{
     @Produces({MediaType.APPLICATION_JSON})
     public Response eliminar(@PathParam("id_prueba") UUID idPrueba, @PathParam("id_jornada") UUID idJornada){
         if(idPrueba != null && idJornada != null){
-            try {
-                Prueba p = pDAO.buscarPorId(idPrueba);
-                Jornada j = jDAO.buscarPorId(idJornada);
-                PruebaJornada pj = new PruebaJornada(p, j);
-                PruebaJornadaPK pk = new PruebaJornadaPK(idPrueba, idJornada);
-                PruebaJornada pJExistente = pJDAO.buscarPorId(pk);
-                if(p != null && j != null && pJExistente != null){
-                    pJDAO.eliminar(pj);
-                    return Response.status(Response.Status.NO_CONTENT).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba o jornada").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Prueba p = pDAO.buscarPorId(idPrueba);
+            Jornada j = jDAO.buscarPorId(idJornada);
+            PruebaJornada pj = new PruebaJornada(p, j);
+            PruebaJornadaPK pk = new PruebaJornadaPK(idPrueba, idJornada);
+            PruebaJornada pJExistente = pJDAO.buscarPorId(pk);
+            if(p != null && j != null && pJExistente != null){
+                pJDAO.eliminar(pj);
+                return Response.status(Response.Status.NO_CONTENT).build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba o jornada").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "idPrueba o idJornada").build();
     }

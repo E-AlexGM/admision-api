@@ -35,15 +35,11 @@ public class AreaResource  implements Serializable {
     public Response crear(Area area, @Context UriInfo uriInfo) {
 
         if (area != null && area.getIdArea() == null) {
-            try {
-                area.setIdArea(UUID.randomUUID());
-                areaDAO.crear(area);
-                UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                uriBuilder.path(area.getIdArea().toString());
-                return Response.created(uriBuilder.build()).build();
-            } catch (Exception e) {
-                return Response.status(500).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
-            }
+            area.setIdArea(UUID.randomUUID());
+            areaDAO.crear(area);
+            UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+            uriBuilder.path(area.getIdArea().toString());
+            return Response.created(uriBuilder.build()).build();
         }
         return Response.status(422).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El recurso no puede ser nulo y no debe tener un ID asignado").build();
     }
@@ -52,16 +48,12 @@ public class AreaResource  implements Serializable {
     @Path("{id}")
     public Response eliminar(@PathParam("id") UUID id) {
         if (id != null) {
-            try {
-                Area area = areaDAO.buscarPorId(id);
-                if (area != null) {
-                    areaDAO.eliminar(area);
-                    return Response.noContent().build();
-                }
-                return Response.status(404).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            } catch (Exception e) {
-                return Response.status(500).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Area area = areaDAO.buscarPorId(id);
+            if (area != null) {
+                areaDAO.eliminar(area);
+                return Response.noContent().build();
             }
+            return Response.status(404).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
         return Response.status(422).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El ID no puede ser nulo").build();
     }
@@ -75,21 +67,15 @@ public class AreaResource  implements Serializable {
             @QueryParam("max")
             @DefaultValue("50")
             int maxResults) {
-        try {
-            if (firstResult >= 0 && maxResults > 0 && maxResults <= 50) {
-                List<Area> areas = areaDAO.buscarPorRango(firstResult, maxResults);
-                Long total = areaDAO.contar();
-                Response.ResponseBuilder responseBuilder = Response.ok(areas)
-                        .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
-                        .type(MediaType.APPLICATION_JSON);
-                return responseBuilder.build();
-            } else {
-                return Response.status(422).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50").build();
-            }
-
-        }catch (Exception e){
-            return Response.status(500).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+        if (firstResult >= 0 && maxResults > 0 && maxResults <= 50) {
+            List<Area> areas = areaDAO.buscarPorRango(firstResult, maxResults);
+            Long total = areaDAO.contar();
+            Response.ResponseBuilder responseBuilder = Response.ok(areas)
+                    .header(ResponseHeaders.TOTAL_RECORDS.toString(), total)
+                    .type(MediaType.APPLICATION_JSON);
+            return responseBuilder.build();
         }
+        return Response.status(422).header(ResponseHeaders.WRONG_PARAMETER.toString(), "Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50").build();
     }
 
     @GET
@@ -97,16 +83,12 @@ public class AreaResource  implements Serializable {
     @Produces(MediaType.APPLICATION_JSON)
     public Response buscarPorId(@PathParam("id") UUID id) {
         if (id != null) {
-            try {
-                Area encontrado = areaDAO.buscarPorId(id);
-                if (encontrado != null) {
-                    Response.ResponseBuilder builder = Response.ok(encontrado).type(MediaType.APPLICATION_JSON);
-                    return builder.build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            } catch (Exception e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Area encontrado = areaDAO.buscarPorId(id);
+            if (encontrado != null) {
+                Response.ResponseBuilder builder = Response.ok(encontrado).type(MediaType.APPLICATION_JSON);
+                return builder.build();
             }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "id: " + id).build();
     }
@@ -117,18 +99,13 @@ public class AreaResource  implements Serializable {
     @Produces(MediaType.APPLICATION_JSON)
     public Response actualizar(@PathParam("id") UUID idArea, Area area){
         if(idArea != null && area != null){
-            try {
-                Area existente = areaDAO.buscarPorId(idArea);
-                if(existente != null){
-                    area.setIdArea(idArea);
-                    areaDAO.actualizar(area);
-                    return Response.status(Response.Status.OK).entity(area).build();
-                }
-                return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
-            }catch (Exception e){
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).header(ResponseHeaders.PROCESS_ERROR.toString(), e.getMessage()).build();
+            Area existente = areaDAO.buscarPorId(idArea);
+            if(existente != null){
+                area.setIdArea(idArea);
+                areaDAO.actualizar(area);
+                return Response.status(Response.Status.OK).entity(area).build();
             }
-
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "id: " + idArea).build();
     }
