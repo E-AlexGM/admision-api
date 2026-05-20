@@ -1,10 +1,14 @@
 package sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.rest;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,306 +21,286 @@ import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Pre
 
 public class PreguntaResourceTest {
 
-    PreguntaResource cut; // Class Under Test
-    PreguntaDAO mockPDAO;
+    PreguntaResource cut;
+    PreguntaDAO mockPreguntaDAO;
     UriInfo mockUriInfo;
-    UriBuilder mockUriBuilder;   
+    UriBuilder mockUriBuilder;
 
     @BeforeEach
     public void setUp() {
         cut = new PreguntaResource();
-        mockPDAO = Mockito.mock(PreguntaDAO.class);
-        cut.pDAO = mockPDAO; // Inyectar el mock en la clase bajo prueba
+        mockPreguntaDAO = Mockito.mock(PreguntaDAO.class);
+        cut.preguntaDAO = mockPreguntaDAO;
         mockUriInfo = Mockito.mock(UriInfo.class);
         mockUriBuilder = Mockito.mock(UriBuilder.class);
         Mockito.when(mockUriInfo.getAbsolutePathBuilder()).thenReturn(mockUriBuilder);
-        Mockito.when(mockUriBuilder.path(Mockito.anyString())).thenReturn(mockUriBuilder);
+        Mockito.when(mockUriBuilder.path(anyString())).thenReturn(mockUriBuilder);
+        Mockito.when(mockUriBuilder.build()).thenReturn(URI.create("http://localhost/pregunta"));
     }
 
     @Test
-    public void crear_Pregunta_Exitoso(){
-        System.out.println("Ejecutando Test: crear_Pregunta_Exitoso");
+    public void crear_Pregunta_Exitoso() {
         Pregunta nuevaPregunta = new Pregunta();
-        Mockito.doNothing().when(mockPDAO).crear(nuevaPregunta);
 
         Response response = cut.crear(nuevaPregunta, mockUriInfo);
 
-        Mockito.verify(mockPDAO).crear(nuevaPregunta);
+        Mockito.verify(mockPreguntaDAO).crear(nuevaPregunta);
         Mockito.verify(mockUriInfo).getAbsolutePathBuilder();
         Mockito.verify(mockUriBuilder).path(Mockito.anyString());
         Mockito.verify(mockUriBuilder).build();
         assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+        assertTrue(response.getHeaders().containsKey("Location"));
     }
 
     @Test
-    public void crear_Pregunta_BadRequest(){
-        System.out.println("Ejecutando Test: crear_Pregunta_BadRequest");   
+    public void crear_Pregunta_BadRequest() {
         Response response = cut.crear(null, mockUriInfo);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals("El recurso no puede ser nulo y no debe tener un ID asignado",
+                response.getHeaderString(ResponseHeaders.WRONG_PARAMETER.toString()));
     }
 
     @Test
-    public void crear_Pregunta_ErrorInterno(){
-        System.out.println("Ejecutando Test: crear_Pregunta_ErrorInterno");
+    public void crear_Pregunta_BadRequest_ConIdAsignado() {
         Pregunta nuevaPregunta = new Pregunta();
-        Mockito.doThrow(new RuntimeException("Error interno")).when(mockPDAO).crear(nuevaPregunta);
+        nuevaPregunta.setIdPregunta(UUID.randomUUID());
+
+        Response response = cut.crear(nuevaPregunta, mockUriInfo);
+
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals("El recurso no puede ser nulo y no debe tener un ID asignado",
+                response.getHeaderString(ResponseHeaders.WRONG_PARAMETER.toString()));
+    }
+
+    @Test
+    public void crear_Pregunta_ErrorInterno() {
+        Pregunta nuevaPregunta = new Pregunta();
+        Mockito.doThrow(new RuntimeException("Error interno")).when(mockPreguntaDAO).crear(nuevaPregunta);
         assertThrows(RuntimeException.class, () -> cut.crear(nuevaPregunta, mockUriInfo));
     }
 
-    @Test 
-    public void buscarPorId_Pregunta_Encontrado(){
-        System.out.println("Ejecutando Test: buscarPorId_Pregunta_Encontrado");
-        // Configurar el mock para simular la existencia de la Pregunta
+    @Test
+    public void buscarPorId_Pregunta_Encontrado() {
         UUID idPregunta = UUID.randomUUID();
-        Pregunta pExistente = new Pregunta();
-        Mockito.when(mockPDAO.buscarPorId(idPregunta)).thenReturn(pExistente);
+        Pregunta existente = new Pregunta();
+        Mockito.when(mockPreguntaDAO.buscarPorId(idPregunta)).thenReturn(existente);
 
-        // Llamar al método buscarPorId
         Response response = cut.buscarPorId(idPregunta);
 
-        // Verificar que se haya llamado al método buscarPorId del DAO
-        Mockito.verify(mockPDAO).buscarPorId(idPregunta);
-
-        // Verificar que la respuesta sea OK y contenga la Pregunta
+        Mockito.verify(mockPreguntaDAO).buscarPorId(idPregunta);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        assertEquals(pExistente, response.getEntity());
+        assertEquals(existente, response.getEntity());
     }
 
     @Test
-    public void buscarPorId_Pregunta_NoEncontrado(){
-        System.out.println("Ejecutando Test: buscarPorId_Pregunta_NoEncontrado");
+    public void buscarPorId_Pregunta_NoEncontrado() {
         UUID idPregunta = UUID.randomUUID();
-        // Configurar el mock para simular la no existencia de la Pregunta
-        Mockito.when(mockPDAO.buscarPorId(idPregunta)).thenReturn(null);
+        Mockito.when(mockPreguntaDAO.buscarPorId(idPregunta)).thenReturn(null);
 
-        // Llamar al método buscarPorId
         Response response = cut.buscarPorId(idPregunta);
 
-        // Verificar que se haya llamado al método buscarPorId del DAO
-        Mockito.verify(mockPDAO).buscarPorId(idPregunta);
-
-        // Verificar que la respuesta sea NOT_FOUND
+        Mockito.verify(mockPreguntaDAO).buscarPorId(idPregunta);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        assertEquals("Recurso no encontrado", response.getHeaderString(ResponseHeaders.NOT_FOUND.toString()));
     }
 
     @Test
-    public void buscarPorId_Pregunta_ErrorInterno(){
-        System.out.println("Ejecutando Test: buscarPorId_Pregunta_ErrorInterno");
+    public void buscarPorId_Pregunta_ErrorInterno() {
         UUID idPregunta = UUID.randomUUID();
-        Mockito.when(mockPDAO.buscarPorId(idPregunta)).thenThrow(new RuntimeException("Error interno"));
+        Mockito.when(mockPreguntaDAO.buscarPorId(idPregunta)).thenThrow(new RuntimeException("Error interno"));
         assertThrows(RuntimeException.class, () -> cut.buscarPorId(idPregunta));
     }
 
     @Test
-    public void buscarPorId_TipoPrueba_BadRequest(){
-        System.out.println("Ejecutando Test: buscarPorId_TipoPrueba_BadRequest");
-        // Llamar al método buscarPorId con un ID nulo
+    public void buscarPorId_BadRequest() {
         Response response = cut.buscarPorId(null);
-
-        // Verificar que la respuesta sea BAD_REQUEST
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals("id: null", response.getHeaderString(ResponseHeaders.WRONG_PARAMETER.toString()));
     }
 
     @Test
-    public void actualizar_Pregunta_Exitoso(){
-        System.out.println("Ejecutando Test: actualizar_Pregunta_Exitoso");
-        // Configurar el mock para simular la existencia de la Pregunta
+    public void actualizar_Pregunta_Exitoso() {
         UUID idPregunta = UUID.randomUUID();
-        Pregunta pExistente = new Pregunta();
-        Mockito.when(mockPDAO.buscarPorId(idPregunta)).thenReturn(pExistente);
+        Pregunta existente = new Pregunta();
+        Pregunta entrada = new Pregunta();
 
-        Response response = cut.actualizar(pExistente, idPregunta);
-        // Verificar que se haya llamado al método buscarPorId del DAO  
-        Mockito.verify(mockPDAO).buscarPorId(idPregunta);
-        Mockito.verify(mockPDAO).actualizar(pExistente);
+        Mockito.when(mockPreguntaDAO.buscarPorId(idPregunta)).thenReturn(existente);
+
+        Response response = cut.actualizar(idPregunta, entrada);
+
+        Mockito.verify(mockPreguntaDAO).buscarPorId(idPregunta);
+        Mockito.verify(mockPreguntaDAO).actualizar(entrada);
+        assertEquals(idPregunta, entrada.getIdPregunta());
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
-    @Test 
-    public void actualizar_Pregunta_NoEncontrado(){
-        System.out.println("Ejecutando Test: actualizar_Pregunta_NoEncontrado");
+    @Test
+    public void actualizar_Pregunta_NoEncontrado() {
         UUID idPregunta = UUID.randomUUID();
-        // Configurar el mock para simular la no existencia de la Pregunta
-        Mockito.when(mockPDAO.buscarPorId(idPregunta)).thenReturn(null);
+        Mockito.when(mockPreguntaDAO.buscarPorId(idPregunta)).thenReturn(null);
 
-        Response response = cut.actualizar(new Pregunta(), idPregunta);
-        // Verificar que se haya llamado al método buscarPorId del DAO  
-        Mockito.verify(mockPDAO).buscarPorId(idPregunta);
+        Response response = cut.actualizar(idPregunta, new Pregunta());
+
+        Mockito.verify(mockPreguntaDAO).buscarPorId(idPregunta);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        assertEquals("Recurso no encontrado", response.getHeaderString(ResponseHeaders.NOT_FOUND.toString()));
     }
 
     @Test
-    public void actualizar_Pregunta_ErrorInterno(){
-        System.out.println("Ejecutando Test: actualizar_Pregunta_ErrorInterno");
+    public void actualizar_Pregunta_ErrorInterno() {
         UUID idPregunta = UUID.randomUUID();
-        Pregunta pExistente = new Pregunta();
-        Mockito.when(mockPDAO.buscarPorId(idPregunta)).thenThrow(new RuntimeException("Error interno"));
-        assertThrows(RuntimeException.class, () -> cut.actualizar(pExistente, idPregunta));
+        Pregunta entrada = new Pregunta();
+        Mockito.when(mockPreguntaDAO.buscarPorId(idPregunta)).thenThrow(new RuntimeException("Error interno"));
+        assertThrows(RuntimeException.class, () -> cut.actualizar(idPregunta, entrada));
     }
 
-     @Test
-     public void actualizar_TipoPrueba_BadRequest(){
-         System.out.println("Ejecutando Test: actualizar_TipoPrueba_BadRequest");
-         // Llamar al método actualizar con un ID nulo
-         Response response = cut.actualizar(new Pregunta(), null);
-         // Verificar que la respuesta sea BAD_REQUEST
-         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-     }
-
-     @Test
-     public void actualizar_Pregunta_BadRequest_PreguntaNull(){
-         System.out.println("Ejecutando Test: actualizar_Pregunta_BadRequest_PreguntaNull");
-         // Llamar al método actualizar con Pregunta nula
-         Response response = cut.actualizar(null, UUID.randomUUID());
-         // Verificar que la respuesta sea BAD_REQUEST
-         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-     }
-
-     @Test
-     public void actualizar_Pregunta_BadRequest_AmbosNull(){
-         System.out.println("Ejecutando Test: actualizar_Pregunta_BadRequest_AmbosNull");
-         // Llamar al método actualizar con ambos parámetros nulos
-         Response response = cut.actualizar(null, null);
-         // Verificar que la respuesta sea BAD_REQUEST
-         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-     }
+    @Test
+    public void actualizar_BadRequest_IdNull() {
+        Response response = cut.actualizar(null, new Pregunta());
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals("El recurso no puede ser nulo y debe tener un ID asignado",
+                response.getHeaderString(ResponseHeaders.WRONG_PARAMETER.toString()));
+    }
 
     @Test
-    public void eliminar_Pregunta_Exitoso(){
-        System.out.println("Ejecutando Test: eliminar_Pregunta_Exitoso");
-        // Configurar el mock para simular la existencia de la Pregunta
+    public void actualizar_BadRequest_PreguntaNull() {
+        Response response = cut.actualizar(UUID.randomUUID(), null);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals("El recurso no puede ser nulo y debe tener un ID asignado",
+                response.getHeaderString(ResponseHeaders.WRONG_PARAMETER.toString()));
+    }
+
+    @Test
+    public void actualizar_BadRequest_AmbosNull() {
+        Response response = cut.actualizar(null, null);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals("El recurso no puede ser nulo y debe tener un ID asignado",
+                response.getHeaderString(ResponseHeaders.WRONG_PARAMETER.toString()));
+    }
+
+    @Test
+    public void eliminar_Pregunta_Exitoso() {
         UUID idPregunta = UUID.randomUUID();
+        Pregunta existente = new Pregunta();
+        Mockito.when(mockPreguntaDAO.buscarPorId(idPregunta)).thenReturn(existente);
 
-        Pregunta pExistente = new Pregunta();
-        Mockito.when(mockPDAO.buscarPorId(idPregunta)).thenReturn(pExistente);
-
-        // Llamar al método eliminar
         Response response = cut.eliminar(idPregunta);
 
-        // Verificar que se haya llamado al método buscarPorId del DAO
-        Mockito.verify(mockPDAO).buscarPorId(idPregunta);
-        Mockito.verify(mockPDAO).eliminar(pExistente);
-
-        // Verificar que la respuesta sea NO_CONTENT
+        Mockito.verify(mockPreguntaDAO).buscarPorId(idPregunta);
+        Mockito.verify(mockPreguntaDAO).eliminar(existente);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void eliminar_Pregunta_NoEncontrado(){
-        System.out.println("eliminar_Pregunta_NoEncontrado");
+    public void eliminar_Pregunta_NoEncontrado() {
         UUID idPregunta = UUID.randomUUID();
-        // Configurar el mock para simular la no existencia de la Pregunta
-        Mockito.when(mockPDAO.buscarPorId(idPregunta)).thenReturn(null);
+        Mockito.when(mockPreguntaDAO.buscarPorId(idPregunta)).thenReturn(null);
 
-        // Crear una instancia de PreguntaResource y asignar el mock
-        cut.pDAO = mockPDAO;
-
-        // Llamar al método eliminar
         Response response = cut.eliminar(idPregunta);
 
-        // Verificar que se haya llamado al método buscarPorId del DAO
-        Mockito.verify(mockPDAO).buscarPorId(idPregunta);
-
-        // Verificar que la respuesta sea NOT_FOUND
+        Mockito.verify(mockPreguntaDAO).buscarPorId(idPregunta);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        assertEquals("Recurso no encontrado", response.getHeaderString(ResponseHeaders.NOT_FOUND.toString()));
     }
 
     @Test
-    public void eliminar_Pregunta_ErrorInterno(){
-        System.out.println("eliminar_Pregunta_ErrorInterno");
+    public void eliminar_Pregunta_ErrorInterno() {
         UUID idPregunta = UUID.randomUUID();
-        Mockito.when(mockPDAO.buscarPorId(idPregunta)).thenThrow(new RuntimeException("Error interno"));
+        Mockito.when(mockPreguntaDAO.buscarPorId(idPregunta)).thenThrow(new RuntimeException("Error interno"));
         assertThrows(RuntimeException.class, () -> cut.eliminar(idPregunta));
     }
 
     @Test
-    public void eliminar_TipoPrueba_BadRequest(){
-        System.out.println("eliminar_TipoPrueba_BadRequest");
-        // Llamar al método eliminar con un ID nulo
+    public void eliminar_BadRequest() {
         Response response = cut.eliminar(null);
-        // Verificar que la respuesta sea BAD_REQUEST
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals("El ID no puede ser nulo", response.getHeaderString(ResponseHeaders.WRONG_PARAMETER.toString()));
+    }
+
+    @Test
+    public void buscarPorRango_Preguntas_Exitoso() {
+        int first = 0;
+        int max = 50;
+        Mockito.when(mockPreguntaDAO.buscarPorRango(first, max)).thenReturn(List.of(new Pregunta(), new Pregunta()));
+        Mockito.when(mockPreguntaDAO.contar()).thenReturn(2L);
+
+        Response response = cut.buscarPorRango(first, max);
+
+        Mockito.verify(mockPreguntaDAO).buscarPorRango(first, max);
+        Mockito.verify(mockPreguntaDAO).contar();
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        assertEquals("2", response.getHeaderString(ResponseHeaders.TOTAL_RECORDS.toString()));
+    }
+
+    @Test
+    public void buscarPorRango_Preguntas_Vacio() {
+        int first = 0;
+        int max = 50;
+        Mockito.when(mockPreguntaDAO.buscarPorRango(first, max)).thenReturn(List.of());
+        Mockito.when(mockPreguntaDAO.contar()).thenReturn(0L);
+
+        Response response = cut.buscarPorRango(first, max);
+
+        Mockito.verify(mockPreguntaDAO).buscarPorRango(first, max);
+        Mockito.verify(mockPreguntaDAO).contar();
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        assertEquals("0", response.getHeaderString(ResponseHeaders.TOTAL_RECORDS.toString()));
+    }
+
+    @Test
+    public void buscarPorRango_Preguntas_Null() {
+        int first = 0;
+        int max = 50;
+        Mockito.when(mockPreguntaDAO.buscarPorRango(first, max)).thenReturn(null);
+        Mockito.when(mockPreguntaDAO.contar()).thenReturn(0L);
+
+        Response response = cut.buscarPorRango(first, max);
+
+        Mockito.verify(mockPreguntaDAO).buscarPorRango(first, max);
+        Mockito.verify(mockPreguntaDAO).contar();
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void buscarPorRango_BadRequest_AmbosInvalidos() {
+        Response response = cut.buscarPorRango(-1, -10);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals("Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50",
+                response.getHeaderString(ResponseHeaders.WRONG_PARAMETER.toString()));
+    }
+
+    @Test
+    public void buscarPorRango_BadRequest_FirstNegativo() {
+        Response response = cut.buscarPorRango(-1, 50);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void buscarPorRango_Preguntas_Exitoso(){
-        System.out.println("Ejecutando Test: buscarPorRango_Preguntas_Exitoso");
-        // Configurar el mock para simular la existencia de Preguntas
-        int first = 0;
-        int size = 50;
-        Mockito.when(mockPDAO.buscarPorRango(first, size)).thenReturn(List.of(new Pregunta(), new Pregunta()));
-        Response response = cut.buscarPorRango(first, size);
-        Mockito.verify(mockPDAO).buscarPorRango(first, size);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus()); 
+    public void buscarPorRango_BadRequest_MaxCero() {
+        Response response = cut.buscarPorRango(0, 0);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
-     @Test
-     public void buscarPorRango_Preguntas_NoEncontrado(){
-         System.out.println("Ejecutando Test: buscarPorRango_Preguntas_NoEncontrADO");
-         // Configurar el mock para simular la no existencia de Preguntas
-         int first = 0;
-         int size = 50;
-         Mockito.when(mockPDAO.buscarPorRango(first, size)).thenReturn(List.of());
-         Response response = cut.buscarPorRango(first, size);
-         Mockito.verify(mockPDAO).buscarPorRango(first, size);
-         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-     }
+    @Test
+    public void buscarPorRango_BadRequest_MaxNegativo() {
+        Response response = cut.buscarPorRango(0, -5);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+    }
 
-     @Test
-     public void buscarPorRango_Preguntas_Null(){
-         System.out.println("Ejecutando Test: buscarPorRango_Preguntas_Null");
-         // Configurar el mock para retornar null
-         int first = 0;
-         int size = 50;
-         Mockito.when(mockPDAO.buscarPorRango(first, size)).thenReturn(null);
-         Response response = cut.buscarPorRango(first, size);
-         Mockito.verify(mockPDAO).buscarPorRango(first, size);
-         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-     }
+    @Test
+    public void buscarPorRango_BadRequest_MaxMayor50() {
+        Response response = cut.buscarPorRango(0, 51);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertEquals("Los parámetros 'first' debe ser >= 0 y 'max' debe ser > 0 y <= 50",
+                response.getHeaderString(ResponseHeaders.WRONG_PARAMETER.toString()));
+    }
 
-     @Test
-     public void buscarPorRango_TipoPrueba_BadRequest(){
-         System.out.println("Ejecutando Test: buscarPorRango_TipoPrueba_BadRequest");
-         // Llamar al método buscarPorRango con parámetros inválidos
-         Response response = cut.buscarPorRango(-1, -10);
-         // Verificar que la respuesta sea BAD_REQUEST
-         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-     }
-
-     @Test
-     public void buscarPorRango_BadRequest_FirstNegativo(){
-         System.out.println("Ejecutando Test: buscarPorRango_BadRequest_FirstNegativo");
-         // Llamar al método buscarPorRango con first negativo
-         Response response = cut.buscarPorRango(-1, 50);
-         // Verificar que la respuesta sea BAD_REQUEST
-         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-     }
-
-     @Test
-     public void buscarPorRango_BadRequest_SizeCero(){
-         System.out.println("Ejecutando Test: buscarPorRango_BadRequest_SizeCero");
-         // Llamar al método buscarPorRango con size = 0
-         Response response = cut.buscarPorRango(0, 0);
-         // Verificar que la respuesta sea BAD_REQUEST
-         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-     }
-
-     @Test
-     public void buscarPorRango_BadRequest_SizeNegativo(){
-         System.out.println("Ejecutando Test: buscarPorRango_BadRequest_SizeNegativo");
-         // Llamar al método buscarPorRango con size negativo
-         Response response = cut.buscarPorRango(0, -5);
-         // Verificar que la respuesta sea BAD_REQUEST
-         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-     }
-
-     @Test
-     public void buscarPorRango_Preguntas_ErrorInterno(){
-         System.out.println("Ejecutando Test: buscarPorRango_Preguntas_ErrorInterno");
-         int first = 0;
-         int size = 50;
-         Mockito.when(mockPDAO.buscarPorRango(first, size)).thenThrow(new RuntimeException("Error interno"));
-         assertThrows(RuntimeException.class, () -> cut.buscarPorRango(first, size));
-     }
-
+    @Test
+    public void buscarPorRango_Preguntas_ErrorInterno() {
+        int first = 0;
+        int max = 50;
+        Mockito.when(mockPreguntaDAO.buscarPorRango(first, max)).thenThrow(new RuntimeException("Error interno"));
+        assertThrows(RuntimeException.class, () -> cut.buscarPorRango(first, max));
+    }
 }
+
