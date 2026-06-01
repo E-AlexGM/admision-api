@@ -71,7 +71,7 @@ public class PruebaResource implements Serializable {
             if(pruebaExistente != null) {
                 // Actualizar los campos de la prueba existente con los valores del objeto p
                 pDAO.actualizar(p);
-                return Response.status(Response.Status.OK).build();
+                return Response.status(Response.Status.OK).entity(p).build();
             }
             return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba").build();
         }

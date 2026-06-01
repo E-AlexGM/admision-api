@@ -126,6 +126,7 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
 
     @GET
     @Path("{id_pregunta}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response buscarPorId(@PathParam("id_prueba_clave") UUID idPruebaClave,
                                 @PathParam("id_area") UUID idArea,
                                 @PathParam("id_pregunta") UUID idPregunta) {
@@ -143,6 +144,7 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response actualizar(@PathParam("id_prueba_clave") UUID idPruebaClave,
                            @PathParam("id_area") UUID idArea,
                            PruebaClaveAreaPregunta pruebaClaveAreaPregunta){
@@ -158,7 +160,8 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
                 boolean isValid = pruebaClaveAreaPreguntaDAO.validarPorcentajePrueba(pruebaClaveArea.getIdPruebaClave(), pruebaClaveAreaPregunta);
                 if(isValid){
                     pruebaClaveAreaPreguntaDAO.actualizar(pruebaClaveAreaPregunta);
-                    return Response.status(Response.Status.OK).build();
+
+                    return Response.status(Response.Status.OK).entity(pruebaClaveAreaPregunta).build();
                 }
                 return Response.status(Response.Status.CONFLICT)
                         .header(ResponseHeaders.VIOLATES_BUSINESS_RULES.toString(), "el porcentaje total excede el máximo permitido para esta prueba")
