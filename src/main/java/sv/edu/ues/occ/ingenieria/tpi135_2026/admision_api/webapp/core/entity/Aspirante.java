@@ -18,6 +18,10 @@ import jakarta.persistence.Table;
         @NamedQuery(
                 name = "Aspirante.buscarPorApellidos",
                 query = "SELECT a FROM Aspirante a WHERE a.apellidos = :apellidos"
+        ),
+        @NamedQuery(
+                name = "Aspirante.buscarPorCorreo",
+                query = "SELECT a FROM Aspirante a WHERE a.correo = :correo"
         )
 })
 @Entity

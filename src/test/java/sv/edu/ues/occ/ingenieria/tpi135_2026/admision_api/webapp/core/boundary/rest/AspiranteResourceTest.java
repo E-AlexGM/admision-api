@@ -187,7 +187,7 @@ public class AspiranteResourceTest {
         Mockito.when(mockAD.buscarPorApellidos("Lopez"))
                 .thenReturn(List.of(new Aspirante(UUID.randomUUID()), new Aspirante(UUID.randomUUID())));
 
-        Response resultado = cut.buscarPorApellidos("Lopez");
+        Response resultado = cut.buscar(null, "Lopez");
 
         assertEquals(200, resultado.getStatus());
         assertNotNull(resultado.getEntity());
@@ -199,7 +199,7 @@ public class AspiranteResourceTest {
         System.out.println("Ejecutando test: buscarPorApellidosNoEncontradoTest en AspiranteResource");
         Mockito.when(mockAD.buscarPorApellidos("NoExiste")).thenReturn(Collections.emptyList());
 
-        Response resultado = cut.buscarPorApellidos("NoExiste");
+        Response resultado = cut.buscar(null, "NoExiste");
 
         assertEquals(404, resultado.getStatus());
         Mockito.verify(mockAD).buscarPorApellidos("NoExiste");
@@ -210,7 +210,7 @@ public class AspiranteResourceTest {
         System.out.println("Ejecutando test: buscarPorApellidosResultadoNullTest en AspiranteResource");
         Mockito.when(mockAD.buscarPorApellidos("NoExisteNull")).thenReturn(null);
 
-        Response resultado = cut.buscarPorApellidos("NoExisteNull");
+        Response resultado = cut.buscar(null, "NoExisteNull");
 
         assertEquals(404, resultado.getStatus());
         Mockito.verify(mockAD).buscarPorApellidos("NoExisteNull");
@@ -219,8 +219,8 @@ public class AspiranteResourceTest {
     @Test
     public void buscarPorApellidosParametroInvalidoTest() {
         System.out.println("Ejecutando test: buscarPorApellidosParametroInvalidoTest en AspiranteResource");
-        Response resultadoNull = cut.buscarPorApellidos(null);
-        Response resultadoBlank = cut.buscarPorApellidos("   ");
+        Response resultadoNull = cut.buscar(null, null);
+        Response resultadoBlank = cut.buscar(null, "   ");
 
         assertEquals(400, resultadoNull.getStatus());
         assertEquals(400, resultadoBlank.getStatus());
@@ -231,8 +231,53 @@ public class AspiranteResourceTest {
     public void buscarPorApellidosConExcepcionTest() {
         System.out.println("Ejecutando test: buscarPorApellidosConExcepcionTest en AspiranteResource");
         Mockito.when(mockAD.buscarPorApellidos("Lopez")).thenThrow(new RuntimeException("Error en base de datos"));
-        assertThrows(RuntimeException.class, () -> cut.buscarPorApellidos("Lopez"));
+        assertThrows(RuntimeException.class, () -> cut.buscar(null, "Lopez"));
         Mockito.verify(mockAD).buscarPorApellidos("Lopez");
+    }
+
+    @Test
+    public void buscarPorCorreoExitosoTest() {
+        System.out.println("Ejecutando test: buscarPorCorreoExitosoTest en AspiranteResource");
+        Aspirante encontrado = new Aspirante(UUID.randomUUID());
+        encontrado.setCorreo("correo@test.com");
+        Mockito.when(mockAD.buscarPorCorreo("correo@test.com")).thenReturn(encontrado);
+
+        Response resultado = cut.buscar("correo@test.com", null);
+
+        assertEquals(200, resultado.getStatus());
+        assertNotNull(resultado.getEntity());
+        Mockito.verify(mockAD).buscarPorCorreo("correo@test.com");
+        Mockito.verify(mockAD, Mockito.never()).buscarPorApellidos(Mockito.any());
+    }
+
+    @Test
+    public void buscarPorCorreoNoEncontradoTest() {
+        System.out.println("Ejecutando test: buscarPorCorreoNoEncontradoTest en AspiranteResource");
+        Mockito.when(mockAD.buscarPorCorreo("noexiste@test.com")).thenReturn(null);
+
+        Response resultado = cut.buscar("noexiste@test.com", null);
+
+        assertEquals(404, resultado.getStatus());
+        Mockito.verify(mockAD).buscarPorCorreo("noexiste@test.com");
+    }
+
+    @Test
+    public void buscarPorCorreoParametroInvalidoTest() {
+        System.out.println("Ejecutando test: buscarPorCorreoParametroInvalidoTest en AspiranteResource");
+        Response resultadoNull = cut.buscar(null, null);
+        Response resultadoBlank = cut.buscar("   ", null);
+
+        assertEquals(400, resultadoNull.getStatus());
+        assertEquals(400, resultadoBlank.getStatus());
+        Mockito.verifyNoInteractions(mockAD);
+    }
+
+    @Test
+    public void buscarPorCorreoConExcepcionTest() {
+        System.out.println("Ejecutando test: buscarPorCorreoConExcepcionTest en AspiranteResource");
+        Mockito.when(mockAD.buscarPorCorreo("correo@test.com")).thenThrow(new RuntimeException("Error en base de datos"));
+        assertThrows(RuntimeException.class, () -> cut.buscar("correo@test.com", null));
+        Mockito.verify(mockAD).buscarPorCorreo("correo@test.com");
     }
 
     @Test

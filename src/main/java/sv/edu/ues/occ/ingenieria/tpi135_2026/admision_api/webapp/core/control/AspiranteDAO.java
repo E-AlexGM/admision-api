@@ -48,4 +48,28 @@ public class AspiranteDAO extends DefaultDAO<Aspirante> implements Serializable 
         }
         throw new IllegalArgumentException("Parámetros inválidos");
     }
+
+    /**
+     * Busca un aspirante por correo exacto.
+     * @param correo correo del aspirante
+     * @return aspirante encontrado o null si no se encuentra
+     * @throws IllegalArgumentException si el parametro es invalido
+     * @throws IllegalStateException si ocurre un error al consultar
+     */
+    public Aspirante buscarPorCorreo(String correo) {
+        if (correo != null && !correo.isBlank()) {
+            try {
+                EntityManager entityManager = this.getEntityManager();
+                if (entityManager != null) {
+                    return entityManager.createNamedQuery("Aspirante.buscarPorCorreo", Aspirante.class)
+                            .setParameter("correo", correo.trim())
+                            .getSingleResult();
+                }
+                throw new NullPointerException("El repositorio es nulo");
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        throw new IllegalArgumentException("Parámetros inválidos");
+    }
 }

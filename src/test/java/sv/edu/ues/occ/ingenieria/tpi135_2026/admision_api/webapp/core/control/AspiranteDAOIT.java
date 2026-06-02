@@ -306,6 +306,47 @@ public class AspiranteDAOIT extends AbstractIntengrationDAOTest{
         assertTrue(encontrados.stream().allMatch(a -> apellidos.equals(a.getApellidos())));
     }
 
+    @Order(23)
+    @Test
+    public void testBuscarPorCorreoExitoso() {
+        System.out.println("buscarPorCorreo aspirante exitoso");
+
+        String correo = "correo-busqueda-" + UUID.randomUUID().toString().substring(0, 8) + "@gmail.com";
+        Aspirante aspirante = new Aspirante(UUID.randomUUID());
+        aspirante.setNombres("Aspirante Correo");
+        aspirante.setApellidos("Busqueda Correo");
+        aspirante.setCorreo(correo);
+        aspirante.setFechaNacimiento(LocalDate.of(2000, 7, 7));
+        aspirante.setFechaCreacion(OffsetDateTime.now());
+
+        cut.em.getTransaction().begin();
+        cut.crear(aspirante);
+        cut.em.getTransaction().commit();
+
+        Aspirante encontrado = cut.buscarPorCorreo(correo);
+        assertNotNull(encontrado);
+        assertEquals(correo, encontrado.getCorreo());
+        assertEquals(aspirante.getIdAspirante(), encontrado.getIdAspirante());
+        assertEquals(aspirante.getNombres(), encontrado.getNombres());
+        assertEquals(aspirante.getApellidos(), encontrado.getApellidos());
+    }
+
+    @Order(24)
+    @Test
+    public void testBuscarPorCorreoParametrosInvalidos() {
+        System.out.println("buscarPorCorreo parametros invalidos");
+        assertThrows(IllegalArgumentException.class, () -> cut.buscarPorCorreo(null));
+        assertThrows(IllegalArgumentException.class, () -> cut.buscarPorCorreo("   "));
+    }
+
+    @Order(25)
+    @Test
+    public void testBuscarPorCorreoEmNull() {
+        System.out.println("buscarPorCorreo em nulo");
+        cut.em = null;
+        assertThrows(IllegalStateException.class, () -> cut.buscarPorCorreo("correo@test.com"));
+    }
+
     @Order(21)
     @Test
     public void testBuscarPorApellidosParametrosInvalidos() {

@@ -58,21 +58,32 @@ public class AspiranteResource implements Serializable {
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON})
     @Path("buscar")
-    public Response buscarPorApellidos(@QueryParam("apellidos") String apellidos) {
-        if (apellidos == null || apellidos.isBlank()) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .header(ResponseHeaders.WRONG_PARAMETER.toString(), "El parámetro 'apellidos' no puede ser nulo o vacío")
-                    .build();
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response buscar(
+            @QueryParam("correo") String correo,
+            @QueryParam("apellidos") String apellidos) {
+        if (correo != null && !correo.isBlank()) {
+
+            Aspirante encontrado = aspiranteDAO.buscarPorCorreo(correo);
+
+            if (encontrado == null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .header(ResponseHeaders.NOT_FOUND.toString(), "No se encontró el aspirante").build();
+            }
+            return Response.ok(encontrado).type(MediaType.APPLICATION_JSON).build();
         }
-        List<Aspirante> aspirantes = aspiranteDAO.buscarPorApellidos(apellidos);
-        if (aspirantes == null || aspirantes.isEmpty()) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .header(ResponseHeaders.NOT_FOUND.toString(), "No se encontraron aspirantes con los apellidos especificados")
-                    .build();
+        if (apellidos != null && !apellidos.isBlank()) {
+            List<Aspirante> resultado =
+                    aspiranteDAO.buscarPorApellidos(apellidos);
+            if (resultado == null || resultado.isEmpty()) {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .header(ResponseHeaders.NOT_FOUND.toString(), "No se encontraron aspirantes").build();
+            }
+            return Response.ok(resultado).type(MediaType.APPLICATION_JSON).build();
         }
-        return Response.ok(aspirantes).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(Response.Status.BAD_REQUEST)
+                .header(ResponseHeaders.WRONG_PARAMETER.toString(), "Debe especificar al menos un criterio de búsqueda").build();
     }
 
     @GET
@@ -107,9 +118,9 @@ public class AspiranteResource implements Serializable {
             }
             return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
         }
-        return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "id: "+id).build();
+        return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "id: " + id).build();
     }
-    
+
     @PUT
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -126,9 +137,4 @@ public class AspiranteResource implements Serializable {
         }
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "El recurso no puede ser nulo y debe tener un ID asignado").build();
     }
-
-
-
-
-
 }
