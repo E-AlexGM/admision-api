@@ -254,6 +254,22 @@ public class AspiranteResourceST extends AbstractIntegrationTest {
 
         @Order(10)
         @Test
+        public void buscarPorApellidosNoEncontradoTest() {
+                System.out.println("buscarPorApellidosNoEncontrado en AspiranteResource");
+
+                String apellidosInexistentes = "APELLIDOS-ST-NO-ENCONTRADO-" + UUID.randomUUID().toString().substring(0, 8);
+
+                Response buscar = target.path(RESOURCE_NAME_ASPIRANTE)
+                        .path("buscar")
+                        .queryParam("apellidos", apellidosInexistentes)
+                        .request(MediaType.APPLICATION_JSON)
+                        .get();
+
+                assertEquals(404, buscar.getStatus());
+        }
+
+       @Order(11)
+        @Test
         public void buscarPorCorreoTest() {
                 System.out.println("buscarPorCorreo en AspiranteResource");
 
@@ -282,6 +298,22 @@ public class AspiranteResourceST extends AbstractIntegrationTest {
                 Assertions.assertNotNull(encontrado);
                 Assertions.assertEquals(correo, encontrado.getCorreo());
                 Assertions.assertEquals(nuevo.getApellidos(), encontrado.getApellidos());
+        }
+
+        @Order(12)
+        @Test
+        public void buscarPorCorreoNoEncontradoTest() {
+                System.out.println("buscarPorCorreoNoEncontrado en AspiranteResource");
+
+                String correoInexistente = "aspirante" + UUID.randomUUID().toString().substring(0, 8) + "@test.com";
+
+                Response buscar = target.path(RESOURCE_NAME_ASPIRANTE)
+                        .path("buscar")
+                        .queryParam("correo", correoInexistente)
+                        .request(MediaType.APPLICATION_JSON)
+                        .get();
+
+                assertEquals(404, buscar.getStatus());
         }
 
 

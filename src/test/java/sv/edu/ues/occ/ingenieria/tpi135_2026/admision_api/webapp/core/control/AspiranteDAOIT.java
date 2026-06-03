@@ -306,6 +306,16 @@ public class AspiranteDAOIT extends AbstractIntengrationDAOTest{
         assertTrue(encontrados.stream().allMatch(a -> apellidos.equals(a.getApellidos())));
     }
 
+    @Order(21)
+    @Test
+    public void testBuscarPorApellidosSinResultados() {
+        System.out.println("buscarPorApellidos aspirante sin resultados");
+        String apellidosInexistentes = "APELLIDO-INEXISTENTE-" + UUID.randomUUID().toString().substring(0, 8);
+
+        List<Aspirante> encontrados = cut.buscarPorApellidos(apellidosInexistentes);
+        assertNull(encontrados);
+    }
+
     @Order(23)
     @Test
     public void testBuscarPorCorreoExitoso() {
@@ -333,13 +343,23 @@ public class AspiranteDAOIT extends AbstractIntengrationDAOTest{
 
     @Order(24)
     @Test
+    public void testBuscarPorCorreoSinResultados() {
+        System.out.println("buscarPorCorreo aspirante sin resultados");
+        String correoInexistente = "correo-inexistente-" + UUID.randomUUID().toString().substring(0, 8) + "@gmail.com";
+
+        Aspirante encontrado = cut.buscarPorCorreo(correoInexistente);
+        assertNull(encontrado);
+    }
+
+    @Order(25)
+    @Test
     public void testBuscarPorCorreoParametrosInvalidos() {
         System.out.println("buscarPorCorreo parametros invalidos");
         assertThrows(IllegalArgumentException.class, () -> cut.buscarPorCorreo(null));
         assertThrows(IllegalArgumentException.class, () -> cut.buscarPorCorreo("   "));
     }
 
-    @Order(25)
+    @Order(26)
     @Test
     public void testBuscarPorCorreoEmNull() {
         System.out.println("buscarPorCorreo em nulo");
@@ -347,7 +367,7 @@ public class AspiranteDAOIT extends AbstractIntengrationDAOTest{
         assertThrows(IllegalStateException.class, () -> cut.buscarPorCorreo("correo@test.com"));
     }
 
-    @Order(21)
+    @Order(27)
     @Test
     public void testBuscarPorApellidosParametrosInvalidos() {
         System.out.println("buscarPorApellidos aspirante parametros invalidos");
@@ -355,7 +375,7 @@ public class AspiranteDAOIT extends AbstractIntengrationDAOTest{
         assertThrows(IllegalArgumentException.class, () -> cut.buscarPorApellidos("   "));
     }
 
-    @Order(22)
+    @Order(28)
     @Test
     public void testBuscarPorApellidosEmNull() {
         System.out.println("buscarPorApellidos aspirante em nulo");

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Aspirante;
 
@@ -62,6 +63,11 @@ public class AspiranteDAOTest {
         List<Aspirante> resultadoExitoso = cut.buscarPorApellidos("Lopez");
         assertEquals(listaEsperada, resultadoExitoso);
 
+        Mockito.when(mockQuery.getResultList()).thenReturn(Collections.emptyList());
+
+        List<Aspirante> resultadoVacio = cut.buscarPorApellidos("Lopez");
+        assertNull(resultadoVacio);
+
         Mockito.when(mockEM.createNamedQuery("Aspirante.buscarPorApellidos", Aspirante.class))
                 .thenThrow(new RuntimeException("Error"));
 
@@ -97,6 +103,11 @@ public class AspiranteDAOTest {
         cut.em = mockEM;
         Aspirante resultadoExitoso = cut.buscarPorCorreo("  correo@test.com  ");
         assertEquals(aspirante, resultadoExitoso);
+
+        Mockito.when(mockQuery.getSingleResult()).thenThrow(new NoResultException());
+
+        Aspirante resultadoVacio = cut.buscarPorCorreo("correo@test.com");
+        assertNull(resultadoVacio);
 
         Mockito.when(mockEM.createNamedQuery("Aspirante.buscarPorCorreo", Aspirante.class))
                 .thenThrow(new RuntimeException("Error"));

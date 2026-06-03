@@ -6,6 +6,7 @@ import java.util.List;
 import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Aspirante;
 
@@ -37,9 +38,10 @@ public class AspiranteDAO extends DefaultDAO<Aspirante> implements Serializable 
             try {
                 EntityManager entityManager = this.getEntityManager();
                 if (entityManager != null) {
-                    return entityManager.createNamedQuery("Aspirante.buscarPorApellidos", Aspirante.class)
+                    List<Aspirante> resultados = entityManager.createNamedQuery("Aspirante.buscarPorApellidos", Aspirante.class)
                             .setParameter("apellidos", apellidos.trim())
                             .getResultList();
+                    return resultados.isEmpty() ? null : resultados;
                 }
                 throw new NullPointerException("El repositorio es nulo");
             } catch (Exception e) {
@@ -66,7 +68,9 @@ public class AspiranteDAO extends DefaultDAO<Aspirante> implements Serializable 
                             .getSingleResult();
                 }
                 throw new NullPointerException("El repositorio es nulo");
-            } catch (Exception e) {
+            }catch (NoResultException nre) {
+                return null;
+            }catch (Exception e) {
                 throw new IllegalStateException(e);
             }
         }
