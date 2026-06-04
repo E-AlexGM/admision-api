@@ -30,6 +30,10 @@ import jakarta.persistence.Table;
     @NamedQuery(
                 name = "PruebaJornadaAulaAspiranteOpcionExamen.findByIdAspiranteAndIdPrueba",
                 query = "SELECT p FROM PruebaJornadaAulaAspiranteOpcionExamen p WHERE p.idAspiranteOpcion.idAspirante.idAspirante = :idAspirante AND p.idPrueba.idPrueba = :idPrueba"
+    ),
+     @NamedQuery(
+                name = "PruebaJornadaAulaAspiranteOpcionExamen.findByCorreoAspirante",
+                query = "SELECT p FROM PruebaJornadaAulaAspiranteOpcionExamen p WHERE p.idAspiranteOpcion.idAspirante.correo = :correo"
     )
 })
 @Entity
