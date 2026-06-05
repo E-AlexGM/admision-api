@@ -394,4 +394,51 @@ VALUES
     ('30000000-0000-0000-0000-000000000005', '70000000-0000-0000-0000-000000000013'),
     ('30000000-0000-0000-0000-000000000006', '70000000-0000-0000-0000-000000000013');
 
+-- ================================================================================
+-- ÁRBOL DE ÁREAS Y CONFIGURACIÓN PARA LA PRUEBA "NUEVO INGRESO 2026"
+-- Clave ID: 40000000-0000-0000-0000-000000000002 (PRIMERA_CLAVE)
+-- ================================================================================
+
+-- 1. CREACIÓN DEL ÁRBOL DE ÁREAS (Materias y Sub-materias extraídas del JSON)
+-- --------------------------------------------------------------------------------
+-- Nivel 1: Áreas Padre
+INSERT INTO public.area (id_area, id_area_padre, nombre, descripcion, activo) VALUES
+    ('d8c82255-afe7-44c7-b3d1-64799287db01', NULL, 'INFORMATICA', 'Área principal Informática', true),
+    ('a121653f-2a4c-4ccf-bc65-5b70869720dd', NULL, 'BIOLOGIA', 'Área principal Biología', true),
+    ('8cf20e03-8930-42cc-aba3-a1932136e707', NULL, 'SOCIALES', 'Área principal Sociales', true)
+ON CONFLICT (id_area) DO NOTHING;
+
+-- Nivel 2: Sub-áreas
+INSERT INTO public.area (id_area, id_area_padre, nombre, descripcion, activo) VALUES
+    ('033146a3-788a-435f-a746-d57e1b300969', 'd8c82255-afe7-44c7-b3d1-64799287db01', 'PROGRAMACION', 'Sub-área de Informática', true),
+    ('dd5eadb4-402c-4d32-85f3-373a5fe8a21f', 'd8c82255-afe7-44c7-b3d1-64799287db01', 'PROGRAMACION 2', 'Sub-área de Informática', true),
+    ('dc445b72-5121-453a-add9-7380987160f6', 'd8c82255-afe7-44c7-b3d1-64799287db01', 'PROGRAMACION 3', 'Sub-área de Informática', true),
+    ('84b48a4a-56b8-46d8-9cfe-54210faccaac', '8cf20e03-8930-42cc-aba3-a1932136e707', 'HISTORIA', 'Sub-área de Sociales', true),
+    ('ea03041b-4ea5-4bf8-85f9-3752f5afbbe9', '8cf20e03-8930-42cc-aba3-a1932136e707', 'GEOGRAFÍA', 'Sub-área de Sociales', true)
+ON CONFLICT (id_area) DO NOTHING;
+
+-- Nivel 3: Sub-áreas específicas
+INSERT INTO public.area (id_area, id_area_padre, nombre, descripcion, activo) VALUES
+    ('3ed61146-af79-444e-b7f7-2ec134bd9836', '033146a3-788a-435f-a746-d57e1b300969', 'POO', 'Rama de Programación', true),
+    ('24d7cca0-78ba-44cd-b80b-fabd86c69355', 'dc445b72-5121-453a-add9-7380987160f6', 'WebSockets', 'Rama de Programación 3', true),
+    ('39d88938-f58d-4a4b-990b-bbe3b0245e06', '84b48a4a-56b8-46d8-9cfe-54210faccaac', 'IMPERIALIMSO', 'Rama de Historia', true),
+    ('e57cdb2b-0590-407b-b60a-2e0e88837613', 'ea03041b-4ea5-4bf8-85f9-3752f5afbbe9', 'GEOMORFOLOGÍA', 'Rama de Geografía', true)
+ON CONFLICT (id_area) DO NOTHING;
+
+-- Insertamos el árbol completo con sus porcentajes y cantidades
+INSERT INTO public.prueba_clave_area (id_prueba_clave, id_area, cantidad, porcentaje) VALUES
+-- Informática y ramas
+('40000000-0000-0000-0000-000000000002', 'd8c82255-afe7-44c7-b3d1-64799287db01', 10, 10.00),  -- INFORMATICA
+('40000000-0000-0000-0000-000000000002', '033146a3-788a-435f-a746-d57e1b300969', 10, 10.00),  -- PROGRAMACION
+('40000000-0000-0000-0000-000000000002', 'dd5eadb4-402c-4d32-85f3-373a5fe8a21f', 10, 10.00),  -- PROGRAMACION 2
+('40000000-0000-0000-0000-000000000002', '3ed61146-af79-444e-b7f7-2ec134bd9836', 5,  50.00),  -- POO
+('40000000-0000-0000-0000-000000000002', '24d7cca0-78ba-44cd-b80b-fabd86c69355', 5,  50.00),  -- WebSockets
+-- Biología
+('40000000-0000-0000-0000-000000000002', 'a121653f-2a4c-4ccf-bc65-5b70869720dd', 10, 25.00),  -- BIOLOGIA
+-- Sociales y ramas
+('40000000-0000-0000-0000-000000000002', '8cf20e03-8930-42cc-aba3-a1932136e707', 2,  2.00),   -- SOCIALES
+('40000000-0000-0000-0000-000000000002', 'ea03041b-4ea5-4bf8-85f9-3752f5afbbe9', 2,  2.00),   -- GEOGRAFÍA
+('40000000-0000-0000-0000-000000000002', '39d88938-f58d-4a4b-990b-bbe3b0245e06', 2,  2.00),   -- IMPERIALIMSO
+('40000000-0000-0000-0000-000000000002', 'e57cdb2b-0590-407b-b60a-2e0e88837613', 2,  2.00);   -- GEOMORFOLOGÍA
+
 
