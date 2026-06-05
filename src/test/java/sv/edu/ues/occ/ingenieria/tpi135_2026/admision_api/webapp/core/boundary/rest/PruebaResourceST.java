@@ -135,6 +135,17 @@ public class PruebaResourceST extends AbstractIntegrationTest {
 
     @Order(4)
     @Test
+    public void listarTest() {
+        Response respuesta = target
+                                .queryParam("activo", true)
+                                .request(MediaType.APPLICATION_JSON)
+                                .get();
+        Assertions.assertEquals(200, respuesta.getStatus());
+      
+    }
+
+    @Order(5)
+    @Test
     public void buscarPorRangoTest() {
         // Lista pruebas por rango.
         System.out.println("buscarPorRango en PruebaResource");
@@ -152,7 +163,7 @@ public class PruebaResourceST extends AbstractIntegrationTest {
         Assertions.assertFalse(registros.isEmpty());
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     public void buscarPorRangoParametrosInvalidosTest() {
         // Paginacion invalida debe responder 400.
@@ -166,7 +177,7 @@ public class PruebaResourceST extends AbstractIntegrationTest {
         Assertions.assertEquals(400, respuesta.getStatus());
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     public void buscarPorIdTest() {
         // Busca por id existente.
@@ -184,7 +195,7 @@ public class PruebaResourceST extends AbstractIntegrationTest {
                 Assertions.assertEquals(contexto.idPrueba, encontrado.getIdPrueba());
     }
 
-    @Order(7)
+    @Order(8)
     @Test
     public void actualizarTest() {
         // Actualiza una prueba existente.
@@ -210,7 +221,7 @@ public class PruebaResourceST extends AbstractIntegrationTest {
         Assertions.assertEquals(200, respuesta.getStatus());
     }
 
-    @Order(8)
+    @Order(9)
     @Test
     public void eliminarTest() {
         // Elimina prueba existente y valida que no se encuentre luego.
@@ -231,7 +242,7 @@ public class PruebaResourceST extends AbstractIntegrationTest {
         Assertions.assertEquals(500, buscar.getStatus());
     }
 
-    @Order(9)
+    @Order(10)
     @Test
     public void eliminarNoEncontradoTest() {
         // Debe responder 404 cuando el recurso no existe.

@@ -39,6 +39,19 @@ public class PruebaDAO extends DefaultDAO<Prueba> implements Serializable {
         }
 
     }
+    
+    public List<Prueba> findActive(Boolean active){
 
+        if(active == null) throw new IllegalArgumentException("El estado no puede ser nulo");
+        
+        try{
+            return em.createNamedQuery("Prueba.findActive", Prueba.class)
+                    .setParameter("active", active)
+                    .getResultList();
+        }catch(Exception e){
+            throw new IllegalStateException(e);
+        }
+    }
+    
 
 }

@@ -9,11 +9,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 
 @Entity
 @IdClass(PruebaJornadaPK.class)
 @Table(name = "prueba_jornada")
+@NamedQueries({
+    @NamedQuery(
+        name = "PruebaJornada.findByJornadaFechaInicio",
+        query = "SELECT pj FROM PruebaJornada pj WHERE pj.idJornada.fechaInicio <= :fechaInicio"
+    )
+})
 public class PruebaJornada implements Serializable {
 
     @Id

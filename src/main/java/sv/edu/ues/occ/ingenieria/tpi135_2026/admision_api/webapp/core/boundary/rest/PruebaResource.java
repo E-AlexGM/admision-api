@@ -108,5 +108,24 @@ public class PruebaResource implements Serializable {
     }
 
 
+    
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response listar(@QueryParam("activo") Boolean activo){
+        
+        List<Prueba> pruebas = pDAO.findActive(activo);
+
+        if(pruebas.isEmpty() || pruebas == null){
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .build();
+        } 
+
+        return Response
+            .ok()
+            .entity(pruebas)
+            .build();
+    }
+    
 
 } 

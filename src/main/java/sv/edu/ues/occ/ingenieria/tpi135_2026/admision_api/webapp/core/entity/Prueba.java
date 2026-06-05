@@ -6,17 +6,16 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.persistence.*;
-
-
-
 
 @Entity
 @Table(name = "prueba")
 @NamedQueries({
         @NamedQuery(name = "Prueba.findByIdAspirante",
                 query = "SELECT ex.idPrueba FROM PruebaJornadaAulaAspiranteOpcionExamen ex WHERE ex.idAspiranteOpcion.idAspirante.idAspirante = :idAspirante"
+        ),
+        @NamedQuery(name = "Prueba.findActive",
+            query = "SELECT p FROM Prueba p WHERE p.activo = :activo"
         )
 })
 public class Prueba implements Serializable{
@@ -47,6 +46,9 @@ public class Prueba implements Serializable{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_tipo_prueba", nullable = false)
     private TipoPrueba idTipoPrueba;
+
+    @Column(name = "activo", nullable = false)
+    private Boolean activo = true;
 
 
     public Prueba(UUID idPrueba) {
@@ -116,6 +118,8 @@ public class Prueba implements Serializable{
         return idTipoPrueba;
     }
 
+    
+
     public void setIdTipoPrueba(TipoPrueba idTipoPrueba) {
         this.idTipoPrueba = idTipoPrueba;
     }@Override
@@ -149,4 +153,13 @@ public class Prueba implements Serializable{
                ", puntajeMaximo=" + puntajeMaximo + ", notaAprobacion=" + notaAprobacion + 
                ", duracion=" + duracion + ", fechaCreacion=" + fechaCreacion + "]";
     }
+    
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+    
 }

@@ -108,6 +108,7 @@ CREATE TABLE IF NOT EXISTS public.prueba
     nota_aprobacion numeric(5, 2) NOT NULL,
     duracion integer,
     fecha_creacion timestamp with time zone NOT NULL,
+    activo boolean,
     CONSTRAINT prueba_pkey PRIMARY KEY (id_prueba)
 );
 
