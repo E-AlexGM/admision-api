@@ -17,72 +17,89 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.boundary.dto.AulaDto;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.AulaClientMock;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaAulaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.JornadaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Jornada;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.JornadaAula;
 
-
 @Path("jornada/{id_jornada}/aula")
 public class JornadaAulaResource implements Serializable {
-    
+
     @Inject
     JornadaAulaDAO jADAO;
-    
+
     @Inject
     JornadaDAO jDAO;
 
+    @Inject
+    AulaClientMock aulaClientMock;
+
     /**
-     * LISTA LAS AULAS ASOCIADAS A UNA JORNADA ESPECÍFICA
-     * @param idJornada
-     * @return LA LISTA DE AULAS ASOCIADAS A LA JORNADA
+     * Lista las aulas asociadas a una jornada específica
+     * 
+     * @param idJornada de la jornada especifica
+     * @return lista de aulas asociadas a la jornada
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response listarAulaJornadas(@PathParam("id_jornada") UUID idJornada){
-        if(idJornada != null){
-            List<JornadaAula> aulas = jADAO.listarPorJornada(idJornada);
-            Response.ResponseBuilder responseBuilder = Response.ok(aulas)
-                    .type(MediaType.APPLICATION_JSON);
-            return responseBuilder.build();
+    public Response listarAulaJornadas(@PathParam("id_jornada") UUID idJornada) {
+
+        if (idJornada == null) {
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .build();
         }
-        return Response.status(Response.Status.BAD_REQUEST).build();
+
+        List<JornadaAula> aulas = jADAO.listarPorJornada(idJornada);
+
+        List<AulaDto> aulasDtoMock = aulas.stream()
+                .map(aula -> aulaClientMock.findById(aula.getIdAula()))
+                .toList();
+
+        return Response
+                .ok(aulas)
+                .entity(aulasDtoMock)
+                .build();
     }
 
     /**
      * ELIMINA UN AULA ASOCIADA A UNA JORNADA ESPECÍFICA
+     * 
      * @param idJornada EL ID DE LA JORNADA DE LA QUE SE DESEA ELIMINAR EL AULA
-     * @param idAula EL ID DEL AULA QUE SE DESEA ELIMINAR
+     * @param idAula    EL ID DEL AULA QUE SE DESEA ELIMINAR
      * @return
      */
     @DELETE
     @Path("/{id_aula}")
-    public Response eliminar(@PathParam("id_jornada") UUID idJornada, @PathParam("id_aula") String idAula){
+    public Response eliminar(@PathParam("id_jornada") UUID idJornada, @PathParam("id_aula") String idAula) {
 
-        if(idJornada != null && idAula != null){    
+        if (idJornada != null && idAula != null) {
             JornadaAula jA = jADAO.buscarPorJornadaYAula(idJornada, idAula);
-            if(jA != null){
+            if (jA != null) {
                 jADAO.eliminar(jA);
                 return Response.status(Response.Status.NO_CONTENT).build();
             }
-            return Response.status(Response.Status.NOT_FOUND).entity("No se encontró el aula para la jornada especificada.").build();
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("No se encontró el aula para la jornada especificada.").build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
-
     /**
      * ASOCIA UN AULA A UNA JORNADA ESPECÍFICA
+     * 
      * @param idJornada EL ID DE LA JORNADA A LA QUE SE DESEA ASOCIAR EL AULA
-     * @return 
+     * @return
      */
     @POST
-    @Consumes({MediaType.APPLICATION_JSON})
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response crear(@PathParam("id_jornada") UUID idJornada, JornadaAula jornadaAula, @Context UriInfo uriInfo){
-        if(idJornada != null && jornadaAula != null && jornadaAula.getIdAula() != null){
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    public Response crear(@PathParam("id_jornada") UUID idJornada, JornadaAula jornadaAula, @Context UriInfo uriInfo) {
+        if (idJornada != null && jornadaAula != null && jornadaAula.getIdAula() != null) {
             Jornada j = jDAO.buscarPorId(idJornada);
-            if(j != null){
+            if (j != null) {
                 jornadaAula.setIdJornada(j);
                 if (jornadaAula.getIdJornadaAula() == null) {
                     jornadaAula.setIdJornadaAula(UUID.randomUUID());
@@ -92,7 +109,8 @@ public class JornadaAulaResource implements Serializable {
                 uriBuilder.path(jornadaAula.getIdJornadaAula().toString());
                 return Response.created(uriBuilder.build()).build();
             }
-            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "jornada").build();
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "jornada")
+                    .build();
         }
         return Response.status(Response.Status.BAD_REQUEST).build();
     }

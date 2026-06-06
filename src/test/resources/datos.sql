@@ -441,4 +441,18 @@ INSERT INTO public.prueba_clave_area (id_prueba_clave, id_area, cantidad, porcen
 ('40000000-0000-0000-0000-000000000002', '39d88938-f58d-4a4b-990b-bbe3b0245e06', 2,  2.00),   -- IMPERIALIMSO
 ('40000000-0000-0000-0000-000000000002', 'e57cdb2b-0590-407b-b60a-2e0e88837613', 2,  2.00);   -- GEOMORFOLOGÍA
 
+-- ================================================================================
+-- 13. ASIGNACIÓN DE AULAS MOCK PARA API REST
+-- Se asocian las aulas A01, A02 y A03 a las primeras jornadas existentes.
+-- ================================================================================
 
+INSERT INTO public.jornada_aula (id_jornada_aula, id_jornada, id_aula)
+VALUES 
+    -- Se asocia A01 a "Jornada Matutina Base" (ID ...001)
+    ('80000000-0000-0000-0000-000000000052', '70000000-0000-0000-0000-000000000001', 'A01'),
+    
+    -- Se asocia A02 a "Jornada Matutina 2026-11-02" (ID ...002)
+    ('80000000-0000-0000-0000-000000000053', '70000000-0000-0000-0000-000000000002', 'A02'),
+    
+    -- Se asocia A03 a "Jornada Vespertina 2026-11-02" (ID ...003)
+    ('80000000-0000-0000-0000-000000000054', '70000000-0000-0000-0000-000000000003', 'A03');
