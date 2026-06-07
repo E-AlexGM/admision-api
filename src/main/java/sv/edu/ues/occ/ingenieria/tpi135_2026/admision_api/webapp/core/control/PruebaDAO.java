@@ -25,7 +25,7 @@ public class PruebaDAO extends DefaultDAO<Prueba> implements Serializable {
     public EntityManager getEntityManager() {
         return em;
     }
-
+     
     public List<Prueba> findByIdAspirante(UUID idAspirante) {
         if(idAspirante == null){
             throw new IllegalArgumentException("El id del aspirante no puede ser nulo");
@@ -40,13 +40,14 @@ public class PruebaDAO extends DefaultDAO<Prueba> implements Serializable {
 
     }
     
+    
     public List<Prueba> findActive(Boolean active){
 
         if(active == null) throw new IllegalArgumentException("El estado no puede ser nulo");
         
         try{
             return em.createNamedQuery("Prueba.findActive", Prueba.class)
-                    .setParameter("active", active)
+                    .setParameter("activo", active)
                     .getResultList();
         }catch(Exception e){
             throw new IllegalStateException(e);

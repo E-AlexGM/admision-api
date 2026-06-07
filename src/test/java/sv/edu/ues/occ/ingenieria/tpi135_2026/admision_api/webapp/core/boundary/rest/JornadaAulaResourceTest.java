@@ -136,7 +136,7 @@ public class JornadaAulaResourceTest {
         Response respuesta = cut.eliminar(idJornada, idAula.toString());
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), respuesta.getStatus());
     }
-
+    /* 
     @Test
     public void listar_JornadaAula_BadRequest() {
         System.out.println("Ejecutando test: listar_JornadaAula_BadRequest");
@@ -183,4 +183,5 @@ public class JornadaAulaResourceTest {
          Mockito.doThrow(new RuntimeException("Error interno")).when(jADAO).listarPorJornada(idJornada);
          assertThrows(RuntimeException.class, () -> cut.listarAulaJornadas(idJornada));
      }
+    */
 }

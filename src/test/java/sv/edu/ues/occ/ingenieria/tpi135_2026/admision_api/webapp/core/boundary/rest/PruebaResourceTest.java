@@ -183,7 +183,7 @@ public class PruebaResourceTest {
          int max = 10;
          List<Prueba> pruebas = List.of(new Prueba(), new Prueba());
          Mockito.when(pDAO.buscarPorRango(first, max)).thenReturn(pruebas);
-         Response response = cut.buscarPorRango(first, max);
+         Response response = cut.buscarPorRango(first, max, null);
          assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
          assertEquals(pruebas, response.getEntity());
      }
@@ -195,7 +195,7 @@ public class PruebaResourceTest {
          int max = 10;
          List<Prueba> pruebas = List.of();
          Mockito.when(pDAO.buscarPorRango(first, max)).thenReturn(pruebas);
-         Response response = cut.buscarPorRango(first, max);
+         Response response = cut.buscarPorRango(first, max, null);
          assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
      }
 
@@ -205,7 +205,7 @@ public class PruebaResourceTest {
          int first = 0;
          int max = 10;
          Mockito.when(pDAO.buscarPorRango(first, max)).thenReturn(null);
-         Response response = cut.buscarPorRango(first, max);
+         Response response = cut.buscarPorRango(first, max, null);
          assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
      }
 
@@ -215,7 +215,7 @@ public class PruebaResourceTest {
          int first = 0;
          int max = 10;
          Mockito.when(pDAO.buscarPorRango(first, max)).thenThrow(new RuntimeException());
-         assertThrows(RuntimeException.class, () -> cut.buscarPorRango(first, max));
+         assertThrows(RuntimeException.class, () -> cut.buscarPorRango(first, max, null));
      }
 
      @Test
@@ -223,7 +223,7 @@ public class PruebaResourceTest {
          System.out.println("EjecutandoTest: buscarPorRango_Prueba_BadRequest_FirstNegativo");
          int first = -1;
          int max = 10;
-         Response response = cut.buscarPorRango(first, max);
+         Response response = cut.buscarPorRango(first, max, null);
          assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
      }
 
@@ -232,7 +232,7 @@ public class PruebaResourceTest {
          System.out.println("EjecutandoTest: buscarPorRango_Prueba_BadRequest_MaxCero");
          int first = 0;
          int max = 0;
-         Response response = cut.buscarPorRango(first, max);
+         Response response = cut.buscarPorRango(first, max, null);
          assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
      }
 
@@ -241,7 +241,7 @@ public class PruebaResourceTest {
          System.out.println("EjecutandoTest: buscarPorRango_Prueba_BadRequest_MaxNegativo");
          int first = 0;
          int max = -5;
-         Response response = cut.buscarPorRango(first, max);
+         Response response = cut.buscarPorRango(first, max, null);
          assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
      }
 

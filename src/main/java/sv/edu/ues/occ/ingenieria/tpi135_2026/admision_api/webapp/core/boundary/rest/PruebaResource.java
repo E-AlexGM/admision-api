@@ -92,23 +92,7 @@ public class PruebaResource implements Serializable {
         return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "id").build();
     }
 
-    @GET 
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response buscarPorRango(@QueryParam("first") @DefaultValue("0") int first, 
-                        @QueryParam("max") @DefaultValue("50") int max) {
-
-        if(first >= 0 && max > 0) {
-            List<Prueba> pruebas = pDAO.buscarPorRango(first, max);
-            if(pruebas != null && !pruebas.isEmpty()) {
-                return Response.status(Response.Status.OK).entity(pruebas).build();
-            }
-            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba").build();
-        }
-        return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "first o max").build();
-    }
-
-
-    
+        
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response listar(@QueryParam("activo") Boolean activo){
@@ -127,5 +111,31 @@ public class PruebaResource implements Serializable {
             .build();
     }
     
+    
+    @GET 
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response buscarPorRango(@QueryParam("first") @DefaultValue("0") int first, 
+                        @QueryParam("max") @DefaultValue("50") int max, 
+                        @QueryParam("activo") Boolean activo) {
+
+        if(first >= 0 && max > 0) {
+            List<Prueba> pruebas;
+            
+            if(activo != null) {
+                pruebas = pDAO.findActive(activo);
+            } else {
+                pruebas = pDAO.buscarPorRango(first, max);
+            }
+            
+            if(pruebas != null && !pruebas.isEmpty()) {
+                return Response.status(Response.Status.OK).entity(pruebas).build();
+            }
+            return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba").build();
+        }
+        return Response.status(Response.Status.BAD_REQUEST).header(ResponseHeaders.WRONG_PARAMETER.toString(), "first o max").build();
+    }
+    
+
+
 
 } 

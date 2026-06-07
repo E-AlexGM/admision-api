@@ -64,6 +64,7 @@ public class PruebaResourceST extends AbstractIntegrationTest {
                 nueva.setDuracion(90);
                 nueva.setFechaCreacion(OffsetDateTime.now().withNano(0));
                 nueva.setIdTipoPrueba(tipo);
+                nueva.setActivo(true);
                 return nueva;
         }
 

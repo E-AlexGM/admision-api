@@ -48,7 +48,7 @@ public class Prueba implements Serializable{
     private TipoPrueba idTipoPrueba;
 
     @Column(name = "activo", nullable = false)
-    private Boolean activo = true;
+    private Boolean activo;
 
 
     public Prueba(UUID idPrueba) {
