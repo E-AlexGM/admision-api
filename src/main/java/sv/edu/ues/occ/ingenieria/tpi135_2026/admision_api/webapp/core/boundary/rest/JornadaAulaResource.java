@@ -37,8 +37,8 @@ public class JornadaAulaResource implements Serializable {
     AulaClientMock aulaClientMock;
 
     /**
+     * GET
      * Lista las aulas asociadas a una jornada específica
-     * 
      * @param idJornada de la jornada especifica
      * @return lista de aulas asociadas a la jornada
      */
