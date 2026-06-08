@@ -91,11 +91,14 @@ public class AspiranteOpcionDAO extends DefaultDAO<AspiranteOpcion> implements S
             try {
                 EntityManager entityManager = this.getEntityManager();
                 if (entityManager != null) {
-                    return entityManager.createNamedQuery("AspiranteOpcion.buscarPorIdYAspirante", AspiranteOpcion.class)
+                    AspiranteOpcion resultados = entityManager.createNamedQuery("AspiranteOpcion.buscarPorIdYAspirante", AspiranteOpcion.class)
                         .setParameter("idAspiranteOpcion", idAspiranteOpcion)
                         .setParameter("idAspirante", idAspirante)
-                        .getSingleResult();
-                }
+                        .getResultStream()
+                        .findFirst()
+                        .orElse(null);
+                    return resultados;
+                 }
                 throw new NullPointerException("El repositorio es nulo");
             } catch (Exception e) {
                 throw new IllegalStateException(e);

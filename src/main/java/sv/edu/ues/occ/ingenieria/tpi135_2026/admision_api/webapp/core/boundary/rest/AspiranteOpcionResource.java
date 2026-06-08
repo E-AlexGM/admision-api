@@ -117,6 +117,7 @@ public class AspiranteOpcionResource implements Serializable {
 
     @DELETE
     @Path("{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response eliminar(
             @PathParam("id_aspirante") UUID idAspirante,
             @PathParam("id") UUID id) {
@@ -126,8 +127,10 @@ public class AspiranteOpcionResource implements Serializable {
         AspiranteOpcion aspiranteOpcion = aspiranteOpcionDAO.buscarPorIdYAspirante(id, idAspirante);
         if (aspiranteOpcion != null) {
             aspiranteOpcionDAO.eliminar(aspiranteOpcion);
-            return Response.noContent().build();
+        return Response.noContent().build();
+
         }
-        return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
+                    return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "Recurso no encontrado").build();
+
     }
 }
