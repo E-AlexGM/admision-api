@@ -21,12 +21,17 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaDAO;
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.TipoPruebaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Prueba;
 
+import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.TipoPrueba;
 
 
 @Path("prueba")
 public class PruebaResource implements Serializable {
+
+    @Inject
+    TipoPruebaDAO tpDAO;
 
     @Inject
     PruebaDAO pDAO;
@@ -63,15 +68,17 @@ public class PruebaResource implements Serializable {
 
     @PUT
     @Path("{id_prueba}")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response actualizar(@PathParam("id_prueba") UUID idPrueba, Prueba p) {
         if(p != null) {
             Prueba pruebaExistente = pDAO.buscarPorId(idPrueba);
+            
             p.setIdPrueba(idPrueba);
             if(pruebaExistente != null) {
-                // Actualizar los campos de la prueba existente con los valores del objeto p
-                pDAO.actualizar(p);
-                return Response.status(Response.Status.OK).entity(p).build();
+
+                Prueba pUpdated = pDAO.actualizar(p);
+                return Response.status(Response.Status.OK).entity(pUpdated).build();
             }
             return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "prueba").build();
         }
@@ -93,24 +100,6 @@ public class PruebaResource implements Serializable {
     }
 
         
-    @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response listar(@QueryParam("activo") Boolean activo){
-        
-        List<Prueba> pruebas = pDAO.findActive(activo);
-
-        if(pruebas.isEmpty() || pruebas == null){
-            return Response
-                    .status(Response.Status.NOT_FOUND)
-                    .build();
-        } 
-
-        return Response
-            .ok()
-            .entity(pruebas)
-            .build();
-    }
-    
     
     @GET 
     @Produces({MediaType.APPLICATION_JSON})

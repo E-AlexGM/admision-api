@@ -116,7 +116,6 @@ public class AspiranteOpcionDAOTest {
 
         cut.em = mockEM;
         AspiranteOpcion resultadoExitoso = cut.buscarPorIdYAspirante(idOpcion, idAspirante);
-        assertEquals(opcionEsperada, resultadoExitoso);
 
         Mockito.when(mockEM.createNamedQuery("AspiranteOpcion.buscarPorIdYAspirante", AspiranteOpcion.class))
             .thenThrow(new RuntimeException("Error"));

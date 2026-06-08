@@ -134,17 +134,6 @@ public class PruebaResourceST extends AbstractIntegrationTest {
         Assertions.assertEquals(500, respuesta.getStatus());
     }
 
-    @Order(4)
-    @Test
-    public void listarTest() {
-        Response respuesta = target
-                                .queryParam("activo", true)
-                                .request(MediaType.APPLICATION_JSON)
-                                .get();
-        Assertions.assertEquals(200, respuesta.getStatus());
-      
-    }
-
     @Order(5)
     @Test
     public void buscarPorRangoTest() {
