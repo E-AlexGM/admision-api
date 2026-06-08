@@ -106,7 +106,7 @@ public class JornadaAulaResource implements Serializable {
                 }
                 jADAO.crear(jornadaAula);
                 UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
-                uriBuilder.path(jornadaAula.getIdJornadaAula().toString());
+                uriBuilder.path(jornadaAula.getIdAula().toString());
                 return Response.created(uriBuilder.build()).build();
             }
             return Response.status(Response.Status.NOT_FOUND).header(ResponseHeaders.NOT_FOUND.toString(), "jornada")

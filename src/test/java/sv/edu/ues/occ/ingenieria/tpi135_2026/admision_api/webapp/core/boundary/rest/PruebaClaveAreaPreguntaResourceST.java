@@ -240,6 +240,7 @@ public class PruebaClaveAreaPreguntaResourceST extends AbstractIntegrationTest{
                 .path(RESOURCE_NAME_AREA)
                 .path(idArea)
                 .path(RESOURCE_NAME_PREGUNTA)
+                .path(idPregunta)
                 .request(MediaType.APPLICATION_JSON)
                 .put(Entity.json(pruebaClaveAreaPregunta2));
         assertEquals(Response.Status.OK.getStatusCode(), respuesta.getStatus());

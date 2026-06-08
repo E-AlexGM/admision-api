@@ -145,14 +145,16 @@ public class PruebaClaveAreaPreguntaResource implements Serializable{
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("{id_pregunta}")
     public Response actualizar(@PathParam("id_prueba_clave") UUID idPruebaClave,
                            @PathParam("id_area") UUID idArea,
+                            @PathParam("id_pregunta") UUID idPregunta,
                            PruebaClaveAreaPregunta pruebaClaveAreaPregunta){
 
         if(idPruebaClave != null && idArea != null && pruebaClaveAreaPregunta != null) {
             PruebaClaveAreaPK pk = new PruebaClaveAreaPK(idPruebaClave, idArea);
             PruebaClaveArea pruebaClaveArea  = pruebaClaveAreaDAO.buscarPorId(pk);
-            Pregunta pregunta = preguntaDAO.buscarPorId(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta());
+            Pregunta pregunta = preguntaDAO.buscarPorId(idPregunta);
             if(pruebaClaveArea != null && pregunta != null) {
                 pruebaClaveAreaPregunta.setIdPregunta(pregunta);
                 pruebaClaveAreaPregunta.setIdArea(pruebaClaveArea.getIdArea());

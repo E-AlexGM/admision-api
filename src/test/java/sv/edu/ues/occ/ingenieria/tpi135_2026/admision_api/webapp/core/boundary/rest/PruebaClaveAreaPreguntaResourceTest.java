@@ -362,7 +362,7 @@ class PruebaClaveAreaPreguntaResourceTest {
             when(pDAO.buscarPorId(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta())).thenReturn(pruebaClaveAreaPregunta.getIdPregunta());
             when(pCAPDAO.validarPorcentajePrueba(pruebaClave, pruebaClaveAreaPregunta)).thenReturn(true);
 
-            Response response = resource.actualizar(idPruebaClave, idArea, pruebaClaveAreaPregunta);
+            Response response = resource.actualizar(idPruebaClave, idArea, pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta(),pruebaClaveAreaPregunta);
 
             assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
             verify(pCAPDAO).actualizar(any(PruebaClaveAreaPregunta.class));
@@ -374,7 +374,7 @@ class PruebaClaveAreaPreguntaResourceTest {
             PruebaClaveAreaPK pk = new PruebaClaveAreaPK(idPruebaClave, idArea);
             when(pCADAO.buscarPorId(pk)).thenReturn(null);
 
-            Response response = resource.actualizar(idPruebaClave, idArea, pruebaClaveAreaPregunta);
+            Response response = resource.actualizar(idPruebaClave, idArea, pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta(),pruebaClaveAreaPregunta);
 
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
             verify(pCAPDAO, never()).crear(any());
@@ -386,7 +386,7 @@ class PruebaClaveAreaPreguntaResourceTest {
             pruebaClaveArea.setIdPruebaClave(pruebaClave);
             when(pCADAO.buscarPorId(pk)).thenReturn(pruebaClaveArea);
             when(pDAO.buscarPorId(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta())).thenReturn(null);
-            Response response = resource.actualizar(idPruebaClave, idArea, pruebaClaveAreaPregunta);
+            Response response = resource.actualizar(idPruebaClave, idArea, pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta(),pruebaClaveAreaPregunta);
             assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
             verify(pCAPDAO, never()).crear(any());
         }
@@ -394,7 +394,7 @@ class PruebaClaveAreaPreguntaResourceTest {
         @Test
         @DisplayName("Debe retornar 400 si idPruebaClave es nulo")
         void actualizarIdPruebaClaveNulo() {
-            Response response = resource.actualizar(null, idArea, pruebaClaveAreaPregunta);
+            Response response = resource.actualizar(null, idArea, pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta(),pruebaClaveAreaPregunta);
 
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         }
@@ -402,7 +402,7 @@ class PruebaClaveAreaPreguntaResourceTest {
         @Test
         @DisplayName("Debe retornar 400 si idArea es nulo")
         void actualizarIdAreaNulo() {
-            Response response = resource.actualizar(idPruebaClave, null, pruebaClaveAreaPregunta);
+            Response response = resource.actualizar(idPruebaClave, null,pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta() ,pruebaClaveAreaPregunta);
 
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         }
@@ -410,7 +410,7 @@ class PruebaClaveAreaPreguntaResourceTest {
         @Test
         @DisplayName("Debe retornar 400 si pruebaClaveAreaPregunta es nulo")
         void actualizarPruebaClaveAreaPreguntaNulo() {
-            Response response = resource.actualizar(idPruebaClave, idArea, null);
+            Response response = resource.actualizar(idPruebaClave, idArea, idPregunta,null);
 
             assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         }
@@ -423,7 +423,7 @@ class PruebaClaveAreaPreguntaResourceTest {
             when(pDAO.buscarPorId(pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta())).thenReturn(pruebaClaveAreaPregunta.getIdPregunta());
             when(pCAPDAO.validarPorcentajePrueba(pruebaClave, pruebaClaveAreaPregunta)).thenReturn(false);
 
-            Response response = resource.actualizar(idPruebaClave, idArea, pruebaClaveAreaPregunta);
+            Response response = resource.actualizar(idPruebaClave, idArea, pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta(),pruebaClaveAreaPregunta);
 
             assertEquals(Response.Status.CONFLICT.getStatusCode(), response.getStatus());
             verify(pCAPDAO, never()).crear(any(PruebaClaveAreaPregunta.class));
@@ -434,7 +434,7 @@ class PruebaClaveAreaPreguntaResourceTest {
         void actualizarExcepcion() {
             PruebaClaveAreaPK pk = new PruebaClaveAreaPK(idPruebaClave, idArea);
             when(pCADAO.buscarPorId(pk)).thenThrow(new RuntimeException("Error de BD"));
-            assertThrows(RuntimeException.class, () -> resource.actualizar(idPruebaClave, idArea, pruebaClaveAreaPregunta));
+            assertThrows(RuntimeException.class, () -> resource.actualizar(idPruebaClave, idArea,pruebaClaveAreaPregunta.getIdPregunta().getIdPregunta() ,pruebaClaveAreaPregunta));
         }
     }
 
