@@ -91,6 +91,7 @@ public class PruebaClaveResource implements Serializable{
 
     @GET
     @Path("/{id_clave}")
+    @Produces({MediaType.APPLICATION_JSON})
     public Response buscarPorId(@PathParam("id_prueba") UUID idPrueba, @PathParam("id_clave") UUID idPruebaClave){
         if(idPrueba != null && idPruebaClave != null){
             PruebaClave encontrado = pCDAO.buscarPorId(idPruebaClave);
