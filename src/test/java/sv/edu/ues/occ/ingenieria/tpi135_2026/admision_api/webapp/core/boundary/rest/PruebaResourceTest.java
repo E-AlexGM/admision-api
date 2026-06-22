@@ -15,7 +15,9 @@ import jakarta.ws.rs.core.UriInfo;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.PruebaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.control.TipoPruebaDAO;
 import sv.edu.ues.occ.ingenieria.tpi135_2026.admision_api.webapp.core.entity.Prueba;
-
+/**
+ * Comentario para probar pipeline
+ */
 public class PruebaResourceTest {
 
     PruebaDAO pDAO;
